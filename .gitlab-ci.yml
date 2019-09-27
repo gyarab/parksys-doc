@@ -1,5 +1,6 @@
 before_script:
-  - curl -s https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | sudo bash
+  - apk add --update curl && rm -rf /var/cache/apk/*
+  - curl -s https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | bash
   - deb http://ftp.fi.debian.org/debian/ buster main contrib non-free
   - deb-src http://ftp.fi.debian.org/debian/ buster main contrib non-free
   - apt-get install icc-profiles
