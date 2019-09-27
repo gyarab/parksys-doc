@@ -1,3 +1,8 @@
+before_script:
+  - deb http://ftp.fi.debian.org/debian/ buster main contrib non-free
+  - deb-src http://ftp.fi.debian.org/debian/ buster main contrib non-free
+  - apt-get install icc-profiles
+
 compile_pdf:
   image: tianon/latex
   script:
