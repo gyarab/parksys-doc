@@ -1,0 +1,8 @@
+compile_pdf:
+  image: tianon/latex
+  script:
+    - cd prace
+    - make
+  artifacts:
+    paths:
+      - prace/prace.pdf
