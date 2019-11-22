@@ -57,8 +57,6 @@
 \usepackage{dcolumn}        % lepší zarovnání sloupců v tabulkách
 \usepackage{booktabs}       % lepší vodorovné linky v tabulkách
 \usepackage{paralist}       % lepší enumerate a itemize
-\usepackage[usenames]{xcolor}  % barevná sazba
-\usepackage[table]{xcolor}
 
 %%% Údaje o práci
 
@@ -123,7 +121,11 @@
 \tableofcontents
 
 %%% Jednotlivé kapitoly práce jsou pro přehlednost uloženy v samostatných souborech
-\include{uvod}
+\include{kapitoly/uvod}
+\include{kapitoly/analyza}
+\include{kapitoly/proof_of_concept}
+\include{kapitoly/vyvoj}
+\include{kapitoly/uzivatelska_dokumentace}
 \include{kapitoly/kapitola}
 
 \include{zaver}

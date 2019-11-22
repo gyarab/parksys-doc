@@ -1,0 +1,13 @@
+*.log
+*.dvi
+*.toc
+*.aux
+*.lof
+*.out
+*.bbl
+*.blg
+*.xmpi
+*.fls
+*.fdb_latexmk
+*.lot
+*.pdf

@@ -1,0 +1,76 @@
+
+\chapter{Analýza} \label{analyza}
+
+\section{Volba technologií a vývojového prostředí} \label{devenv}
+
+% Maybe divide into smaller pieces
+
+% Typescript
+% - rychlost vývoje JS
+% - type safety
+% - Node ecosystem
+%   - dev tools
+%   - libraries
+%   - npm
+% - freedom of expression
+% - scripts using main code
+
+% VSCode
+% - supports TS well
+% - lightweight
+% - plethora of extensions to ease development
+
+% Docker for deployment
+
+\section{Architektura řešení} \label{architektura_reseni}
+
+% - describe all superficially
+% - in their subsections, be specific
+
+% TODO: Find a better label
+\subsection{Snímač SPZ}
+
+% - just a phone taking photographs and analyzing them
+%   - in the phone (rooted and/or with a normal Linux distro)
+%   - remotely through back end
+% - movement detection
+% - size to filter distant vehicles that are not entering etc.
+
+\subsection{Serverová aplikace}
+
+% - Express
+%   - standard and other libraries build on it
+%   - REST for Devices
+% - JEST \& Supertest
+%   - declarative simple
+%   - integrates with Express well
+% - GraphQL
+%   - Apollo because it has a Server and also a Client
+%   - Frontend first development for most of the features
+% - MongoDB & Mongoose
+%   - Mongoose is very mature
+%   - development iteration
+%   - migration scripts are written in pure JS
+%   - good for the ever increasing number of records - parking data
+
+\subsection{Webová klientská aplikace}
+
+% - React
+%   - components, author wants to learn it
+% - Redux 
+%   - eco-system of libraries (ReduxSaga)
+%   - compatibility with React
+%   - easy to test
+% - JEST & Enzyme for tests
+
+% SERVER & CLIENT => common core code for API?
+
+\section{Databázové schéma} \label{db_schema}
+
+\section{Zabezpečení přihlašování a přístupu} \label{db_schema}
+
+% - hash, salt
+% - JWT
+% - simple permission levels
+%   - the system operates on its own most of the time
+%   - many permissions and roles are confusing anyway
