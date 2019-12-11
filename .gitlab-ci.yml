@@ -3,6 +3,7 @@ compile_pdf:
   script:
     - cd prace
     - make
+    - mv prace/prace.pdf prace.pdf
   artifacts:
     paths:
-      - prace/prace.pdf
+      - prace.pdf
