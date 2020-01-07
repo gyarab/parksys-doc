@@ -63,10 +63,6 @@
 %   - easy to test
 % - JEST & Enzyme for tests
 
-% SERVER & CLIENT => common core code for API?
-
-\section{Databázové schéma} \label{db_schema}
-
 \section{Zabezpečení přihlašování a přístupu} \label{db_schema}
 
 % - hash, salt
@@ -74,3 +70,84 @@
 % - simple permission levels
 %   - the system operates on its own most of the time
 %   - many permissions and roles are confusing anyway
+
+\section{Parkovací pravidla} \label{analysis_parking_schema}
+
+\begin{itemize}
+  \item Různá vozidla mohou podléhat ruzným pravidlům.
+  \item Pravidla mají prioritu.
+  \item Pravidla mají časové omezení.
+  \item V jednu chvíli může platit více pravidel.
+\end{itemize}
+
+Mechanismus, kterým umožníme vozidlům být ovlivněna některými pravidly,
+budou filtry.
+Pro dostatečnou flexibilitu je zapotřebí oddělit samotná pravidla od jejich
+priority, časového intervalu platnosti i filtrů,
+k čemuž bude sloužit objekt typu \texttt{ParkingRuleAssignment}.
+
+% TODO - add a db schema image that takes less space
+\begin{lstlisting}
+type ParkingRuleAssignment {
+  rules: [ParkingRule]!
+  start: DateTime!
+  end: DateTime!
+  # ALL nebo NONE
+  vehicleFilterMode: VehicleFilterMode!
+  vehicleFilters: [VehicleFilter!]
+  priority: NonNegativeInt!
+}
+
+type VehicleFilter {
+  id: ID!
+  name: String!
+  action: VehicleFilterAction!
+  vehicles: [Vehicle!]!
+}
+\end{lstlisting}
+
+Filtrování bude mít dva módy: začneme se všemi vozidly (ALL) a začneme bez vozidel (NONE).
+Následné filtry mohou buď přidávat, nebo odstraňovat jednotlivá vozidla.
+Hodí se mít filtry uložené separátně, aby mohli být využity několikrát.
+
+Pro zjednodušení algoritmů, uvalíme omezení: ve stejný čas nesmí existovat více \texttt{ParkingRuleAssignment}
+se stejnou prioritou.
+
+\subsubsection*{Algoritmus filtru vozidel}
+
+\textit{Vstup: objekt \texttt{ParkingRuleAssignment}, vozidlo}
+
+\textit{Výstup: boolean určující platnost}
+\begin{enumerate}
+  \item Na základě módu filtrování si budeme udržovat množinu buď odstraněných vozidel (mód ALL), nebo přidaných vozidel (mód NONE).
+  \item Podle příslušné akce filtrů (odstranit, nebo přidat) budeme množinu našich vozidel manipulovat, např. je-li mód ALL a filtr odstraňuje, do množiny si vozidla přidáme
+  \item Pokud je vozidlo ve výsledné množině, tak pro něj \texttt{ParkingRuleAssignment} platí pokud je filtrovací mód NONE a neplatí pokud je mód ALL. Opačné výsledky nastanou, pokud vozidlo v množině není.
+\end{enumerate}
+
+Tento algoritmus lze potanciálně rozdělit na předvýpočet (kroky 1. a 2.) a ověření (krok 3.).
+Je-li ale uživatel příčetný, počet použitých filtrů nebude obrovský a nemusíme se starat o cachování
+množin a tedy vypočítat množinu pro každé vozidlo, což nevadí, protože algoritmus má časovou i prostorovou složitost
+${\cal O}(N)$.
+
+\subsubsection*{Algoritmus pro aplikaci ParkingRuleAssignmentů}
+
+V jednom čase může existovat více objektů typu \texttt{ParkingRuleAssignment} avšak s různou prioritou.
+Může se stát, že aplikovaných \texttt{ParkingRuleAssignment} bude několik (různé priority, vyprší platno, etc.).
+
+Situaci si lze představit jako několik úseček navzájem rovnoběžných v různých výškách, které se neprotínají.
+Nás nyní zajímá, na které a v jakých intervalech na ně dopadne světlo, pokud na ně kolmo posvítíme.
+
+<IMAGE>
+
+\begin{enumerate}
+  \item CREATE EVENTS AND SORT THEM
+  \item CREATE A HEAP
+  \item CREATE A RESULT LIST WITH TIMES AND PRA
+  \item REMEMBER CURRENT PRA AND ITS APPLICATION START
+  \item FOR EVERY EVENT:
+  \begin{enumerate}
+    \item ... complicated
+  \end{enumerate}
+\end{enumerate}
+
+\section{Databázové schéma} \label{db_schema}
