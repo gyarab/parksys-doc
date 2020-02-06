@@ -132,21 +132,42 @@ ${\cal O}(N)$.
 \subsubsection*{Algoritmus pro aplikaci ParkingRuleAssignmentů}
 
 V jednom čase může existovat více objektů typu \texttt{ParkingRuleAssignment} avšak s různou prioritou.
-Může se stát, že aplikovaných \texttt{ParkingRuleAssignment} bude několik (různé priority, vyprší platno, etc.).
+Může se stát, že aplikovaných \texttt{ParkingRuleAssignment} bude několik (různé priority, vyprší platnost, etc.).
 
-Situaci si lze představit jako několik úseček navzájem rovnoběžných v různých výškách, které se neprotínají.
-Nás nyní zajímá, na které a v jakých intervalech na ně dopadne světlo, pokud na ně kolmo posvítíme.
+Situaci si lze představit jako několik úseček navzájem rovnoběžných úseček v různých výškách, které se neprotínají.
+Nás nyní zajímá, na které a v jakých intervalech na ně dopadne světlo, pokud na ně kolmo zeshora posvítíme.
 
 <IMAGE>
 
+Pro zjednodušení předpokládejme, že všechny \texttt{ParkingRuleAssignment}, které zpracováváme, platí pro naše vozidlo.
+Přidat tuto kontrolu později je triviální.
+
 \begin{enumerate}
-  \item CREATE EVENTS AND SORT THEM
-  \item CREATE A HEAP
-  \item CREATE A RESULT LIST WITH TIMES AND PRA
-  \item REMEMBER CURRENT PRA AND ITS APPLICATION START
-  \item FOR EVERY EVENT:
+  \item Seřadíme si začátky a konce úseček podle jejich času.
+  \item Vytvoříme si haldu pro odkládání úseček
+  \item Vytvoříme si seznam aplikovaných pravidel s časy (časy mohou se lišit od počátečních i koncových časů).
+  \item Nechť \textit{s} je současná úsečka a \textit{$t_s$} čas zvolení \textit{s} (čas zvolení se může lišit od začátku úsečky).
+  \item Pro každou událost \textit{u} značící začátek/konec úsečky (aplikaci pravidla) \textit{p}:
   \begin{enumerate}
-    \item ... complicated
+    \item Pokud se jedná o začátek nové úsečky:
+    \begin{enumerate}
+      \item Pokud není zvolená úsečka:\\
+            \textit{$t_s$} $\leftarrow$ \textit{p.start}\\
+            \textit{s} $\leftarrow$ \textit{p}
+      \item Pokud je zvolená úsečka a \textit{p} má vyšší prioritu než \textit{s}:\\
+            \textit{s} dáme do seznamu aplikovaných pravidel se začátkem \textit{$t_s$} a koncem \textit{p.start}.\\
+            \textit{s} dáme na haldu, pokud \textit{s.end} > \textit{p.end}.\\
+            \textit{$t_s$} $\leftarrow$ \textit{p.start}\\
+            \textit{s} $\leftarrow$ \textit{p}
+      \item Pokud je zvolená úsečka a \textit{p} má nižší prioritu než \textit{s} a \textit{p.end} > \textit{s.end}:\\
+            \textit{s} dáme na haldu
+    \end{enumerate}
+    \item Jinak (jedná se o konec nějaké úsečky):
+    \begin{enumerate}
+      \item Přidáme \textit{s} do seznamu aplikovaných pravidel se začátkem \textit{$t_s$} a koncem \textit{s.end}.
+      \item Taháme z haldy dokud nedostaneme úsečku s koncem později než konecm \textit{s}, nebo dokud halda není prázdná.
+      \item Pokud jsme z haldy vhodnou úsečku vytáhli, použijeme ji. V opačném případě vyprázdníme \textit{s} a \textit{$t_s$}.
+    \end{enumerate}
   \end{enumerate}
 \end{enumerate}
 
