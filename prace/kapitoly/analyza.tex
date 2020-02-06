@@ -144,7 +144,7 @@ Přidat tuto kontrolu později je triviální.
 
 \begin{enumerate}
   \item Seřadíme si začátky a konce úseček podle jejich času.
-  \item Vytvoříme si haldu pro odkládání úseček
+  \item Vytvoříme si haldu pro odkládání úseček, která řadí podle priority -- větší výše.
   \item Vytvoříme si seznam aplikovaných pravidel s časy (časy mohou se lišit od počátečních i koncových časů).
   \item Nechť \textit{s} je současná úsečka a \textit{$t_s$} čas zvolení \textit{s} (čas zvolení se může lišit od začátku úsečky).
   \item Pro každou událost \textit{u} značící začátek/konec úsečky (aplikaci pravidla) \textit{p}:
@@ -170,5 +170,11 @@ Přidat tuto kontrolu později je triviální.
     \end{enumerate}
   \end{enumerate}
 \end{enumerate}
+
+Agloritmus zajisté doběhne, protože máme konečný počet událostí a v každém cyklu jednu zpracujeme.
+Při rozumném počtu \texttt{ParkingRuleAssignment} v daném intervalu je algoritmus velice rychlý.
+${\cal O}(N^2\cdot logN)$
+${\cal O}(N\cdot logN)$
+Přidáme-li filtrování, které nemusíme provést pro všechny úsečky, ${\cal O}(N\cdot M)$.
 
 \section{Databázové schéma} \label{db_schema}
