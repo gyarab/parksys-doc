@@ -3,9 +3,15 @@
 
 \section{Architektura řešení} \label{architektura_reseni}
 
-<DIAGRAM with protocols>
+\begin{figure} \centering
+  \includegraphics[width=145mm]{../img/architecture_drawing.jpg}
+  \caption{Diagram komponent a jejich komunikace.}
+  \label{fig:architecture_drawing}
+\end{figure}
 
-Parkovací systém se zkládá z následujících částí, které si nyní popíšeme stručně a detailněji později:
+Parkovací systém se zkládá z následujících částí, které si nyní popíšeme stručně a detailněji později.
+Části spolu komunikují pomocí HTTP.
+Obrázek \ref{fig:architecture_drawing} ukazuje tyto části a nastiňuje způsob komunikace.
 
 \begin{itemize}
   \item \textbf{Backend} je středobodem celé aplikace -- komunikuje se všemy ostatními komponentami.
@@ -52,7 +58,7 @@ Renderování zajišťuje knihovna React, která od klasického přístupu, kdy 
 souborů, mandatuje, že v jednom souboru je jedna komponenta se vším svým HTML a logikou ve formě Javascriptu nebo
 Typescriptu. Pomocí další knihovny typestyle pak můžeme do stejného souboru psát i typované CSS.
 Aby bylo možné snadno sdílet mezi komponentami stav, byla pro takzvaný state-management zvolena knihovna Redux.
-Diagram na obrázku \ref{fig:react_redux_dataflow} ukazuje tok data mezi Reactem a Reduxem.
+Diagram na obrázku \ref{fig:react_redux_dataflow} ukazuje tok dat mezi Reactem a Reduxem.
 
 \begin{figure} \centering
 \includegraphics[width=145mm]{../img/react-redux-architecture.png}
@@ -161,14 +167,17 @@ se stejnou prioritou.
 \textit{Výstup: boolean určující platnost}
 \begin{enumerate}
   \item Na základě módu filtrování si budeme udržovat množinu buď odstraněných vozidel (mód ALL), nebo přidaných vozidel (mód NONE).
-  \item Podle příslušné akce filtrů (odstranit, nebo přidat) budeme množinu našich vozidel manipulovat, např. je-li mód ALL a filtr odstraňuje, do množiny si vozidla přidáme
+  \item Podle příslušné akce filtrů (odstranit nebo přidat) budeme množinu našich vozidel manipulovat. Např. je-li mód ALL a filtr odstraňuje, do množiny si vozidla přidáme.
   \item Pokud je vozidlo ve výsledné množině, tak pro něj \texttt{ParkingRuleAssignment} platí pokud je filtrovací mód NONE a neplatí pokud je mód ALL. Opačné výsledky nastanou, pokud vozidlo v množině není.
 \end{enumerate}
 
-Tento algoritmus lze potanciálně rozdělit na předvýpočet (kroky 1. a 2.) a ověření (krok 3.).
-Je-li ale uživatel příčetný, počet použitých filtrů nebude obrovský a nemusíme se starat o cachování
-množin a tedy vypočítat množinu pro každé vozidlo, což nevadí, protože algoritmus má časovou i prostorovou složitost
-${\cal O}(N)$.
+Časová i paměťová složitost algoritmu je ${\cal O}(N)$, kde $N$ je počet filtrů.
+
+Tento algoritmus lze potenciálně rozdělit na předvýpočet (kroky 1. a 2.) a ověření (krok 3.).
+To je jedna možnost, která zvýší paměťovou náročnost, protože bychom si museli pamatovat množiny, což je nepraktické.
+Je-li uživatel příčetný, počet použitých filtrů nebude obrovský, a tudíž je lepší zvolit následující způsob cachovaní.
+Zapamatujeme si výsledky pro určitý seznam filtrů pro konkrétní vozidlo pouze při běhu algoritmu, který je
+vysvětlen v následující kapitole, čímž následující algoritmus zrychlíme.
 
 \subsubsection*{Algoritmus pro aplikaci ParkingRuleAssignmentů}
 
@@ -177,8 +186,14 @@ Může se stát, že aplikovaných \texttt{ParkingRuleAssignment} bude několik 
 
 Situaci si lze představit jako několik úseček navzájem rovnoběžných úseček v různých výškách, které se neprotínají.
 Nás nyní zajímá, na které a v jakých intervalech na ně dopadne světlo, pokud na ně kolmo zeshora posvítíme.
+Situaci lze vidět na obrázku \ref{fig:rules_drawing}.
 
-<IMAGE>
+\begin{figure} \centering
+  \includegraphics[width=145mm]{../img/rules_drawing.jpg}
+  \textit{Modré úsečky neplatí kvůli filtrům nebo protože jsou deaktivované. Oranžová čára značí výstup požadovaného algoritmu.}
+  \caption{Ilustrace problému úseček. }
+  \label{fig:rules_drawing}
+\end{figure}
 
 Pro zjednodušení předpokládejme, že všechny \texttt{ParkingRuleAssignment}, které zpracováváme, platí pro naše vozidlo.
 Přidat tuto kontrolu později je triviální.
@@ -209,7 +224,7 @@ Přidat tuto kontrolu později je triviální.
     \item Jinak (jedná se o konec nějaké úsečky):
     \begin{enumerate}
       \item Přidáme \textit{s} do seznamu aplikovaných pravidel se začátkem \textit{$t_s$} a koncem \textit{s.end}.
-      \item Taháme z haldy dokud nedostaneme úsečku s koncem později než konecm \textit{s}, nebo dokud halda není prázdná.
+      \item Taháme z haldy, dokud nedostaneme úsečku s koncem později než konecm \textit{p}, nebo dokud halda není prázdná.
       \item Pokud jsme z haldy vhodnou úsečku vytáhli, použijeme ji. V opačném případě vyprázdníme \textit{s} a \textit{$t_s$}.
     \end{enumerate}
   \end{enumerate}
