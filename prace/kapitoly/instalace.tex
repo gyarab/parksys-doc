@@ -1,0 +1,27 @@
+
+\chapter{Instalace} \label{analyza}
+
+Instalace celého systému je velice jednoduchá. Pro distribuci je použit nástroj
+Docker, který zajistí kompilaci, spuštění, propojení všech částí a odhalení
+potřebných služeb ven na internet.
+
+-- EXPLAIN DOCKER A LITTLE AND PROVIDE A LINK TO DOCUMENTATION
+
+Kromě Backendu, Frontendu, OpenALPR Server a MongoDB používá tato distribuce
+Dockerem populární HTTP server NGINX pro SSL a reverse proxy. Vnitřní HTTP komunikace
+tak nemusí být zabezpečena.
+
+\subsubsection*{Postup Instalace}
+
+\begin{enumerate}
+  \item Po stažení git repozitáře se zdrojovým kódem, nastavíme submoduly:\\
+  \begin{lstlisting}
+    $ git submodule init
+    $ git submodule update --remote --recursive
+  \end{lstlisting}
+  \item Dle potřeby upravíme soubor \textit{/docker-compose.yml} kvůli hostname, SSL certifikátům pro NGINX apod.
+  \item Celý systém spustíme.\\
+  \begin{lstlisting}
+    $ docker-compose up
+  \end{lstlisting}
+\end{enumerate}
