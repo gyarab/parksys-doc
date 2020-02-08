@@ -1,7 +1,56 @@
 
 \chapter{Analýza} \label{analyza}
 
+\section{Architektura řešení} \label{architektura_reseni}
+
+<DIAGRAM with protocols>
+
+Parkovací systém se zkládá z následujících částí, které si nyní popíšeme stručně a detailněji později:
+
+\begin{itemize}
+  \item \textbf{Backend} je středobodem celé aplikace -- komunikuje se všemy ostatními komponentami.
+        Zajišťuje business logiku aplikace, autentizaci i autorizaci uživatelů a perzistenci dat do \textbf{Databáze}.
+  \begin{itemize}
+    \item \textbf{Databáze} (nevlastní software -- https://www.mongodb.com/) k ukládání dat je MongoDB, která byla vybrána, protože data se budou
+          převážně zapisovat a bude potřeba v nich rychle hledat a provádět agregační dotazy.
+    \item \textbf{OpenALPR Server} (převzato z https://github.com/gerhardsletten/express-openalpr-server) je server, jenž obstarává přístup
+          ke knihovně OpenALPR (https://github.com/openalpr/openalpr), která rozpoznává SPZ, přes protokol http.
+  \end{itemize}
+  \item \textbf{Mobilní aplikace} posílá obrazová data na \textbf{Backend}, kde jsou zpracována. Je určena pro platformu Android.
+  \item \textbf{Frontend} je rozhraní mezi celým systémem a správcem parkoviště a dalšího personálu.
+\end{itemize}
+
+% - describe all superficially
+% - in their subsections, be specific
+
 \section{Volba technologií a vývojového prostředí} \label{devenv}
+
+Jako programovací jazyk pro \textbf{Backend} byl zvolen staticky typovaný Typescript kvůli rychlosti vývoje
+a množství knihoven, které poskytuje ekosystém Node.js. Primárním způsobem komunikace s \textbf{Frontend}
+je dotazovací jazyk GraphQL, který přináší ucelený popis poskytovanách dat pomocí kontroly typů,
+expresivních dotazů, jejichž odpověď má stejný "tvar". Obrázek \ref{fig:graphql_example} ukazuje dotaz hledání uživatele podle jména.
+
+\begin{figure} \centering
+\includegraphics[width=145mm]{../img/graphql_example.png}
+\caption{Screenshot z nástroje GraphQL Playground. Příklad GraphQL dotazu (vlevo) a odpovědi (vpravo).}
+\label{fig:graphql_example}
+\end{figure}
+
+Model uživatele může mít i další atributy, ale GraphQL vrátí přesně ty údaje, na které se uživatel zeptal.
+Tento triviální příklad neukazuje další funkce jako argumenty, mutace dat, dědičnost, více dotazů v jednom http dotazu
+a mnoho dalších.
+GraphQL je pouze specifikace vytvořená společností Facebook. Detailní informace jsou dostupné na oficiálních
+stránkach https://graphql.org/.
+
+Pro \textbf{Frontend} byl jako u \textbf{Backend} vybrán Typescript ze stejných důvodů. Renderování zajišťuje
+knihovna React, která od řekněme klasického přístupu, kdy se odděluje HTML a Javascript do separátních
+souborů, mandatuje, že v jednom souboru je jedna komponenta se vším svým HTML a logikou ve formě Javascriptu nebo
+Typescriptu. Pomocí knihovny typestyle pak můžeme do stejného souboru psát i typované CSS.
+Aby bylo možné snadno sdílet mezi komponentami stav, byla pro takzvaný state-management zvolena knihovna Redux.
+
+\textbf{Mobilní aplikace}, která je určena pro platformu Android, měla volbu jazyka omezenou na Javu, Kotlin a C++.
+Rychlost C++ není potřeba a navíc autor s tímto jazykem nižší úrovně nemá takové zkušenosti.
+Kotlin oproti Javě umožňuje přímočarejší přístup k elementům uživatelského rozhraní, a proto byl zvolen.
 
 % Maybe divide into smaller pieces
 
@@ -22,13 +71,8 @@
 
 % Docker for deployment
 
-\section{Architektura řešení} \label{architektura_reseni}
-
-% - describe all superficially
-% - in their subsections, be specific
-
 % TODO: Find a better label
-\subsection{Snímač SPZ}
+\subsection{Detekce SPZ}
 
 % - just a phone taking photographs and analyzing them
 %   - in the phone (rooted and/or with a normal Linux distro)
