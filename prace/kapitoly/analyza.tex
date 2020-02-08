@@ -20,13 +20,14 @@ Parkovací systém se zkládá z následujících částí, které si nyní pop�
   \item \textbf{Frontend} je rozhraní mezi celým systémem a správcem parkoviště a dalšího personálu.
 \end{itemize}
 
-% - describe all superficially
-% - in their subsections, be specific
-
-\section{Volba technologií a vývojového prostředí} \label{devenv}
+\section{Backend} \label{backend}
 
 Jako programovací jazyk pro \textbf{Backend} byl zvolen staticky typovaný Typescript kvůli rychlosti vývoje
-a množství knihoven, které poskytuje ekosystém Node.js. Primárním způsobem komunikace s \textbf{Frontend}
+a množství knihoven, které poskytuje ekosystém Node.js.
+
+\subsection{Komunikace s Frontendem}
+
+Primárním způsobem komunikace s \textbf{Frontend}
 je dotazovací jazyk GraphQL, který přináší ucelený popis poskytovanách dat pomocí kontroly typů,
 expresivních dotazů, jejichž odpověď má stejný "tvar". Obrázek \ref{fig:graphql_example} ukazuje dotaz hledání uživatele podle jména.
 
@@ -37,20 +38,36 @@ expresivních dotazů, jejichž odpověď má stejný "tvar". Obrázek \ref{fig:
 \end{figure}
 
 Model uživatele může mít i další atributy, ale GraphQL vrátí přesně ty údaje, na které se uživatel zeptal.
-Tento triviální příklad neukazuje další funkce jako argumenty, mutace dat, dědičnost, více dotazů v jednom http dotazu
+Tento triviální příklad neukazuje další funkce jako mutace dat, dědičnost typů, více dotazů v jednom http dotazu
 a mnoho dalších.
 GraphQL je pouze specifikace vytvořená společností Facebook. Detailní informace jsou dostupné na oficiálních
 stránkach https://graphql.org/.
 
-Pro \textbf{Frontend} byl jako u \textbf{Backend} vybrán Typescript ze stejných důvodů. Renderování zajišťuje
-knihovna React, která od řekněme klasického přístupu, kdy se odděluje HTML a Javascript do separátních
+\section{Frontend} \label{frontend}
+
+Pro \textbf{Frontend} byl jako u \textbf{Backend} vybrán Typescript ze stejných důvodů. Webové rozhraní
+je takzvaná SPA (z angl. Single-Page-Application), což znamená, že uživateli se obsah mění dynamicky
+bez načítání dalších stránek.
+Renderování zajišťuje knihovna React, která od klasického přístupu, kdy se odděluje HTML a Javascript do separátních
 souborů, mandatuje, že v jednom souboru je jedna komponenta se vším svým HTML a logikou ve formě Javascriptu nebo
-Typescriptu. Pomocí knihovny typestyle pak můžeme do stejného souboru psát i typované CSS.
+Typescriptu. Pomocí další knihovny typestyle pak můžeme do stejného souboru psát i typované CSS.
 Aby bylo možné snadno sdílet mezi komponentami stav, byla pro takzvaný state-management zvolena knihovna Redux.
+Diagram na obrázku \ref{fig:react_redux_dataflow} ukazuje tok data mezi Reactem a Reduxem.
+
+\begin{figure} \centering
+\includegraphics[width=145mm]{../img/react-redux-architecture.png}
+\caption{Spojení React a Redux. \citep[viz][]{react_redux_dataflow}}
+\label{fig:react_redux_dataflow}
+\end{figure}
+
+\section{Mobilní aplikce} \label{mobile_app}
 
 \textbf{Mobilní aplikace}, která je určena pro platformu Android, měla volbu jazyka omezenou na Javu, Kotlin a C++.
 Rychlost C++ není potřeba a navíc autor s tímto jazykem nižší úrovně nemá takové zkušenosti.
 Kotlin oproti Javě umožňuje přímočarejší přístup k elementům uživatelského rozhraní, a proto byl zvolen.
+
+Jediným úkolem \textbf{Mobilní aplikace} je v pravidelném intervalu pořídit snímek fotoaparátem a poslat ho na
+\textbf{Backend}, který jej patřičně zpracuje.
 
 % Maybe divide into smaller pieces
 
@@ -71,8 +88,15 @@ Kotlin oproti Javě umožňuje přímočarejší přístup k elementům uživate
 
 % Docker for deployment
 
-% TODO: Find a better label
-\subsection{Detekce SPZ}
+\section{Detekce SPZ}
+
+Detekci SPZ bude zajišťovat knihovna OpenALPR \citep[viz][]{OpenALPR}, jejímž vstupem je obrázek a popřípadě
+parametry jako úhel kamery apod. Ke zbytku aplikace je připojena malým HTTP serverem, jenž byl převzán a upraven
+\citep[viz][]{OpenALPR_Server}.
+Ten umožňuje poslat pomocí protokolu HTTP obrázek a obdržet JSON s SPZ daty a souřadnicemi detekované SPZ.
+Samotný server ke knihovně přistupuje zavoláním binárky \textit{alpr}, který jako argument přijme cestu k
+obrázku, ve kterém hledáme SPZ. Alternativní a lepší způsob přístupu by bylo mít v Node.js přímo takzv.
+\textit{language-binding}, ale to se autorovi (a mnoho dalším, kteří se o to pokoušeli) nepodařilo.
 
 % - just a phone taking photographs and analyzing them
 %   - in the phone (rooted and/or with a normal Linux distro)
@@ -80,34 +104,7 @@ Kotlin oproti Javě umožňuje přímočarejší přístup k elementům uživate
 % - movement detection
 % - size to filter distant vehicles that are not entering etc.
 
-\subsection{Serverová aplikace}
-
-% - Express
-%   - standard and other libraries build on it
-%   - REST for Devices
-% - JEST \& Supertest
-%   - declarative simple
-%   - integrates with Express well
-% - GraphQL
-%   - Apollo because it has a Server and also a Client
-%   - Frontend first development for most of the features
-% - MongoDB & Mongoose
-%   - Mongoose is very mature
-%   - development iteration
-%   - migration scripts are written in pure JS
-%   - good for the ever increasing number of records - parking data
-
-\subsection{Webová klientská aplikace}
-
-% - React
-%   - components, author wants to learn it
-% - Redux 
-%   - eco-system of libraries (ReduxSaga)
-%   - compatibility with React
-%   - easy to test
-% - JEST & Enzyme for tests
-
-\section{Zabezpečení přihlašování a přístupu} \label{db_schema}
+\section{Autentizace a autorizace} \label{db_schema}
 
 % - hash, salt
 % - JWT
@@ -186,6 +183,9 @@ Nás nyní zajímá, na které a v jakých intervalech na ně dopadne světlo, p
 Pro zjednodušení předpokládejme, že všechny \texttt{ParkingRuleAssignment}, které zpracováváme, platí pro naše vozidlo.
 Přidat tuto kontrolu později je triviální.
 
+\textit{Vstup: seznam \texttt{ParkingRuleAssignmentů} odpovídající pro interval pobytu vozidla na parkovišti, vozidlo}
+
+\textit{Výstup: seznam \texttt{ParkingRuleAssignmentů} s časy platnosti}
 \begin{enumerate}
   \item Seřadíme si začátky a konce úseček podle jejich času.
   \item Vytvoříme si haldu pro odkládání úseček, která řadí podle priority -- větší výše.
