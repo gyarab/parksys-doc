@@ -2,10 +2,8 @@
 \chapter{Instalace} \label{analyza}
 
 Instalace celého systému je velice jednoduchá. Pro distribuci je použit nástroj
-Docker, který zajistí kompilaci, spuštění, propojení všech částí a odhalení
+Docker \citep[viz][]{DockerDocs}, který zajistí kompilaci, spuštění, propojení všech částí a odhalení
 potřebných služeb ven na internet.
-
--- EXPLAIN DOCKER A LITTLE AND PROVIDE A LINK TO DOCUMENTATION
 
 Kromě Backendu, Frontendu, OpenALPR Server a MongoDB používá tato distribuce
 Dockerem populární HTTP server NGINX pro SSL a reverse proxy. Vnitřní HTTP komunikace
@@ -14,7 +12,7 @@ tak nemusí být zabezpečena.
 \subsubsection*{Postup Instalace}
 
 \begin{enumerate}
-  \item Po stažení git repozitáře se zdrojovým kódem, nastavíme submoduly:\\
+  \item Po stažení git repozitáře se zdrojovým kódem nastavíme submoduly:\\
   \begin{lstlisting}
     $ git submodule init
     $ git submodule update --remote --recursive
@@ -25,3 +23,7 @@ tak nemusí být zabezpečena.
     $ docker-compose up
   \end{lstlisting}
 \end{enumerate}
+
+Poslední krok může trvat i několik minut v závislosti na rychlosti internetového
+přípojení. Protože Docker zabalí vše včetně systémových závislostí, velikost
+výsledných imagů je $1,4$GB.
