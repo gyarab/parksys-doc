@@ -39,7 +39,7 @@ expresivních dotazů, jejichž odpověď má stejný "tvar". Obrázek \ref{fig:
 
 \begin{figure} \centering
 \includegraphics[width=145mm]{../img/graphql_example.png}
-\caption{Screenshot z nástroje GraphQL Playground. Příklad GraphQL dotazu (vlevo) a odpovědi (vpravo).}
+\caption{Příklad GraphQL dotazu (vlevo) a odpovědi (vpravo). Screenshot z nástroje GraphQL Playground.}
 \label{fig:graphql_example}
 \end{figure}
 
@@ -60,7 +60,7 @@ Typescriptu. Pomocí další knihovny typestyle pak můžeme do stejného soubor
 Aby bylo možné snadno sdílet mezi komponentami stav, byla pro takzvaný state-management zvolena knihovna Redux.
 Diagram na obrázku \ref{fig:react_redux_dataflow} ukazuje tok dat mezi Reactem a Reduxem.
 
-\begin{figure} \centering
+\begin{figure}[!htb] \centering
 \includegraphics[width=145mm]{../img/react-redux-architecture.png}
 \caption{Spojení React a Redux. \citep[viz][]{react_redux_dataflow}}
 \label{fig:react_redux_dataflow}
@@ -181,19 +181,19 @@ vysvětlen v následující kapitole, čímž následující algoritmus zrychlí
 
 \subsubsection*{Algoritmus pro aplikaci ParkingRuleAssignmentů}
 
+\begin{figure}[!htb] \centering
+  \includegraphics[width=145mm]{../img/rules_drawing.jpg}
+  \textit{Modré úsečky neplatí kvůli filtrům nebo protože jsou deaktivované. Oranžová čára značí výstup požadovaného algoritmu.}
+  \caption{Ilustrace problému úseček. }
+  \label{fig:rules_drawing}
+\end{figure}
+
 V jednom čase může existovat více objektů typu \texttt{ParkingRuleAssignment} avšak s různou prioritou.
 Může se stát, že aplikovaných \texttt{ParkingRuleAssignment} bude několik (různé priority, vyprší platnost, etc.).
 
 Situaci si lze představit jako několik úseček navzájem rovnoběžných úseček v různých výškách, které se neprotínají.
 Nás nyní zajímá, na které a v jakých intervalech na ně dopadne světlo, pokud na ně kolmo zeshora posvítíme.
 Situaci lze vidět na obrázku \ref{fig:rules_drawing}.
-
-\begin{figure} \centering
-  \includegraphics[width=145mm]{../img/rules_drawing.jpg}
-  \textit{Modré úsečky neplatí kvůli filtrům nebo protože jsou deaktivované. Oranžová čára značí výstup požadovaného algoritmu.}
-  \caption{Ilustrace problému úseček. }
-  \label{fig:rules_drawing}
-\end{figure}
 
 Pro zjednodušení předpokládejme, že všechny \texttt{ParkingRuleAssignment}, které zpracováváme, platí pro naše vozidlo.
 Přidat tuto kontrolu později je triviální.
