@@ -17,8 +17,7 @@ Obrázek \ref{fig:architecture_drawing} ukazuje tyto části a nastiňuje způso
   \item \textbf{Backend} je středobodem celé aplikace -- komunikuje se všemy ostatními komponentami.
         Zajišťuje business logiku aplikace, autentizaci i autorizaci uživatelů a perzistenci dat do \textbf{Databáze}.
   \begin{itemize}
-    \item \textbf{Databáze} (nevlastní software -- https://www.mongodb.com/) k ukládání dat je MongoDB, která byla vybrána, protože data se budou
-          převážně zapisovat a bude potřeba v nich rychle hledat a provádět agregační dotazy.
+    \item \textbf{Databáze} slouží k ukládání a čtení dat.
     \item \textbf{OpenALPR Server} (převzato z https://github.com/gerhardsletten/express-openalpr-server) je server, jenž obstarává přístup
           ke knihovně OpenALPR (https://github.com/openalpr/openalpr), která rozpoznává SPZ, přes protokol http.
   \end{itemize}
@@ -55,6 +54,11 @@ Jelikož GraphQL posílá odpovědi v JSON, není vhodné na posílání obrázk
 ale přes síť se přenese více bytů, než při použití obvyklého způsobu přes HTTP. Z toho důvodu pro posílání
 obrázků (např. QR kódu pro Frontend pro autentifikaci zařízení nebo zaznamenané znímky SPZ) bude mít Backend i
 klasické REST endpointy.
+
+\subsection{Databáze}
+
+Databáze MongoDB, která byla vybrána, protože data se budou převážně zapisovat a bude potřeba v nich rychle hledat a provádět agregační dotazy.
+Mimo jiné umožňuje provoz několika spolupracujících instancí, zálohování apod \citep[viz][]{MongoDB}.
 
 \subsection{Frontend} \label{frontend}
 
