@@ -1,0 +1,186 @@
+
+\chapter{Webová aplikace}
+
+\section{Obrazovky}
+
+Dle požadavků z úvodu mějme po příhlášení do webového rozhraní následující obrazovky, mezi kterými bude uživatel přepínat pomocí hlavního menu.
+
+\begin{itemize}
+  \item \textbf{Dashboard} -- jednoduché shrnutí nedávných statistik, kolik vozidel je
+        momentálně na parkovišti, aktivní zařízení apod.
+  \item \textbf{Statistiky} -- detailněji zobrazené údaje o počtu parkování a výdělku podle roku, měsíce a dne s grafy.
+        Zde půjde i exportovat data to CSV souboru (\textit{Comma-Separated-Values}).
+  \item \textbf{Pravidla a Filtry} -- definice parkovacích pravidel a filtrů vozidel (popsáno v \ref{analysis_parking_schema}).
+        Pro ověření půjde si parkovací pravidla a filtry odsimulovat.
+  \item \textbf{Zařízení} -- správa zařízení zachycujících fotografie SPZ, která lze autentifikovat do systému pomocí
+        QR kódu.
+  \item \textbf{Správa uživatelů} -- přidávání, odebírání a úprava uživatelů a jejich operávnění.
+  \item \textbf{Správa účtu} -- změna údajů a hesla současně přihlášeného uživatele.
+\end{itemize}
+
+\section{Autentizace a autorizace} \label{auther_authen}
+
+Autentifikace lidských uživatelů bude probíhat pomocí standardního hesla a zařízení pomocí dlouhého, náhodně generovaného hesla,
+které bude posíláno na Frontend ve formě QR kódu, které zařízení naskenuje.
+TODO: Tokens
+
+Autorizace pak bude probíhat bez Cookies, místo toho bude Access Token poslán v hlavičce HTTP hlavičce
+\textit{Authorization}, čímž předejdeme CSRF/XSRF útokům.
+
+\section{Business logika}
+
+\subsection{Parkovací pravidla} \label{analysis_parking_schema}
+
+\begin{itemize}
+  \item Různá vozidla mohou podléhat ruzným pravidlům.
+  \item Pravidla mají prioritu.
+  \item Pravidla mají časové omezení.
+  \item V jednu chvíli může platit více pravidel.
+\end{itemize}
+
+Mechanismus, kterým umožníme vozidlům být ovlivněna některými pravidly,
+budou filtry.
+Pro dostatečnou flexibilitu je zapotřebí oddělit samotná pravidla od jejich
+priority, časového intervalu platnosti i filtrů,
+k čemuž bude sloužit objekt typu \texttt{ParkingRuleAssignment}.
+
+% TODO - add a db schema image that takes less space
+\begin{lstlisting}
+type ParkingRuleAssignment {
+  rules: [ParkingRule]!
+  start: DateTime!
+  end: DateTime!
+  # ALL nebo NONE
+  vehicleFilterMode: VehicleFilterMode!
+  vehicleFilters: [VehicleFilter!]
+  priority: NonNegativeInt!
+}
+
+type VehicleFilter {
+  id: ID!
+  name: String!
+  action: VehicleFilterAction!
+  vehicles: [Vehicle!]!
+}
+\end{lstlisting}
+
+Filtrování bude mít dva módy: začneme se všemi vozidly (ALL) a začneme bez vozidel (NONE).
+Následné filtry mohou buď přidávat, nebo odstraňovat jednotlivá vozidla.
+Hodí se mít filtry uložené separátně, aby mohli být využity několikrát.
+
+Pro zjednodušení algoritmů, uvalíme omezení: ve stejný čas nesmí existovat více \texttt{ParkingRuleAssignment}
+se stejnou prioritou.
+
+\subsubsection*{Algoritmus filtru vozidel}
+
+\textit{Vstup: objekt \texttt{ParkingRuleAssignment}, vozidlo}
+
+\textit{Výstup: boolean určující platnost}
+\begin{enumerate}
+  \item Na základě módu filtrování si budeme udržovat množinu buď odstraněných vozidel (mód ALL), nebo přidaných vozidel (mód NONE).
+  \item Podle příslušné akce filtrů (odstranit nebo přidat) budeme množinu našich vozidel manipulovat. Např. je-li mód ALL a filtr odstraňuje, do množiny si vozidla přidáme.
+  \item Pokud je vozidlo ve výsledné množině, tak pro něj \texttt{ParkingRuleAssignment} platí pokud je filtrovací mód NONE a neplatí pokud je mód ALL. Opačné výsledky nastanou, pokud vozidlo v množině není.
+\end{enumerate}
+
+Časová i paměťová složitost algoritmu je ${\cal O}(N)$, kde $N$ je počet filtrů.
+
+Tento algoritmus lze potenciálně rozdělit na předvýpočet (kroky 1. a 2.) a ověření (krok 3.).
+To je jedna možnost, která zvýší paměťovou náročnost, protože bychom si museli pamatovat množiny, což je nepraktické.
+Je-li uživatel příčetný, počet použitých filtrů nebude obrovský, a tudíž je lepší zvolit následující způsob cachovaní.
+Zapamatujeme si výsledky pro určitý seznam filtrů pro konkrétní vozidlo pouze při běhu algoritmu, který je
+vysvětlen v následující kapitole, čímž následující algoritmus zrychlíme.
+
+\subsubsection*{Algoritmus pro aplikaci ParkingRuleAssignmentů}
+
+\begin{figure}[!htb] \centering
+  \includegraphics[width=145mm]{../img/rules_drawing.jpg}
+  \textit{Modré úsečky neplatí kvůli filtrům nebo protože jsou deaktivované. Oranžová čára značí výstup požadovaného algoritmu.}
+  \caption{Ilustrace problému úseček.}
+  \label{fig:rules_drawing}
+\end{figure}
+
+V jednom čase může existovat více objektů typu \texttt{ParkingRuleAssignment} avšak s různou prioritou.
+Může se stát, že aplikovaných \texttt{ParkingRuleAssignment} bude několik (různé priority, vyprší platnost, etc.).
+
+Situaci si lze představit jako několik úseček navzájem rovnoběžných úseček v různých výškách, které se neprotínají.
+Nás nyní zajímá, na které a v jakých intervalech na ně dopadne světlo, pokud na ně kolmo zeshora posvítíme.
+Situaci lze vidět na obrázku \ref{fig:rules_drawing}.
+
+Pro zjednodušení předpokládejme, že všechny \texttt{ParkingRuleAssignment}, které zpracováváme, platí pro naše vozidlo.
+Přidat tuto kontrolu později je triviální.
+
+\textit{Vstup: seznam \texttt{ParkingRuleAssignmentů} odpovídající pro interval pobytu vozidla na parkovišti, vozidlo}
+
+\textit{Výstup: seznam \texttt{ParkingRuleAssignmentů} s časy platnosti}
+\begin{enumerate}
+  \item Seřadíme si začátky a konce úseček podle jejich času.
+  \item Vytvoříme si haldu pro odkládání úseček, která řadí podle priority -- větší výše.
+  \item Vytvoříme si seznam aplikovaných pravidel s časy (časy mohou se lišit od počátečních i koncových časů).
+  \item Nechť \textit{s} je současná úsečka a \textit{$t_s$} čas zvolení \textit{s} (čas zvolení se může lišit od začátku úsečky).
+  \item Pro každou událost \textit{u} značící začátek/konec úsečky (aplikaci pravidla) \textit{p}:
+  \begin{enumerate}
+    \item Pokud se jedná o začátek nové úsečky:
+    \begin{enumerate}
+      \item Pokud není zvolená úsečka:\\
+            \textit{$t_s$} $\leftarrow$ \textit{p.start}\\
+            \textit{s} $\leftarrow$ \textit{p}
+      \item Pokud je zvolená úsečka a \textit{p} má vyšší prioritu než \textit{s}:\\
+            \textit{s} dáme do seznamu aplikovaných pravidel se začátkem \textit{$t_s$} a koncem \textit{p.start}.\\
+            \textit{s} dáme na haldu, pokud \textit{s.end} > \textit{p.end}.\\
+            \textit{$t_s$} $\leftarrow$ \textit{p.start}\\
+            \textit{s} $\leftarrow$ \textit{p}
+      \item Pokud je zvolená úsečka a \textit{p} má nižší prioritu než \textit{s} a \textit{p.end} > \textit{s.end}:\\
+            \textit{s} dáme na haldu
+    \end{enumerate}
+    \item Jinak (jedná se o konec nějaké úsečky):
+    \begin{enumerate}
+      \item Přidáme \textit{s} do seznamu aplikovaných pravidel se začátkem \textit{$t_s$} a koncem \textit{s.end}.
+      \item Taháme z haldy, dokud nedostaneme úsečku s koncem později než konecm \textit{p}, nebo dokud halda není prázdná.
+      \item Pokud jsme z haldy vhodnou úsečku vytáhli, použijeme ji. V opačném případě vyprázdníme \textit{s} a \textit{$t_s$}.
+    \end{enumerate}
+  \end{enumerate}
+\end{enumerate}
+
+Algoritmus zajisté doběhne, protože máme konečný počet událostí a v každém cyklu jednu zpracujeme.
+Při rozumném počtu \texttt{ParkingRuleAssignment} v daném intervalu je algoritmus velice rychlý.
+${\cal O}(N^2\cdot logN)$
+${\cal O}(N\cdot logN)$
+Přidáme-li filtrování, které nemusíme provést pro všechny úsečky, ${\cal O}(N\cdot M)$.
+
+\section{GraphQL resolvery}
+
+<TODO: EXPLAIN RESOLVERS>
+
+Jelikož je většina operací nad modeli se opakuje, byli napsány obecné resolvery jako HOF (Higher-Order-Function)
+pro vytváření, úpravu, mazání, vyhledávání a získávání modelů v relaci.
+Měnící se část je pak pouze definice databázového modelu.
+
+\section{Databázový model}
+
+\section{Uživatelské rozhraní}
+
+\subsection{Obecná vybírátka modelů}
+
+Dle principu neopakování se bylo vytvořeno několik obecných UI komponent, které umožňují vyhledávání libovolných
+modelů a jejich volbu a využití v ostatních komponentách. Ve zdrojovém kódu je implementujeme jako
+HOF (Higher-Order-Function), což je funkce vracející další funkce -- konkrétní komponenty.
+Měnící se části, které do těchto obecných komponent budeme vkládat je komponenta renderující jediný model
+(\textit{renderModel}),
+GraphQL dotaz pro získávání modelů (\textit{queryString}), funkce, jejímž vstupem je odpověď na GraphQL dotaz a výstupem je
+samotné pole modelů (\textit{modelArrayGetter}), a funkce, jejímž vstupem je dotazovací řetězec a výstupem jsou
+argumenty pro GraphQL dotaz (\textit{identifierToOptions}).
+
+Obrázek \ref{fig:picker_lifecycle} ukazuje tok dat v jednom z obecných vybírátek.
+Obrázek \ref{fig:picker_component} ukazuje vyrenderovanou komponentu téhož vybírátka.
+
+\begin{figure}[!htb] \centering
+  \includegraphics[width=145mm]{../img/picker_lifecycle.jpg}
+  \caption{Tok dat v jednom z obecných vybírátek.}
+  \label{fig:picker_lifecycle}
+\end{figure}
+
+\begin{figure}[!htb] \centering
+  \includegraphics[width=70mm]{../img/picker_component.png}
+  \caption{Vyrenderovaná komponenta jednoho vybírátka.}
+  \label{fig:picker_component}
+\end{figure}
