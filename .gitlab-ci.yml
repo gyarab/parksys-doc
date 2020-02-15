@@ -1,5 +1,5 @@
 compile_pdf:
-  image: buster-slim
+  image: debian/buster-slim
   script:
     - tar cvf upload.tar.gz
     - "curl -X POST \"https://tmscer.cz/_latex_compile_\" -H \"Authorization: $TMSCER_TOKEN\" -F \"data=@upload.tar.gz\" -v --output - > output.pdf"
