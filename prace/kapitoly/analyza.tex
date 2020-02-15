@@ -77,6 +77,10 @@ Typescriptu. Pomocí další knihovny typestyle pak můžeme do stejného soubor
 Aby bylo možné snadno sdílet mezi komponentami stav, byla pro takzvaný state-management zvolena knihovna Redux.
 Diagram na obrázku \ref{fig:react_redux_dataflow} ukazuje tok dat mezi Reactem a Reduxem.
 
+Jelikož je aplikace vyvíjena pro správce systému a ne pro velké množství uživatelů, můžeme si dovolit
+klást menší nároky na velikost aplikace (tj. můžeme přidávat i velké knihovny), což velice usnadní vývoj za
+nízkou cenu.
+
 \begin{figure}[!htb] \centering
 \includegraphics[width=145mm]{../img/react-redux-architecture.png}
 \caption{Spojení React a Redux. \citep[viz][]{react_redux_dataflow}}
@@ -85,7 +89,7 @@ Diagram na obrázku \ref{fig:react_redux_dataflow} ukazuje tok dat mezi Reactem 
 
 \subsection{Obrazovky}
 
-Dle požadavků z úvodu mějme po příhlášení následující obrazovky, mezi kterýma bude uživatel přepínat pomocí hlavního menu.
+Dle požadavků z úvodu mějme po příhlášení následující obrazovky, mezi kterými bude uživatel přepínat pomocí hlavního menu.
 
 \begin{itemize}
   \item \textbf{Dashboard} -- jednoduché shrnutí nedávných statistik, kolik vozidel je
