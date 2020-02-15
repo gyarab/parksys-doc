@@ -2,7 +2,7 @@ compile_pdf:
   image: curlimages/curl
   script:
     - tar cvf upload.tar.gz .
-    - "curl -Lv -X POST \"https://tmscer.cz/_latex_compile_\" -H \"Authorization: $TMSCER_TOKEN\" -F \"data=@upload.tar.gz\" --output - > output.pdf"
+    - "curl -Lv -X POST \"https://tmscer.cz/_latex_compile_/\" -H \"Authorization: $TMSCER_TOKEN\" -F \"data=@upload.tar.gz\" --output - > output.pdf"
     - mv output.pdf ../prace.pdf
   artifacts:
     paths:
