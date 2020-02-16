@@ -1,2 +1,36 @@
 
 \chapter{Rozpoznávání SPZ}
+
+Jak již bylo řečeno v kapitole \ref{archtech}, mobilní aplikace pořídí snímek,
+pošle ho na Backend, jenž ho pošle serveru s knihovnou OpenALPR, která
+rozposná SPZ a výsledek pošle zpět na Backend. V této kapitole si popíšeme
+mobilní aplikaci a server s OpenALPR.
+
+\section{Volba zařízení pro mobilní aplikaci}
+
+Co se týče hardwarového vybavení snímacího zařízení, tak je vyžadována přední kamera
+s rozlišením alespoň 1000 na 1000 pixelů. Důvod pro toto rozlišení je, že Backend obdržený snímek
+stejně zmenší na 1000x1000 pixelů, aby knihovna OpenALPR provedla rozpoznání co nejrychleji, a zároveň
+aby bylo rozpoznání dostatečně přesné. Procesor, RAM i vnitřní paměť může být libovolná -- kterékoliv
+dnešní nové zařízení bohatě postačí (za předpokladu, že vnitřní paměť není zaplněná).
+Minimální verze Androidu je 5 (SDK 21).
+
+Autorovi se nepodařilo najít způsob, jak zároveň pořizovat v pravidelném intervalu snímky
+a mít zařízení uzamknuté proti přístupu. K zajištění pořizování snímků si hlavní
+obrazovka aplikace řekně systému Android o \textit{FLAG\_KEEP\_SCREEN\_ON}, což zabrání uzamknutí.
+To má dva následky. První je, že zařízení by nemělo mít OLED displej, aby nedošlo k takzvanému
+\textit{burn-in} \citep[viz][]{OledBurnIn}. Druhý je, že zařízení by mělo být v produkčním provozu
+bezpečně uzavřeno v krabičce, nebo by se mělo nacházet na bezpečném místě, aby se předešlo
+nepovolené manipulaci.
+
+\section{Autentifikace}
+
+Zařízení se autentifikuje naskenováním QR kódu, jenž lze najír ve webové aplikaci. Ten obsahuje
+JSON řetězec s aktivačním heslem, pomocí kterého se zařízení přihlásí do systému a získa sv3ou konfiguraci.
+
+\section{Uživatelské rozhraní mobilní aplikace}
+
+Jelikož mobilní aplikace není určena pro běžného uživatele, můžeme si dovolit
+na uživatelském rozhraní strávit méně času.
+
+\section{}
