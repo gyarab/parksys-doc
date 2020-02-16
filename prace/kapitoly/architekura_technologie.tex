@@ -27,10 +27,18 @@ Obrázek \ref{fig:architecture_drawing} ukazuje tyto části a nastiňuje způso
 
 \section{Technologie}
 
+\subsection{Databáze}
+
+Databáze MongoDB, která byla vybrána, protože data se budou převážně zapisovat a bude potřeba v nich rychle hledat a provádět agregační dotazy.
+Mimo jiné umožňuje provoz několika spolupracujících instancí, zálohování apod \citep[viz][]{MongoDB}.
+
 \subsection{Backend} \label{backend}
 
 Jako programovací jazyk pro \textbf{Backend} byl zvolen staticky typovaný Typescript kvůli rychlosti vývoje
 a množství knihoven, které poskytuje ekosystém Node.js.
+
+Pro definici databázových modelů a komunikaci s MongoDB byla kvůli své vyspělosti a skvělé funkcionalitě zvolena
+knihovna mongoose.
 
 Primárním způsobem komunikace s \textbf{Frontend}
 je dotazovací jazyk GraphQL, který přináší ucelený popis poskytovaných dat pomocí kontroly typů,
@@ -54,11 +62,6 @@ Jelikož GraphQL posílá odpovědi v JSON, není vhodné na posílání obrázk
 ale přes síť se přenese více bytů, než při použití obvyklého způsobu přes HTTP. Z toho důvodu pro posílání
 obrázků (např. QR kódu pro Frontend pro autentifikaci zařízení nebo zaznamenané znímky SPZ) bude mít Backend i
 klasické REST endpointy.
-
-\subsection{Databáze}
-
-Databáze MongoDB, která byla vybrána, protože data se budou převážně zapisovat a bude potřeba v nich rychle hledat a provádět agregační dotazy.
-Mimo jiné umožňuje provoz několika spolupracujících instancí, zálohování apod \citep[viz][]{MongoDB}.
 
 \subsection{Frontend} \label{frontend}
 
@@ -93,7 +96,7 @@ Jediným úkolem \textbf{Mobilní aplikace} je v pravidelném intervalu pořídi
 \subsection{Detekce SPZ}
 
 Detekci SPZ bude zajišťovat knihovna OpenALPR \citep[viz][]{OpenALPR}, jejímž vstupem je obrázek a popřípadě
-parametry jako úhel kamery apod. Ke zbytku aplikace je připojena malým HTTP serverem, jenž byl převzán a upraven
+parametry jako úhel kamery apod. Ke zbytku aplikace bude připojena malým HTTP serverem, jenž byl převzán a upraven
 \citep[viz][]{OpenALPR_Server}.
 Ten umožňuje poslat pomocí protokolu HTTP obrázek a obdržet JSON s SPZ daty a souřadnicemi detekované SPZ.
 Samotný server ke knihovně přistupuje zavoláním binárky \textit{alpr}, který jako argument přijme cestu k

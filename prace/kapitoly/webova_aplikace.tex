@@ -1,6 +1,8 @@
 
 \chapter{Webová aplikace}
 
+Tato kapitola popisuje zvolené postupy při psaní webové aplikace (Backend a Frontend).
+
 \section{Obrazovky}
 
 Dle požadavků z úvodu mějme po příhlášení do webového rozhraní následující obrazovky, mezi kterými bude uživatel přepínat pomocí hlavního menu.
@@ -18,14 +20,26 @@ Dle požadavků z úvodu mějme po příhlášení do webového rozhraní násle
   \item \textbf{Správa účtu} -- změna údajů a hesla současně přihlášeného uživatele.
 \end{itemize}
 
+\section{GraphQL resolvery}
+
+<TODO: EXPLAIN RESOLVERS>
+
+Jelikož je většina operací nad modeli se opakuje, byli napsány obecné resolvery jako HOF (Higher-Order-Function)
+pro vytváření, úpravu, mazání, vyhledávání a získávání modelů v relaci.
+Měnící se část je pak pouze definice databázového modelu.
+
 \section{Autentizace a autorizace} \label{auther_authen}
 
 Autentifikace lidských uživatelů bude probíhat pomocí standardního hesla a zařízení pomocí dlouhého, náhodně generovaného hesla,
 které bude posíláno na Frontend ve formě QR kódu, které zařízení naskenuje.
-TODO: Tokens
+Po úspěšné autentizaci obdží klient token, který kdyby klient posílal v souboru Cookie,
+tak bychom se vystavovali riziku útoku CSRF/XSRF.
+Místo toho bude klient posílat token v hlavičce \textit{Authorization}.
 
-Autorizace pak bude probíhat bez Cookies, místo toho bude Access Token poslán v hlavičce HTTP hlavičce
-\textit{Authorization}, čímž předejdeme CSRF/XSRF útokům.
+Podle tokenu klienta jednoznačně identifikujeme a víme jeho oprávnění. Endpointy a GraphQL resolvery zabezpečíme tak,
+že každý endpoint nebo resolver, který vyžaduje oprávnění, dáme jako argument HOF (Higher-Order-Function)
+\textit{checkPermissions} společně s požadovanými oprávněními. \textit{checkPermissions} pak zavolá původní endpoint
+nebo resolver pouze pokud má klient dostatečná oprávnění.
 
 \section{Business logika}
 
@@ -147,13 +161,6 @@ ${\cal O}(N^2\cdot logN)$
 ${\cal O}(N\cdot logN)$
 Přidáme-li filtrování, které nemusíme provést pro všechny úsečky, ${\cal O}(N\cdot M)$.
 
-\section{GraphQL resolvery}
-
-<TODO: EXPLAIN RESOLVERS>
-
-Jelikož je většina operací nad modeli se opakuje, byli napsány obecné resolvery jako HOF (Higher-Order-Function)
-pro vytváření, úpravu, mazání, vyhledávání a získávání modelů v relaci.
-Měnící se část je pak pouze definice databázového modelu.
 
 \section{Databázový model}
 
