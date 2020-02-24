@@ -22,16 +22,33 @@ Dle požadavků z úvodu mějme po příhlášení do webového rozhraní násle
 
 \section{GraphQL resolvery}
 
-<TODO: EXPLAIN RESOLVERS>
+Protože GraphQL je primárním způsobem komunikace mezi Frontend a Backend, stojí za to si vysvětlit základní stavební bloky
+GraphQL -- resolvery, které tvoří strom. Vzpoměňme si na příklad z přechozí kapitoly na obrázku \ref{fig:graphql_example}.
+Zde kořenem stromu je resolver \textit{userSearch}, jenž přijímá argumenty potřebné pro jeho běh, ty jsou v tomto případě
+povinné (ale nemusí). Kořenový resolver vrací nějaký typ, v tomto případě typ \textit{UserSearchResult}, který udává nalezené
+uživatele (\textit{UserSearchResult.data}) a stránkování (v příkladu vynecháno).
+Při návrhu tohoto resolveru bychom si mohli rozmyslet, že údaje o stránkování vynecháme a vrátíme pouze
+pole nepřázdných uživatelů -- typ \textit{[User!]}.
+Typ \textit{User} má v sobě také nějaké hodnoty a vrátí se nám jen ty, na které se zeptáme. Měl-li by typ \textit{User}
+další objekty, mohli bychom se zeptat i na jejich hodnoty. Kdybychom psali aplikaci pro veterinární kliniku, mohli bychom se zeptat
+třeba na jména mazlíčků.
+Jak toto implementujeme? Pro každý kořenový resolver musíme napsat funkci, která buď přímo vrátí požadovaný objekt a nebo
+k typu, který náš kořenový resolver vrací, napíšeme další resolvery. Čili kdybychom se databáze ptali na uživatele i s
+mazlíčky (v SQL terminologii bychom provedli JOIN), tak bychom nemuseli pro typ \textit{User} psát resolver pro mazlíčky.
+Ale kdybychom se za účelem zrychlení aplikace ptali pouze na uživatele, tak bychom museli mít jěště resolver pro mazlíčky, abychom
+podporovali dotazy na mazlíčky uživatelů, což by způsobilo více poslaných dotazů do databáze, ale pokud by výkon byl problém,
+můžeme se podívat přímo na jaké hodnoty se uživatel ptá.
+\citep[viz][]{GraphQLDoc}
 
-Jelikož je většina operací nad modeli se opakuje, byli napsány obecné resolvery jako HOF (Higher-Order-Function)
+Jelikož se většina operací nad modeli se opakuje, byli napsány obecné resolvery jako HOF (Higher-Order-Function)
 pro vytváření, úpravu, mazání, vyhledávání a získávání modelů v relaci.
-Měnící se část je pak pouze definice databázového modelu.
+Měnící se část je pak pouze definice databázového modelu. Díky GraphQL nemusíme ani ověřovat datové typy, které dostaneme od klienta --
+GraphQL toto udělá za nás díky schema, které tvoříme my.
 
 \section{Autentizace a autorizace} \label{auther_authen}
 
-Autentifikace lidských uživatelů bude probíhat pomocí standardního hesla a zařízení pomocí dlouhého, náhodně generovaného hesla,
-které bude posíláno na Frontend ve formě QR kódu, které zařízení naskenuje.
+Autentifikace lidských uživatelů probíhá pomocí standardního hesla a zařízení pomocí dlouhého, náhodně generovaného hesla,
+které je posíláno na Frontend ve formě QR kódu, které zařízení naskenuje.
 Po úspěšné autentizaci obdží klient token, který kdyby klient posílal v souboru Cookie,
 tak bychom se vystavovali riziku útoku CSRF/XSRF.
 Místo toho bude klient posílat token v hlavičce \textit{Authorization}.
