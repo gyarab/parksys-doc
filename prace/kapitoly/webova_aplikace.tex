@@ -183,6 +183,16 @@ Přidáme-li filtrování, které nemusíme provést pro všechny úsečky, ${\c
 
 \section{Uživatelské rozhraní}
 
+\subsection{Redux a persistence stavu}
+
+Jak již bylo zmíněno v předchozí kapitole, uživatelské rozhraní používá Redux pro sdílení stavu mezi komponentami.
+Stav v Redux je strom, jenž je upravován akcema. Akce jsou předány takzvaným \textit{reducers}, což jsou prosté funkce,
+jejichž vstupem je současný stav a akce a jejichž výstupem je stav nový. \citep[viz][]{ReduxCore}
+Prostost reducerů umožňuje testovatelnost.
+
+K tomu abychom mohli uložit stav aplikace po zavření okna, použijeme knihovnu \textit{redux-persist}, která poskytuje
+HOF funkci, které dáme resolver, a ona změny, které způsobí, někam uloží. V našem případě se jedná o \textit{localstorage}.
+
 \subsection{Obecná vybírátka modelů}
 
 Dle principu neopakování se bylo vytvořeno několik obecných UI komponent, které umožňují vyhledávání libovolných
@@ -207,4 +217,17 @@ Obrázek \ref{fig:picker_component} ukazuje vyrenderovanou komponentu téhož vy
   \includegraphics[width=70mm]{../img/picker_component.png}
   \caption{Vyrenderovaná komponenta jednoho vybírátka.}
   \label{fig:picker_component}
+\end{figure}
+
+\newpage
+\subsection{Grafy}
+
+Grafy jsou potřeba na stránce se statistiky. K tomu byla použita knihovna \textit{react-google-charts},
+což, jak název napovídá, je port knihovny \textit{google-charts} do Reactu. Ta kromě obvyklích grafů umí
+například i takzvaný kalendářový graf, jenž si lze vidět na obrázku \ref{fig:google_charts}.
+
+\begin{figure}[!htb] \centering
+  \includegraphics[width=145mm]{../img/google_charts.png}
+  \caption{Kalendářový graf z knihovny react-google-charts.}
+  \label{fig:google_charts}
 \end{figure}
