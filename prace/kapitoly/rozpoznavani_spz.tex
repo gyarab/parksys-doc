@@ -25,10 +25,19 @@ nepovolené manipulaci.
 
 \section{Autentifikace}
 
-Zařízení se autentifikuje naskenováním QR kódu, jenž lze najír ve webové aplikaci. Ten obsahuje
-JSON řetězec s aktivačním heslem, pomocí kterého se zařízení přihlásí do systému a získa sv3ou konfiguraci.
+Zařízení se autentifikuje naskenováním QR kódu, jenž lze najít ve webové aplikaci. Ten obsahuje
+JSON řetězec s aktivačním heslem, pomocí kterého se zařízení přihlásí do systému a získa svou konfiguraci.
 
-\section{Uživatelské rozhraní mobilní aplikace}
+\section{Cachování výsledků pro přesnost}
 
-Jelikož mobilní aplikace není určena pro běžného uživatele, můžeme si dovolit
-na uživatelském rozhraní strávit méně času.
+Výsledek z knihovny OpenALPR je seznam dvojic udávající SPZ a šanci, že konkrétní SPZ je správně --
+čili jak si OpenALPR věří ve výsledek. Je tudíž logické měření udělat víc a provést aritmetický průměr a
+zvolit nejlepší výsledek.
+
+K ukládání takto dočasných dat (přibližně počet měření krát 1 sekunda) se databáze nehodí, a proto
+bylo zavedeno ukládání do mezipaměti. V současné chvíli se využívá prostá paměť Backendu,
+kde klíčem je $id$ zařízení. Díky tomu, že Node.js běží na jednom vlákně, nemusíme se bát souběhu
+(angl. race-condition). Externí mezipaměť by bylo vhodné využít (např. Redis), pokud bychom spouštěli více
+instancí Backend a prováděli takzvaný load-balancing.
+
+Výchozí počet měření je 2, a lze ho upravit v nastavení Backendu.
