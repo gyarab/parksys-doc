@@ -24,52 +24,66 @@ Na obrázku \ref{fig:structure_backend} a obrázku \ref{fig:structure_frontend} 
 vidět adresářová struktura Backendu a Frontendu.
 
 \begin{figure}
-  \dirtree{%
-  .1 backend.
-  .2 config.
-  .2 scripts.
-  .2 src.
-  .3 apis.
-  .3 auth.
-  .3 cache.
-  .3 db.
-  .3 endpoints.
-  .3 scripts.
-  .3 types.
-  .3 utils.
-  .2 test\_assets.
-  .2 typings.
-  }
-  \caption{Adresářová struktura Backend.}
-  \label{fig:structure_backend}
 \end{figure}
 
+
 \begin{figure}
-  \dirtree{%
-  .1 frontend.
-  .2 config.
-  .3 types.
-  .3 utils.
-  .3 webpack.
-  .2 src.
-  .3 app.
-  .4 apis.
-  .4 components.
-  .4 constants.
-  .4 containers.
-  .4 helpers.
-  .4 images.
-  .4 layouts.
-  .4 models.
-  .4 pages.
-  .4 redux.
-  .4 routes.
-  .4 sagas.
-  .4 selectors.
-  .2 translations.
-  }
-  \caption{Adresářová struktura Frontend.}
-  \label{fig:structure_frontend}
+  \begin{minipage}{0.45\textwidth}
+    \dirtree{%
+    .1 frontend.
+    .2 config.
+    .3 types.
+    .3 utils.
+    .3 webpack.
+    .2 src.
+    .3 app.
+    .4 apis.
+    .4 components.
+    .4 constants.
+    .4 containers.
+    .4 helpers.
+    .4 images.
+    .4 layouts.
+    .4 models.
+    .4 pages.
+    .4 redux.
+    .4 routes.
+    .4 sagas.
+    .4 selectors.
+    .2 translations.
+    }
+    \caption{Adresářová struktura Frontend.}
+    \label{fig:structure_frontend}
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.45\textwidth}
+    \dirtree{%
+    .1 backend.
+    .2 config.
+    .2 scripts.
+    .2 src.
+    .3 apis.
+    .3 auth.
+    .3 cache.
+    .3 db.
+    .3 endpoints.
+    .3 scripts.
+    .3 types.
+    .3 utils.
+    .2 test\_assets.
+    .2 typings.
+    }
+    % Disgusting but it works -- aligned
+    \hfill
+    \\
+    \\
+    \\
+    \\
+    \\
+    \\
+    \caption{Adresářová struktura Backend.}
+    \label{fig:structure_backend}
+  \end{minipage}%
 \end{figure}
 
 \section{GraphQL resolvery}
