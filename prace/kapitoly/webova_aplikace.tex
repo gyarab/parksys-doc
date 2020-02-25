@@ -173,10 +173,17 @@ Přidat tuto kontrolu později je triviální.
 \end{enumerate}
 
 Algoritmus zajisté doběhne, protože máme konečný počet událostí a v každém cyklu jednu zpracujeme.
-Při rozumném počtu \texttt{ParkingRuleAssignment} v daném intervalu je algoritmus velice rychlý.
-${\cal O}(N^2\cdot logN)$
-${\cal O}(N\cdot logN)$
-Přidáme-li filtrování, které nemusíme provést pro všechny úsečky, ${\cal O}(N\cdot M)$.
+Paměťová složitost je zřejmě lineární. Časová složitost bez filtrování je ${\cal O}(N\cdot{logN})$, kde $N$ je 
+počet úseček, protože
+využijeme některého z rychlích zaření a protože použijeme binární haldu a lepší. Počet operací nad haldou,
+který by konečnou složitost mohl změnit, je naštestí lineární. Největší počet operací nad haldou dostaneme tak, že
+každou přidanou úsečku umístíme tak, aby při zpracování jejího konce i začátku došlo k přidání a odebrání z haldy
+(nejedná o tu samou úsečku). Jedna z takovýchto uspořádání je například pyramida, popřípadě zikkurat.
+Tedy s každou přidanou úsečkou se počet operací nad haldou zvýší maximálně o $2$.
+
+Přidáme-li filtrování, tak v nejhorším případě budeme ověřovat platnost každé úsečky. Bude-li $M$ průměrný počet
+filtrů, pak je časová složitost ${\cal O}(N\cdot{M})$. 
+% Při rozumném počtu \texttt{ParkingRuleAssignment} v daném intervalu je algoritmus velice rychlý
 
 \section{Databázový model}
 
