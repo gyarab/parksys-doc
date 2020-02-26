@@ -91,16 +91,21 @@ povinné (ale nemusí). Kořenový resolver vrací nějaký typ, v tomto přípa
 uživatele (\textit{UserSearchResult.data}) a stránkování (v příkladu vynecháno).
 Při návrhu tohoto resolveru bychom si mohli rozmyslet, že údaje o stránkování vynecháme a vrátíme pouze
 pole nepřázdných uživatelů -- typ \textit{[User!]}.
+Máme dva druhy typů: skaláry (listy stromu) a objekty (uzly stromu).
 Typ \textit{User} má v sobě také nějaké hodnoty a vrátí se nám jen ty, na které se zeptáme. Měl-li by typ \textit{User}
 další objekty, mohli bychom se zeptat i na jejich hodnoty. Kdybychom psali aplikaci pro veterinární kliniku, mohli bychom se zeptat
 třeba na jména mazlíčků.
-Jak toto implementujeme? Pro každý kořenový resolver musíme napsat funkci, která buď přímo vrátí požadovaný objekt a nebo
-k typu, který náš kořenový resolver vrací, napíšeme další resolvery. Čili kdybychom se databáze ptali na uživatele i s
+Jak toto implementujeme? Pro každý kořenový resolver musíme napsat funkci, která buď přímo vrátí požadovaný objekt s atributy a nebo
+k typu, který náš kořenový resolver vrací, napíšeme další resolvery, které vrací opět objekty, nebo skaláry.
+Čili kdybychom se databáze ptali na uživatele i s
 mazlíčky (v SQL terminologii bychom provedli JOIN), tak bychom nemuseli pro typ \textit{User} psát resolver pro mazlíčky.
 Ale kdybychom se za účelem zrychlení aplikace ptali pouze na uživatele, tak bychom museli mít jěště resolver pro mazlíčky, abychom
 podporovali dotazy na mazlíčky uživatelů, což by způsobilo více poslaných dotazů do databáze, ale pokud by výkon byl problém,
 můžeme se podívat přímo na jaké hodnoty se uživatel ptá.
 \citep[viz][]{GraphQLDoc}
+
+Zároveň můžeme provádět virtualizaci atributů -- přidávat atributy, které v databázi nemáme, ale pro webové rozhraní se hodí.
+Hypotetickým příkladem budiž celková zaplacená částka zákazníkem, která se v případě potřeby vypočítá.
 
 Jelikož se většina operací nad modeli se opakuje, byli napsány obecné resolvery jako HOF (Higher-Order-Function)
 pro vytváření, úpravu, mazání, vyhledávání a získávání modelů v relaci.
