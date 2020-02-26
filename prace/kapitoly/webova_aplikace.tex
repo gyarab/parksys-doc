@@ -24,10 +24,6 @@ Na obrázku \ref{fig:structure_backend} a obrázku \ref{fig:structure_frontend} 
 vidět adresářová struktura Backendu a Frontendu.
 
 \begin{figure}
-\end{figure}
-
-
-\begin{figure}
   \begin{minipage}{0.45\textwidth}
     \dirtree{%
     .1 frontend.
@@ -266,6 +262,9 @@ Stav v Redux je strom, jenž je upravován akcema. Akce jsou předány takzvaný
 jejichž vstupem je současný stav a akce a jejichž výstupem je stav nový. \citep[viz][]{ReduxCore}
 Prostost reducerů umožňuje testovatelnost.
 
+Jako příklad konkrétního využití budiž uložení některých údajů obrazovek mezi přepnutí obrazovek,
+sdílení vozidla mezi stránkou s vozidly a stránkou s pravidly, schopnost seznamu parkování zvolit vozidlo a mnoho dalších.
+
 K tomu abychom mohli uložit stav aplikace po zavření okna, použijeme knihovnu \textit{redux-persist}, která poskytuje
 HOF funkci, které dáme resolver, a ona změny, které způsobí, někam uloží. V našem případě se jedná o \textit{localstorage}.
 
@@ -282,6 +281,8 @@ argumenty pro GraphQL dotaz (\textit{identifierToOptions}).
 
 Obrázek \ref{fig:picker_lifecycle} ukazuje tok dat v jednom z obecných vybírátek.
 Obrázek \ref{fig:picker_component} ukazuje vyrenderovanou komponentu téhož vybírátka.
+
+Další vybírátka abstrahují i vstup od uživatele, takže lze použít například kalendář.
 
 \begin{figure}[!htb] \centering
   \includegraphics[width=145mm]{../img/picker_lifecycle.jpg}
