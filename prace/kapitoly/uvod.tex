@@ -1,21 +1,28 @@
 \chapter{Úvod} \label{uvod}
 
-Tato dokumentace se zabývá koncepcí a implementací informačního systému pro
+Tento dokument se zabývá koncepcí a implementací informačního systému pro
 parkoviště s minimální obsluhou s automatickým rozpoznáváním SPZ.
+Tento projekt zároveň slouží k vyzkoušení si moderních webových technologií
+a frameworků s přesahem k mobilnímu vývoji.
 
-Práce se nezabývá operací se závorou a platebním terminálem, neb by to vyžadovalo náklady na hardware.
+Práce se nezabývá operací se závorou a platebním terminálem, neb by to zvyšovalo
+obtížnost už tak obtížného projektu a vyžadovalo by to poměrně vysoké
+náklady na hardware.
 
-Konečného produktu se dosáhne využitím moderních webových technologií.
+\section*{Zadání}
 
-\section{Cíle práce}
+Parkovací systém by měl mít následující funkcionalitu:
 
 \begin{itemize}
-  \item Naskenování SPZ
-  \item Vytváření pravidel - dostatečně flexibilní pro většinu použití (asi obejdu pár parkovišť a udělám generické řešení pravidel)
-    \begin{itemize}
-      \item Nastavitelné situace upozornění
-      \item od Ah do Bh tarif X, Zh zadarmo v den D, svátky
-      \item limity na hodiny zdarma
+  \setlength\itemsep{0.05em}
+  \item Naskenování SPZ.
+  \item Vytváření pravidel -- dostatečně flexibilní pro většinu použití.
+  \begin{itemize}
+    \setlength\itemsep{0.05em}
+      \item Od času A do B za tarif X/jednotka času.
+      \item Různý provoz o svátcích a víkendech. \label{missing1}
+      \item Limity na hodiny zdarma.
+      \item Filtrování vozidel -- pro různá vozidla mohou platit jiná pravidla.
     \end{itemize}
-  \item Statistiky (grafy etc.) počtu aut a dalších relevantních dat
+  \item Statistiky počtu aut a výdělku s grafy.
   \end{itemize}
