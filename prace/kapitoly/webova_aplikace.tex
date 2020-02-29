@@ -149,10 +149,56 @@ se dotázali na mazlíčky našeho uživatele.
 Zároveň můžeme provádět virtualizaci atributů -- přidávat atributy, které v databázi nemáme, ale pro webové rozhraní se hodí.
 Hypotetickým příkladem budiž celková zaplacená částka zákazníkem, která se v případě potřeby vypočítá.
 
+\subsection{Obecné resolvery}
+
 Jelikož se většina operací nad modeli se opakuje, byli napsány obecné resolvery jako HOF (Higher-Order-Function)
 pro vytváření, úpravu, mazání, vyhledávání a získávání modelů v relaci.
 Měnící se část je pak pouze definice databázového modelu. Díky GraphQL nemusíme ani ověřovat datové typy, které dostaneme od klienta --
 GraphQL toto udělá za nás díky schema, které tvoříme my.
+
+\begin{figure}
+\lstset
+{ %Formatting for code in appendix
+    basicstyle=\footnotesize,
+    numbers=left,
+    stepnumber=1,
+    showstringspaces=false,
+    tabsize=1,
+    breaklines=true,
+    breakatwhitespace=false,
+}
+\begin{lstlisting}
+function gqlPopulate<D extends mongoose.Document,
+                     K extends keyof D>(
+  modelGetter: ModelGetter<D>,
+  key: K
+): Resolver {
+  return async function(obj: D, args, ctx: Context, info) {
+    const model = modelGetter(ctx);
+    const keyStr = key.toString();
+    if (obj.populated(keyStr)) {
+      return obj[key];
+    } else {
+      const populated: D = await model.populate(obj, {
+        path: keyStr
+      });
+      return populated[key];
+    }
+  };
+}
+\end{lstlisting}
+\end{figure}
+
+Zde lze vidět funkci vracející resolver, který vrátí objekt v relaci (provede JOIN v SQL terminologii),
+pokud ho vlastnící objekt ještě nemá. Na sedmém řádku se získá model z funkce v \textit{lexical-scope} funkce
+vracející resolver. Proměnná \textit{ctx} definuje kontext resolveru a obsahuje modely a klienta, aby
+bylo snažší resolvery testovat -- jedná se o \textit{dependency-injection}.
+
+Na šestém řádku lze vidět parametry, které dostává každý resolver. První parametr je objekt vrácený nadřazeným resolverem,
+pokud nějaký je. Druhý parametr obsahuje klientem specifikované argumenty, například id hledaného uživatele.
+Třetí parametr je již zmíněný kontext, jeho
+obsah si ale definijeme samy v jiné části zdrojového kódu. Poslední parametr obsahuje info o dotazu samotném --
+jaké parametry si klient vyžádal apod.
 
 \section{Autentizace a autorizace} \label{auther_authen}
 
