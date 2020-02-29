@@ -28,7 +28,12 @@ nepovolené manipulaci.
 Zařízení se autentifikuje naskenováním QR kódu, jenž lze najít ve webové aplikaci. Ten obsahuje
 JSON řetězec s aktivačním heslem, pomocí kterého se zařízení přihlásí do systému a získa svou konfiguraci.
 
-\section{Cachování výsledků pro přesnost}
+Samotné skenování QR kódu je provedeno externí aplikací Barcode Scanner od vývojáře
+Zxing Team, která lze nainstalovat z Play Store.
+
+\section{Zvyšování přestnosti}
+
+\subsection{Cachování výsledků}
 
 Výsledek z knihovny OpenALPR je seznam dvojic udávající SPZ a šanci, že konkrétní SPZ je správně --
 čili jak si OpenALPR věří ve výsledek. Je tudíž logické měření udělat víc a provést aritmetický průměr a
@@ -41,3 +46,10 @@ kde klíčem je $id$ zařízení. Díky tomu, že Node.js běží na jednom vlá
 instancí Backend a prováděli takzvaný load-balancing.
 
 Výchozí počet měření je 2, a lze ho upravit v nastavení Backendu.
+
+\subsection{Filtrování podle obsahu}
+
+Pokud OpenALPR nalezne SPZ, údá i její pozici v zdrojovém obrázku.
+Aby se tedy předešlo naskenování SPZ, které jsou například daleko, lze odfiltrovat SPZ
+podle jejich obsahu v pixelech čtverečních. Konkrétní hodnota je potřeba odladit na místě skenování a
+lze změnit ve webové aplikaci pro kterékoliv zařízení.

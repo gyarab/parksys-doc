@@ -2,12 +2,12 @@
 \chapter{Instalace} \label{analyza}
 
 Instalace celého systému je velice jednoduchá. Pro distribuci je použit nástroj
-Docker \citep[viz][]{DockerDocs}, který zajistí kompilaci, spuštění, propojení všech částí a odhalení
-potřebných služeb ven na internet.
+Docker, který zajistí kompilaci, spuštění, propojení všech částí a odhalení
+potřebných služeb ven na internet. \citep[viz][]{DockerDocs}
 
-Kromě Backendu, Frontendu, OpenALPR Server a MongoDB používá tato distribuce
-Dockerem populární HTTP server NGINX pro SSL a reverse proxy. Vnitřní HTTP komunikace
-tak nemusí být zabezpečena.
+% Kromě Backendu, Frontendu, OpenALPR Server a MongoDB používá tato distribuce
+% Dockerem populární HTTP server NGINX pro SSL a reverse proxy. Vnitřní HTTP komunikace
+% tak nemusí být zabezpečena.
 
 \subsubsection*{Postup Instalace}
 
@@ -26,4 +26,4 @@ tak nemusí být zabezpečena.
 
 Poslední krok může trvat i několik minut v závislosti na rychlosti internetového
 přípojení. Protože Docker zabalí vše včetně systémových závislostí, velikost
-výsledných imagů je $1,4$GB.
+výsledných imagů je kolem $1,4$GB.

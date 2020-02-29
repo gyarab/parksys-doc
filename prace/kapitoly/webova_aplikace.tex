@@ -1,15 +1,18 @@
 
 \chapter{Webová aplikace}
 
-Tato kapitola popisuje zvolené postupy při psaní webové aplikace (Backend a Frontend).
+Tato kapitola popisuje zvolené postupy při psaní webové aplikace (backend a frontend).
 
 \section{Obrazovky}
 
-Dle požadavků z úvodu mějme po příhlášení do webového rozhraní následující obrazovky, mezi kterými bude uživatel přepínat pomocí hlavního menu.
+Dle požadavků z úvodu mějme po příhlášení do webového rozhraní následující obrazovky,
+mezi kterými bude uživatel přepínat pomocí hlavního menu.
+
+Seznam všech závislostí je uveden v souborech \textit{package.json} a \textit{package-lock.json}
 
 \begin{itemize}
+  \setlength\itemsep{.05em}
   \item \textbf{Statistiky} -- detailněji zobrazené údaje o počtu parkování a výdělku podle roku, měsíce a dne s grafy.
-        Zde půjde i exportovat data to CSV souboru (\textit{Comma-Separated-Values}).
   \item \textbf{Pravidla a Filtry} -- definice parkovacích pravidel a filtrů vozidel (popsáno v \ref{analysis_parking_schema}).
         Pro ověření půjde si parkovací pravidla a filtry odsimulovat.
   \item \textbf{Zařízení} -- správa zařízení zachycujících fotografie SPZ, která lze autentifikovat do systému pomocí
@@ -19,88 +22,129 @@ Dle požadavků z úvodu mějme po příhlášení do webového rozhraní násle
   \item \textbf{Vozidla a Parkování} -- prohlížení vozidel a jejich parkování.
 \end{itemize}
 
-Na obrázku \ref{fig:structure_backend} a obrázku \ref{fig:structure_frontend} je
-vidět adresářová struktura Backendu a Frontendu.
+\section{Adresářová struktura}
 
-\begin{figure}
-  \begin{minipage}{0.45\textwidth}
-    \dirtree{%
-    .1 frontend.
-    .2 config.
-    .3 types.
-    .3 utils.
-    .3 webpack.
-    .2 src.
-    .3 app.
-    .4 apis.
-    .4 components.
-    .4 constants.
-    .4 containers.
-    .4 helpers.
-    .4 images.
-    .4 layouts.
-    .4 models.
-    .4 pages.
-    .4 redux.
-    .4 routes.
-    .4 sagas.
-    .4 selectors.
-    .2 translations.
-    }
-    \caption{Adresářová struktura Frontend.}
-    \label{fig:structure_frontend}
-  \end{minipage}%
-  \hfill
-  \begin{minipage}{0.45\textwidth}
-    \dirtree{%
-    .1 backend.
-    .2 config.
-    .2 scripts.
-    .2 src.
-    .3 apis.
-    .3 auth.
-    .3 cache.
-    .3 db.
-    .3 endpoints.
-    .3 scripts.
-    .3 types.
-    .3 utils.
-    .2 test\_assets.
-    .2 typings.
-    }
-    % Disgusting but it works -- aligned
-    \hfill
-    \\
-    \\
-    \\
-    \\
-    \\
-    \\
-    \caption{Adresářová struktura Backend.}
-    \label{fig:structure_backend}
-  \end{minipage}%
-\end{figure}
+Následující dva seznamy popisují adresářovou struktury backendu a frontendu.
+Některé méně důležite adresáře byly vynechány.
+
+% \begin{figure}
+%   \begin{minipage}{0.45\textwidth}
+%     \dirtree{%
+%     .1 frontend.
+%     .2 config.
+%     .3 types.
+%     .3 utils.
+%     .3 webpack.
+%     .2 src.
+%     .3 app.
+%     .4 apis.
+%     .4 components.
+%     .4 constants.
+%     .4 containers.
+%     .4 helpers.
+%     .4 images.
+%     .4 layouts.
+%     .4 pages.
+%     .4 redux.
+%     .4 routes.
+%     .4 sagas.
+%     .2 translations.
+%     }
+%     \caption{Adresářová struktura Frontend.}
+%     \label{fig:structure_frontend}
+%   \end{minipage}%
+%   \hfill
+%   \begin{minipage}{0.45\textwidth}
+%     \dirtree{%
+%     .1 backend.
+%     .2 config.
+%     .2 scripts.
+%     .2 test\_assets.
+%     .2 src.
+%     .3 apis.
+%     .3 auth.
+%     .3 cache.
+%     .3 db.
+%     .3 endpoints.
+%     .3 types.
+%     .3 utils.
+%     }
+%     % Disgusting but it works -- aligned
+%     \hfill
+%     \\
+%     \\
+%     \\
+%     \\
+%     \\
+%     \\
+%     \\
+%     \\
+%     \caption{Adresářová struktura Backend.}
+%     \label{fig:structure_backend}
+%   \end{minipage}%
+% \end{figure}
+
+\subsubsection*{Backend}
+
+\begin{itemize}
+  \setlength\itemsep{.05em}
+  \item \textbf{config} -- konfigurační soubory.
+  \item \textbf{scripts} -- skripty pro vývoj.
+  \item \textbf{test\_assets} -- obrázky pro testování rozpoznávání SPZ.
+  \item \textbf{src} -- zdrojový kód.
+  \begin{itemize}
+    \setlength\itemsep{.05em}
+    \item \textbf{apis} -- hepler funkce pro komunikaci s externím API pro rozpoznávání SPZ.
+    \item \textbf{auth} -- autentifikace a autorizace.
+    \item \textbf{cache} -- implementace mezipaměti.
+    \item \textbf{db} -- připojení k databázi a nastavení GraphQL serveru Apollo.
+    \item \textbf{endpoints} -- endpointy (ne GraphQL).
+    \item \textbf{types} -- business logika aplikace, definice GraphQL schema, resolverů a mongoose modelů.
+    \item \textbf{utils} -- datové struktury a ostatní helper funkce i pro testy.
+  \end{itemize}
+\end{itemize}
+
+\subsubsection*{Frontend}
+
+\begin{itemize}
+  \setlength\itemsep{.05em}
+  \item \textbf{config} -- konfigurační soubory -- převzáno od CrazyFactory GmbH.
+  \item \textbf{src/app} -- zdrojový kód.
+  \begin{itemize}
+    \setlength\itemsep{.05em}
+    \item \textbf{apis} -- hepler funkce pro získávání obrázků z backendu.
+    \item \textbf{components} -- komponenty uživatelského rozhraní.
+    \item \textbf{constants} -- GraphQL dotazy, barvy, apod.
+    \item \textbf{helpers} -- hepler funkce.
+    \item \textbf{images} -- obrázky.
+    \item \textbf{layouts} -- rozložení obrazovek.
+    \item \textbf{pages} -- komponenty obrazovek.
+    \item \textbf{redux} -- definice reducerů a stavů aplikace.
+    \item \textbf{routes} -- definice cest obrazovek.
+    \item \textbf{sagas} -- vedlejší efekty Redux akcí.
+    \item \textbf{sagas} -- vedlejší efekty Redux akcí.
+  \end{itemize}
+\end{itemize}
 
 \section{GraphQL resolvery}
 
-Protože GraphQL je primárním způsobem komunikace mezi Frontend a Backend, stojí za to si vysvětlit základní stavební bloky
-GraphQL -- resolvery, které tvoří strom. Vzpoměňme si na příklad z přechozí kapitoly na obrázku \ref{fig:graphql_example}.
+Protože GraphQL je primárním způsobem komunikace mezi frontendem a backendem, stojí za to si vysvětlit základní stavební bloky
+GraphQL -- resolvery, které tvoří strom. Vzpoměňme si na příklad z předchozí kapitoly na obrázku \ref{fig:graphql_example}.
 Zde kořenem stromu je resolver \textit{userSearch}, jenž přijímá argumenty potřebné pro jeho běh, ty jsou v tomto případě
-povinné (ale nemusí). Kořenový resolver vrací nějaký typ, v tomto případě typ \textit{UserSearchResult}, který udává nalezené
+povinné (ale nemusí). Kořenový resolver je funkce vracející nějaký typ, v tomto případě typ \textit{UserSearchResult}, který udává nalezené
 uživatele (\textit{UserSearchResult.data}) a stránkování (v příkladu vynecháno).
 Při návrhu tohoto resolveru bychom si mohli rozmyslet, že údaje o stránkování vynecháme a vrátíme pouze
 pole nepřázdných uživatelů -- typ \textit{[User!]}.
 Máme dva druhy typů: skaláry (listy stromu) a objekty (uzly stromu).
-Typ \textit{User} má v sobě také nějaké hodnoty a vrátí se nám jen ty, na které se zeptáme. Měl-li by typ \textit{User}
+Typ \textit{User} je objekt a má v sobě také nějaké hodnoty a vrátí se nám jen ty, na které se zeptáme. Měl-li by typ \textit{User}
 další objekty, mohli bychom se zeptat i na jejich hodnoty. Kdybychom psali aplikaci pro veterinární kliniku, mohli bychom se zeptat
 třeba na jména mazlíčků.
+
 Jak toto implementujeme? Pro každý kořenový resolver musíme napsat funkci, která buď přímo vrátí požadovaný objekt s atributy a nebo
 k typu, který náš kořenový resolver vrací, napíšeme další resolvery, které vrací opět objekty, nebo skaláry.
-Čili kdybychom se databáze ptali na uživatele i s
-mazlíčky (v SQL terminologii bychom provedli JOIN), tak bychom nemuseli pro typ \textit{User} psát resolver pro mazlíčky.
-Ale kdybychom se za účelem zrychlení aplikace ptali pouze na uživatele, tak bychom museli mít jěště resolver pro mazlíčky, abychom
-podporovali dotazy na mazlíčky uživatelů, což by způsobilo více poslaných dotazů do databáze, ale pokud by výkon byl problém,
-můžeme se podívat přímo na jaké hodnoty se uživatel ptá.
+Kdybychom se databáze ptali na uživatele i s
+mazlíčky (v SQL terminologii bychom provedli JOIN), tak bychom nemuseli pro typ \textit{User} psát resolver pro mazlíčky, kde bychom
+se dotázali na mazlíčky našeho uživatele.
 \citep[viz][]{GraphQLDoc}
 
 Zároveň můžeme provádět virtualizaci atributů -- přidávat atributy, které v databázi nemáme, ale pro webové rozhraní se hodí.
@@ -114,7 +158,7 @@ GraphQL toto udělá za nás díky schema, které tvoříme my.
 \section{Autentizace a autorizace} \label{auther_authen}
 
 Autentifikace lidských uživatelů probíhá pomocí standardního hesla a zařízení pomocí dlouhého, náhodně generovaného hesla,
-které je posíláno na Frontend ve formě QR kódu, které zařízení naskenuje.
+které je posíláno na frontend ve formě QR kódu, které zařízení naskenuje.
 Po úspěšné autentizaci obdží klient token, který kdyby klient posílal v souboru Cookie,
 tak bychom se vystavovali riziku útoku CSRF/XSRF.
 Místo toho bude klient posílat token v hlavičce \textit{Authorization}.
@@ -129,6 +173,7 @@ nebo resolver pouze pokud má klient dostatečná oprávnění.
 \subsection{Parkovací pravidla} \label{analysis_parking_schema}
 
 \begin{itemize}
+  \setlength\itemsep{.05em}
   \item Různá vozidla mohou podléhat ruzným pravidlům.
   \item Pravidla mají prioritu.
   \item Pravidla mají časové omezení.
@@ -174,6 +219,7 @@ se stejnou prioritou.
 
 \textit{Výstup: boolean určující platnost}
 \begin{enumerate}
+  \setlength\itemsep{.05em}
   \item Na základě módu filtrování si budeme udržovat množinu buď odstraněných vozidel (mód ALL), nebo přidaných vozidel (mód NONE).
   \item Podle příslušné akce filtrů (odstranit nebo přidat) budeme množinu našich vozidel manipulovat. Např. je-li mód ALL a filtr odstraňuje, do množiny si vozidla přidáme.
   \item Pokud je vozidlo ve výsledné množině, tak pro něj \texttt{ParkingRuleAssignment} platí pokud je filtrovací mód NONE a neplatí pokud je mód ALL. Opačné výsledky nastanou, pokud vozidlo v množině není.
@@ -210,6 +256,7 @@ Přidat tuto kontrolu později je triviální.
 
 \textit{Výstup: seznam \texttt{ParkingRuleAssignmentů} s časy platnosti}
 \begin{enumerate}
+  \setlength\itemsep{.05em}
   \item Seřadíme si začátky a konce úseček podle jejich času.
   \item Vytvoříme si haldu pro odkládání úseček, která řadí podle priority -- větší výše.
   \item Vytvoříme si seznam aplikovaných pravidel s časy (časy mohou se lišit od počátečních i koncových časů).
@@ -251,26 +298,63 @@ Přidáme-li filtrování, tak v nejhorším případě budeme ověřovat platno
 filtrů, pak je časová složitost ${\cal O}(N\cdot{M})$. 
 % Při rozumném počtu \texttt{ParkingRuleAssignment} v daném intervalu je algoritmus velice rychlý
 
-\section{Databázový model}
-
 \section{Uživatelské rozhraní}
 
 Jelikož autor neměl zkušenosti s vývojem webového uživatelského rozhraní, rozhodl se využít starter projekt
-společnosti Crazy Factory, který pojí vybrané technologie dohromady a mandatuje projektu strukturu.
+společnosti Crazy Factory, který pojí vybrané technologie dohromady a mandatuje projektu základní strukturu.
 Navíc podporuje překlady, reportování chyb apod., což vytvářet z ničeho je obtížné. \citep[viz][]{CFProj}
 
 \subsection{Redux a persistence stavu}
 
 Jak již bylo zmíněno v předchozí kapitole, uživatelské rozhraní používá Redux pro sdílení stavu mezi komponentami.
-Stav v Redux je strom, jenž je upravován akcema. Akce jsou předány takzvaným \textit{reducers}, což jsou prosté funkce,
-jejichž vstupem je současný stav a akce a jejichž výstupem je stav nový. \citep[viz][]{ReduxCore}
-Prostost reducerů umožňuje testovatelnost.
+Stav v Reduxu je strom, jenž je upravován akcemi. Akce a současný stav je předán takzvaným \textit{reducers}, což jsou prosté funkce,
+které vrátí stav nový. \citep[viz][]{ReduxCore} Prostost reducerů umožňuje testovatelnost.
 
-Jako příklad konkrétního využití budiž uložení některých údajů obrazovek mezi přepnutí obrazovek,
-sdílení vozidla mezi stránkou s vozidly a stránkou s pravidly, schopnost seznamu parkování zvolit vozidlo a mnoho dalších.
+Jako příklad konkrétního využití budiž sdíleí některých údajů mezi obrazovkami.
+Napřídklad sdílení vozidla mezi stránkou s vozidly a stránkou s pravidly, schopnost seznamu parkování zvolit vozidlo a mnoho dalších.
+
+Některé komponenty jsou pak na stavu závislé a dojde k jejich překreslení, pokud se jimi čtený stav změní, což je též zařízeno
+Reduxem. Jedná se vlastně o formu \textit{dependency-injection}. Stejným mechanismem jsou do komponent vkládány
+funkce vyvtvářející akce a jiné vedlejší efekty, což dělá tyto komponenty snadno testovatelné.
 
 K tomu abychom mohli uložit stav aplikace po zavření okna, použijeme knihovnu \textit{redux-persist}, která poskytuje
-HOF funkci, které dáme resolver, a ona změny, které způsobí, někam uloží. V našem případě se jedná o \textit{localstorage}.
+HOF funkci, které dáme reducer, a ona změny, které způsobí, někam uloží. \citep[viz][]{reduxpersist}
+V našem případě se jedná o \textit{localstorage}.
+
+\subsection{Typy komponent}
+
+Níže je rozlišení komponent podle jejich interakce s ostatními a míry autonomie.
+Jedná se o spektrum, ne o definitivní kategorie.
+
+\begin{itemize}
+  \setlength\itemsep{0.05em}
+  \item \textbf{Bez vnitřního stavu} -- může se jednat o tlačítka, vstupy textu apod. Tyto komponenty jsou zcela řízeny
+      nadřazenou komponentou.
+  \begin{itemize}
+    \setlength\itemsep{0.05em}
+    \item \textbf{Strukturní} -- delegují data dalším komponentám a mohou mít podřízené komponenty. Příkladem budiž sekce třeba v 
+        uživatelském rozhraní se stejným stylem.
+  \end{itemize}
+  \item \textbf{S vnitřním stavem} -- tyto komponenty údávají stav podřízeným komponentám.
+  \begin{itemize}
+    \setlength\itemsep{0.05em}
+    \item \textbf{Napojené na Redux} -- jedná se o podtyp komponent s vnitřním stavem, které část stavu berou z Reduxu.
+    \item \textbf{Komunikující se světem} --  komunikují s vnějším světem. Například posílají GraphQL dotaz backendu.
+  \end{itemize}
+\end{itemize}
+
+\subsection{Grafy}
+
+Grafy jsou potřeba na stránce se statistiky. K tomu byla použita knihovna \textit{react-google-charts},
+což, jak název napovídá, je port knihovny \textit{google-charts} do Reactu. Ta kromě obvyklích grafů umí
+například i takzvaný kalendářový graf, jenž lze vidět na obrázku \ref{fig:google_charts}.
+
+\begin{figure}[!htb] \centering
+  \includegraphics[width=145mm]{../img/google_charts.png}
+  \caption{Kalendářový graf z knihovny react-google-charts.}
+  \label{fig:google_charts}
+\end{figure}
+
 
 \subsection{Obecná vybírátka modelů}
 
@@ -284,7 +368,7 @@ samotné pole modelů (\textit{modelArrayGetter}), a funkce, jejímž vstupem je
 argumenty pro GraphQL dotaz (\textit{identifierToOptions}).
 
 Obrázek \ref{fig:picker_lifecycle} ukazuje tok dat v jednom z obecných vybírátek.
-Obrázek \ref{fig:picker_component} ukazuje vyrenderovanou komponentu téhož vybírátka.
+Obrázek \ref{fig:picker_component} ukazuje vyrenderovanou komponentu vybírátka.
 
 Další vybírátka abstrahují i vstup od uživatele, takže lze použít například kalendář.
 
@@ -300,15 +384,4 @@ Další vybírátka abstrahují i vstup od uživatele, takže lze použít např
   \label{fig:picker_component}
 \end{figure}
 
-\newpage
-\subsection{Grafy}
-
-Grafy jsou potřeba na stránce se statistiky. K tomu byla použita knihovna \textit{react-google-charts},
-což, jak název napovídá, je port knihovny \textit{google-charts} do Reactu. Ta kromě obvyklích grafů umí
-například i takzvaný kalendářový graf, jenž lze vidět na obrázku \ref{fig:google_charts}.
-
-\begin{figure}[!htb] \centering
-  \includegraphics[width=145mm]{../img/google_charts.png}
-  \caption{Kalendářový graf z knihovny react-google-charts.}
-  \label{fig:google_charts}
-\end{figure}
+% \newpage

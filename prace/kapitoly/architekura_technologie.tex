@@ -1,7 +1,6 @@
 
 \chapter{Architektura a technologie} \label{archtech}
 
-\LaTeX
 \section{Architektura řešení} \label{architektura_reseni}
 
 \begin{figure} \centering
@@ -11,7 +10,7 @@
 \end{figure}
 
 Parkovací systém se zkládá z následujících částí, které si nyní popíšeme stručně a detailněji později.
-Části spolu komunikují pomocí HTTP.
+Jednotlivé komponenty spolu komunikují pomocí HTTP.
 Obrázek \ref{fig:architecture_drawing} ukazuje tyto části a nastiňuje způsob komunikace.
 
 \begin{itemize}
@@ -30,20 +29,20 @@ Obrázek \ref{fig:architecture_drawing} ukazuje tyto části a nastiňuje způso
 
 \subsection{Databáze}
 
-Databáze MongoDB, která byla vybrána, protože data se budou převážně zapisovat a bude potřeba v nich rychle hledat a provádět agregační dotazy.
-Mimo jiné umožňuje provoz několika spolupracujících instancí, zálohování apod \citep[viz][]{MongoDB}.
+Databáze MongoDB byla vybrána, protože data se budou převážně zapisovat a bude potřeba v nich rychle hledat a provádět agregační dotazy.
+Mimo jiné umožňuje provoz několika spolupracujících instancí, zálohování apod. \citep[viz][]{MongoDB}
 
 \subsection{Backend} \label{backend}
 
-Jako programovací jazyk pro \textbf{Backend} byl zvolen staticky typovaný Typescript kvůli rychlosti vývoje
+Jako programovací jazyk pro backend byl zvolen staticky typovaný Typescript kvůli rychlosti vývoje
 a množství knihoven, které poskytuje ekosystém Node.js.
 
-Pro definici databázových modelů a komunikaci s MongoDB byla kvůli své vyspělosti a skvělé funkcionalitě zvolena
-knihovna mongoose.
+Pro definici databázových modelů a komunikaci s databází byla kvůli své vyspělosti a skvělé funkcionalitě zvolena
+knihovna mongoose. \citep[viz][]{Mongoose}
 
-Primárním způsobem komunikace s \textbf{Frontend}
-je dotazovací jazyk GraphQL, který přináší ucelený popis poskytovaných dat pomocí kontroly typů,
-expresivních dotazů, jejichž odpověď má stejný "tvar" v JSON formátu.
+Primárním způsobem komunikace s frontendem
+je dotazovací jazyk GraphQL, který přináší ucelený popis poskytovaných dat pomocí kontroly typů a
+expresivních dotazů, jejichž odpověď má stejný "tvar" v JSON formátu. 
 Obrázek \ref{fig:graphql_example} ukazuje dotaz hledání uživatele podle jména.
 
 \begin{figure} \centering
@@ -52,32 +51,29 @@ Obrázek \ref{fig:graphql_example} ukazuje dotaz hledání uživatele podle jmé
 \label{fig:graphql_example}
 \end{figure}
 
-Model uživatele může mít i další atributy, ale GraphQL vrátí přesně ty údaje, na které se uživatel zeptal.
-Tento triviální příklad neukazuje další funkce jako mutace dat, dědičnost typů, více dotazů v jednom http dotazu
-a mnoho dalších.
+Model uživatele může mít i další atributy, ale GraphQL vrátí přesně ty údaje, na které se klient zeptal.
+Tento triviální příklad neukazuje další funkce jako mutace dat, dědičnost typů, více dotazů v jedné HTTP žádosti
+a mnoho dalších funkcí.
 GraphQL je pouze specifikace vytvořená společností Facebook a má několik
-implementací. Pro tento projekt byla zvolena implementace Apollo \citep[viz][]{Apollo}. Detailní informace jsou dostupné na oficiálních
-stránkach https://graphql.org/.
+implementací. \citep[viz][]{GraphQLDoc} Pro tento projekt byla zvolena implementace Apollo \citep[viz][]{Apollo}.
 
-Jelikož GraphQL posílá odpovědi v JSON, není vhodné na posílání obrázků. Je to možné za využití base64 kódování,
+Jelikož GraphQL posílá odpovědi v JSON, není vhodné pro posílání obrázků. Je to možné za využití base64 kódování,
 ale přes síť se přenese více bytů, než při použití obvyklého způsobu přes HTTP. Z toho důvodu pro posílání
-obrázků (např. QR kódu pro Frontend pro autentifikaci zařízení nebo zaznamenané znímky SPZ) bude mít Backend i
-klasické REST endpointy.
+obrázků bude mít backend i jiné endpointy.
 
 \subsection{Frontend} \label{frontend}
 
-Pro \textbf{Frontend} byl jako u \textbf{Backend} vybrán Typescript ze stejných důvodů. Webové rozhraní
+Pro frontend byl jako u backendu vybrán Typescript ze stejných důvodů. Webové rozhraní
 je takzvaná SPA (z angl. Single-Page-Application), což znamená, že uživateli se obsah mění dynamicky
 bez načítání dalších stránek.
 Renderování zajišťuje knihovna React, která od klasického přístupu, kdy se odděluje HTML a Javascript do separátních
 souborů, mandatuje, že v jednom souboru je jedna komponenta se vším svým HTML a logikou ve formě Javascriptu nebo
-Typescriptu. Pomocí další knihovny typestyle pak můžeme do stejného souboru psát i typované CSS.
+Typescriptu. \citep[viz][]{Reactjs} Pomocí další knihovny typestyle pak můžeme do stejného souboru psát i typované CSS \citep[viz][]{typestyle}.
 Aby bylo možné snadno sdílet mezi komponentami stav, byla pro takzvaný state-management zvolena knihovna Redux.
 Diagram na obrázku \ref{fig:react_redux_dataflow} ukazuje tok dat mezi Reactem a Reduxem.
 
 Jelikož je aplikace vyvíjena pro správce systému a ne pro velké množství uživatelů, můžeme si dovolit
-klást menší nároky na velikost aplikace (tj. můžeme přidávat i velké knihovny), což velice usnadní vývoj za
-nízkou cenu.
+klást menší nároky na velikost aplikace (tj. můžeme přidávat i velké knihovny), což velice usnadní vývoj.
 
 \begin{figure}[!htb] \centering
 \includegraphics[width=145mm]{../img/react-redux-architecture.png}
@@ -87,12 +83,12 @@ nízkou cenu.
 
 \subsection{Mobilní aplikce} \label{mobile_app}
 
-\textbf{Mobilní aplikace}, která je určena pro platformu Android, měla volbu jazyka omezenou na Javu, Kotlin a C++.
+Mobilní aplikace, která je určena pro platformu Android, měla volbu jazyka omezenou na Javu, Kotlin a C++.
 Rychlost C++ není potřeba a navíc autor s tímto nízkoúrovňovým jazykem nemá takové zkušenosti.
 Kotlin oproti Javě umožňuje přímočarejší přístup k prkům uživatelského rozhraní, a proto byl zvolen.
 
-Jediným úkolem \textbf{Mobilní aplikace} je v pravidelném intervalu pořídit snímek fotoaparátem a poslat ho na
-\textbf{Backend}, který jej patřičně zpracuje.
+Jediným úkolem mobilní aplikace je v pravidelném intervalu pořídit snímek fotoaparátem a poslat ho na
+backend, který jej patřičně zpracuje.
 
 \subsection{Detekce SPZ}
 
