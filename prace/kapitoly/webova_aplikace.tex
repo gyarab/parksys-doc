@@ -6,24 +6,23 @@ Tato kapitola popisuje zvolené postupy při psaní webové aplikace (backend a 
 Obrázek \ref{fig:structure_back} a obrázek \ref{fig:structure_front} popisují adresářové
 struktury backendu a frontendu.
 Některé méně důležite adresáře byly vynechány.
-Seznam všech závislostí je uveden v souborech \textit{package.json} a \textit{package-lock.json}
 
 \begin{figure} [!htb]
   \begin{itemize}
     \setlength\itemsep{.05em}
-    \item \textbf{config} -- konfigurační soubory.
-    \item \textbf{scripts} -- skripty pro vývoj.
-    \item \textbf{test\_assets} -- obrázky pro testování rozpoznávání SPZ.
-    \item \textbf{src} -- zdrojový kód.
+    \item \textbf{config} -- konfigurační soubory
+    \item \textbf{scripts} -- skripty pro vývoj
+    \item \textbf{test\_assets} -- obrázky pro testování rozpoznávání SPZ
+    \item \textbf{src} -- zdrojový kód
     \begin{itemize}
       \setlength\itemsep{.05em}
-      \item \textbf{apis} -- hepler funkce pro komunikaci s externím API pro rozpoznávání SPZ.
-      \item \textbf{auth} -- autentifikace a autorizace.
-      \item \textbf{cache} -- implementace mezipaměti.
-      \item \textbf{db} -- připojení k databázi a nastavení GraphQL serveru Apollo.
-      \item \textbf{endpoints} -- endpointy (ne GraphQL).
-      \item \textbf{types} -- business logika aplikace, definice GraphQL schema, resolverů a mongoose modelů.
-      \item \textbf{utils} -- datové struktury a ostatní helper funkce i pro testy.
+      \item \textbf{apis} -- hepler funkce pro komunikaci s externím API pro rozpoznávání SPZ
+      \item \textbf{auth} -- autentifikace a autorizace
+      \item \textbf{cache} -- implementace mezipaměti
+      \item \textbf{db} -- připojení k databázi a nastavení GraphQL serveru Apollo
+      \item \textbf{endpoints} -- endpointy (ne GraphQL)
+      \item \textbf{types} -- business logika aplikace, definice GraphQL schema, resolverů a mongoose modelů
+      \item \textbf{utils} -- datové struktury a ostatní helper funkce i pro testy
     \end{itemize}
   \end{itemize}
   \caption{Adresářová struktura backendu.}
@@ -33,25 +32,39 @@ Seznam všech závislostí je uveden v souborech \textit{package.json} a \textit
 \begin{figure}[!htb]
     \begin{itemize}
       \setlength\itemsep{.05em}
-      \item \textbf{config} -- konfigurační soubory -- převzáno od CrazyFactory GmbH.
-      \item \textbf{src/app} -- zdrojový kód.
+      \item \textbf{config} -- konfigurační soubory
+      \item \textbf{src/app} -- zdrojový kód
       \begin{itemize}
         \setlength\itemsep{.05em}
-        \item \textbf{apis} -- hepler funkce pro získávání obrázků z backendu.
-        \item \textbf{components} -- komponenty uživatelského rozhraní.
-        \item \textbf{constants} -- GraphQL dotazy, barvy, apod.
-        \item \textbf{helpers} -- hepler funkce.
-        \item \textbf{images} -- obrázky.
-        \item \textbf{layouts} -- rozložení obrazovek.
-        \item \textbf{pages} -- komponenty obrazovek.
-        \item \textbf{redux} -- definice reducerů a stavů aplikace.
-        \item \textbf{routes} -- definice cest obrazovek.
-        \item \textbf{sagas} -- vedlejší efekty Redux akcí.
+        \item \textbf{apis} -- hepler funkce pro získávání obrázků z backendu
+        \item \textbf{components} -- komponenty uživatelského rozhraní
+        \item \textbf{constants} -- GraphQL dotazy, barvy, apod
+        \item \textbf{helpers} -- hepler funkce
+        \item \textbf{images} -- obrázky
+        \item \textbf{layouts} -- rozložení obrazovek
+        \item \textbf{pages} -- komponenty obrazovek
+        \item \textbf{redux} -- definice reducerů a stavů aplikace
+        \item \textbf{routes} -- definice cest obrazovek
+        \item \textbf{sagas} -- vedlejší efekty Redux akcí
       \end{itemize}
     \end{itemize}
     \caption{Adresářová struktura frontendu.}
     \label{fig:structure_front}
   \end{figure}
+
+\newpage
+
+Nastavení frontendu je upravitelné ve složce s konfigurací (/config).
+Některé hodnoty jsou brané z proměnných prostředí, mají ale předdefinovanou hodnotu, pokud
+konkrétní promenná prostředí je prázdná.
+
+Nastavení backendu je řešeno knihovnou nconf, která umožňuje kteroukoliv hodnotu upravit
+pomocí proměnných prostředí -- stačí jen vzít cestu k hodnotě a každé vnoření nahradit 
+dvěma podtržítky.
+\citep[viz][]{nconf}
+Například cesta $\{ mongo: \{ host \} \}$ lze přepsat promměnou prostředí s názvem $mongo\_\_host$.
+
+Seznam všech závislostí je uveden v souborech \textit{package.json} a \textit{package-lock.json}.
 
 \section{Obrazovky}
 
@@ -102,7 +115,7 @@ pro vytváření, úpravu, mazání, vyhledávání a získávání modelů v re
 Měnící se část je pak pouze definice databázového modelu. Díky GraphQL nemusíme ani ověřovat datové typy, které dostaneme od klienta --
 GraphQL toto udělá za nás díky schema, které tvoříme my.
 
-\begin{figure}
+\begin{figure}[!htb]
 \lstset
 { %Formatting for code in appendix
     basicstyle=\footnotesize,
@@ -159,9 +172,7 @@ Podle tokenu klienta jednoznačně identifikujeme a víme jeho oprávnění. End
 \textit{checkPermissions} společně s požadovanými oprávněními. \textit{checkPermissions} pak zavolá původní endpoint
 nebo resolver pouze pokud má klient dostatečná oprávnění.
 
-\section{Business logika}
-
-\subsection{Parkovací pravidla} \label{analysis_parking_schema}
+\section{Parkovací pravidla} \label{analysis_parking_schema}
 
 \begin{itemize}
   \setlength\itemsep{.05em}
@@ -204,7 +215,7 @@ Hodí se mít filtry uložené separátně, aby mohli být využity několikrát
 Pro zjednodušení algoritmů, uvalíme omezení: ve stejný čas nesmí existovat více \texttt{ParkingRuleAssignment}
 se stejnou prioritou.
 
-\subsubsection*{Algoritmus filtru vozidel}
+\subsection{Algoritmus filtru vozidel}
 
 \textit{Vstup: objekt \texttt{ParkingRuleAssignment}, vozidlo}
 
@@ -224,7 +235,7 @@ Je-li uživatel příčetný, počet použitých filtrů nebude obrovský, a tud
 Zapamatujeme si výsledky pro určitý seznam filtrů pro konkrétní vozidlo pouze při běhu algoritmu, který je
 vysvětlen v následující kapitole, čímž následující algoritmus zrychlíme.
 
-\subsubsection*{Algoritmus pro aplikaci ParkingRuleAssignmentů}
+\subsection{Algoritmus pro aplikaci pravidel}
 
 \begin{figure}[!htb] \centering
   \includegraphics[width=145mm]{../img/rules_drawing.jpg}

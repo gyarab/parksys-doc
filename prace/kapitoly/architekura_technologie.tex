@@ -9,33 +9,36 @@
   \label{fig:architecture_drawing}
 \end{figure}
 
-Parkovací systém se zkládá z následujících částí, které si nyní popíšeme stručně a detailněji později.
+Parkovací systém se skládá z následujících částí, které si nyní popíšeme stručně a detailněji v
+následujících kapitolách.
 Jednotlivé komponenty spolu komunikují pomocí HTTP.
 Obrázek \ref{fig:architecture_drawing} ukazuje tyto části a nastiňuje způsob komunikace.
 
 \begin{itemize}
-  \item \textbf{Backend} je středobodem celé aplikace -- komunikuje se všemy ostatními komponentami.
-        Zajišťuje business logiku aplikace, autentizaci i autorizaci uživatelů a perzistenci dat do \textbf{Databáze}.
+  \item \textbf{Backend} je středobodem celého systému -- komunikuje se všemy ostatními komponentami.
+        Zajišťuje business logiku aplikace, autentizaci i autorizaci uživatelů i zařízení
+        a perzistenci dat do databáze.
   \begin{itemize}
     \item \textbf{Databáze} slouží k ukládání a čtení dat.
-    \item \textbf{OpenALPR Server} (převzato z https://github.com/gerhardsletten/express-openalpr-server) je server, jenž obstarává přístup
-          ke knihovně OpenALPR (https://github.com/openalpr/openalpr), která rozpoznává SPZ, přes protokol http.
+    \item \textbf{OpenALPR Server} je server, jenž obstarává přístup
+          ke knihovně OpenALPR, která rozpoznává SPZ, přes protokol http.
   \end{itemize}
-  \item \textbf{Mobilní aplikace} posílá obrazová data na \textbf{Backend}, kde jsou zpracována. Je určena pro platformu Android.
-  \item \textbf{Frontend} je rozhraní mezi celým systémem a správcem parkoviště a dalšího personálu.
+  \item \textbf{Mobilní aplikace} posílá obrazová data na backend, kde jsou zpracována. Je určena pro platformu Android.
+  \item \textbf{Frontend} je rozhraní mezi celým systémem a správcem parkoviště.
 \end{itemize}
 
 \section{Technologie}
 
 \subsection{Databáze}
 
-Databáze MongoDB byla vybrána, protože data se budou převážně zapisovat a bude potřeba v nich rychle hledat a provádět agregační dotazy.
+Databáze MongoDB byla vybrána, protože data se budou převážně zapisovat a bude potřeba v nich rychle
+hledat a provádět agregační dotazy.
 Mimo jiné umožňuje provoz několika spolupracujících instancí, zálohování apod. \citep[viz][]{MongoDB}
 
 \subsection{Backend} \label{backend}
 
 Jako programovací jazyk pro backend byl zvolen staticky typovaný Typescript kvůli rychlosti vývoje
-a množství knihoven, které poskytuje ekosystém Node.js.
+a množství knihoven, které poskytuje ekosystém Node.js. \citep[][]{Typescript} \citep[][]{Nodejs}
 
 Pro definici databázových modelů a komunikaci s databází byla kvůli své vyspělosti a skvělé funkcionalitě zvolena
 knihovna mongoose. \citep[viz][]{Mongoose}
@@ -66,10 +69,14 @@ obrázků bude mít backend i jiné endpointy.
 Pro frontend byl jako u backendu vybrán Typescript ze stejných důvodů. Webové rozhraní
 je takzvaná SPA (z angl. Single-Page-Application), což znamená, že uživateli se obsah mění dynamicky
 bez načítání dalších stránek.
+
 Renderování zajišťuje knihovna React, která od klasického přístupu, kdy se odděluje HTML a Javascript do separátních
 souborů, mandatuje, že v jednom souboru je jedna komponenta se vším svým HTML a logikou ve formě Javascriptu nebo
-Typescriptu. \citep[viz][]{Reactjs} Pomocí další knihovny typestyle pak můžeme do stejného souboru psát i typované CSS \citep[viz][]{typestyle}.
+Typescriptu. \citep[viz][]{Reactjs}
+Pomocí další knihovny typestyle pak můžeme do stejného souboru psát i typované CSS \citep[viz][]{typestyle}.
+
 Aby bylo možné snadno sdílet mezi komponentami stav, byla pro takzvaný state-management zvolena knihovna Redux.
+\citep[viz][]{ReduxCore}
 Diagram na obrázku \ref{fig:react_redux_dataflow} ukazuje tok dat mezi Reactem a Reduxem.
 
 Jelikož je aplikace vyvíjena pro správce systému a ne pro velké množství uživatelů, můžeme si dovolit
@@ -92,21 +99,27 @@ backend, který jej patřičně zpracuje.
 
 \subsection{Detekce SPZ}
 
-Detekci SPZ bude zajišťovat knihovna OpenALPR \citep[viz][]{OpenALPR}, jejímž vstupem je obrázek a popřípadě
-parametry jako úhel kamery apod. Ke zbytku aplikace bude připojena malým HTTP serverem, jenž byl převzán a upraven
+Detekci SPZ bude zajišťovat knihovna OpenALPR, jejímž vstupem je obrázek a popřípadě
+parametry jako úhel kamery apod.
+\citep[viz][]{OpenALPR}
+
+Ke zbytku aplikace bude připojena malým HTTP serverem, jenž byl převzán a upraven
 \citep[viz][]{OpenALPR_Server}.
 Ten umožňuje poslat pomocí protokolu HTTP obrázek a obdržet JSON s SPZ daty a souřadnicemi detekované SPZ.
 Samotný server ke knihovně přistupuje zavoláním binárky \textit{alpr}, který jako argument přijme cestu k
-obrázku, ve kterém hledáme SPZ. Alternativní a lepší způsob přístupu by bylo mít v Node.js přímo takzv.
+obrázku, ve kterém hledáme SPZ.
+
+Alternativní a lepší způsob přístupu by bylo mít v Node.js přímo takzv.
 \textit{language-binding}, ale to se autorovi (a mnoho dalším, kteří se o to pokoušeli) nepodařilo.
 
 \section{Metodika vývoje}
 
 Nejprve se vyvine veškerá funkcionalita v základní podobě
 (na způsob MVP -- z angl. Minimal-Viable-Product) a později se vše vyhladí a zlepší. To však neznamená,
-že bychom si nedali záležet na kvalitním a udržitelném kódu, naopak. Cílem je mít flexibilní základ,
-na kterém lze stavět. Pro klidný spánek budeme psát dle uvážení automatizované testy, abychom předešli
-nežádoucímu chování aplikace (takzvaná regrese) po úpravě kódu.
+že by se nemělo dát si záležet na kvalitním a udržitelném kódu, naopak. Cílem je mít flexibilní základ,
+na kterém lze stavět. Pro klidný spánek budeme psát dle uvážení automatizované testy, aby se předešlo
+nežádoucímu chování aplikace po úpravě kódu -- regresi.
 
 Backend i frontend budou vyvinuty současně. Dokud není mobilní aplikace pro zařízení, lze ji simulovat
-například nástrojem curl. Pro rychlejší prototypování bude použita technika zvaná hot-reload.
+například nástrojem \textit{curl}. Pro rychlejší prototypování bude použita technika zvaná
+\textit{hot-reload}.

@@ -37,11 +37,13 @@ JSON řetězec s aktivačním heslem, pomocí kterého se zařízení přihlás�
 Samotné skenování QR kódu je provedeno externí aplikací Barcode Scanner od vývojáře
 Zxing Team, která lze nainstalovat z Play Store.
 
+Konkrétní mechnismus komunikace s touto externí byl převzán. \citep[viz][]{QrScan}
+
 \section{Volba zařízení pro mobilní aplikaci}
 
 Co se týče hardwarového vybavení snímacího zařízení, tak je vyžadována přední kamera
-s rozlišením alespoň 1000 na 1000 pixelů. Důvod pro toto rozlišení je, že Backend obdržený snímek
-stejně zmenší na 1000x1000 pixelů, aby knihovna OpenALPR provedla rozpoznání co nejrychleji, a zároveň
+s rozlišením alespoň 1000 na 1000 pixelů. Důvod pro toto rozlišení je, že backend obdržený snímek
+stejně zmenší na 1000x1000 pixelů (lze však změnit ve webové aplikaci), aby knihovna OpenALPR provedla rozpoznání co nejrychleji, a zároveň
 aby bylo rozpoznání dostatečně přesné. Procesor, RAM i vnitřní paměť může být libovolná -- kterékoliv
 dnešní nové zařízení bohatě postačí (za předpokladu, že vnitřní paměť není zaplněná).
 Minimální verze Androidu je 5 (SDK 21).
@@ -57,11 +59,13 @@ nepovolené manipulaci.
 \section{Životní cyklus mobilní aplikace}
 
 Na obrázku \ref{fig:app_lifecycle} lze vidět životní cyklus mobilní aplikace.
-Proces neprobíhá ne jednom vlákně. Jakmile se pořídí fotografie, tak začně odpočet kolem jedné
-sekundy, po kterém se pořídí další, a zároveň se už posílá první fotografie backendu.
+Proces neprobíhá na jednom vlákně. Jakmile se pořídí fotografie, tak začně odpočet kolem jedné
+sekundy, po kterém se pořídí další, a zároveň se už posílá první fotografie.
+Změní-li se konfigurace na backendu, tak je poslána zaříení při dalším kontaktu, jinak
+konfigurace poslána není.
 
 \begin{figure}[!htb] \centering
-  \includegraphics[width=145mm]{../img/app_lifecycle.jpg}
+  \includegraphics[width=135mm]{../img/app_lifecycle.jpg}
   \caption{Životní cycklus mobilní aplikace.}
   \label{fig:app_lifecycle}
 \end{figure}
@@ -81,3 +85,20 @@ lze vidět obě -- hlavní obrazovku a nastavení.
 V nastavení lze nastavit adresu backendu a vybrat si mezi HTTP a HTTPS.
 Nevýhodou tohoto způsobu komunikace ale je, že pokud se útočníkovi provede
 se dostat mezi backend a zařízení, tak si vlastně pořídil kameru.
+
+\section{Implementační detaily mobilní aplikace}
+
+\subsection{Komunikace s backendem}
+
+Ke komunikaci přes HTTP využívá aplikace knihovnu Volley, která je doporučena
+v Android dokumentaci. Princip použití je takový, že si vytvoříme
+\textit{singleton} obstarávajíc9 frontu žádostí, kterému předáváme HTTP žádosti s
+\textit{callback} funkcí obsluhující odpověď. \citep[viz][]{Volley1}
+
+\subsection{Ukládání snímků}
+
+Snímky se ukládají do paměti určené pro aplikaci. Kdyby se použili dočasné soubory,
+mohlo by se stát, že je systém před posláním nemilosrdně smaže.
+\citep[viz][]{AndroidMem}
+Aplikace tedy musí obstarávat i mazání souborů, což se provádí
+ihned po odeslání snímku na backend.
