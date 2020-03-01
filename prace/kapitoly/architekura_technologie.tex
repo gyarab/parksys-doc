@@ -12,18 +12,21 @@
 Parkovací systém se skládá z následujících částí, které si nyní popíšeme stručně a detailněji v
 následujících kapitolách.
 Jednotlivé komponenty spolu komunikují pomocí HTTP.
-Obrázek \ref{fig:architecture_drawing} ukazuje tyto části a nastiňuje způsob komunikace.
+Obrázek \ref{fig:architecture_drawing} ukazuje tyto části a nastiňuje obsah komunikace.
 
 \begin{itemize}
-  \item \textbf{Backend} je středobodem celého systému -- komunikuje se všemy ostatními komponentami.
-        Zajišťuje business logiku aplikace, autentizaci i autorizaci uživatelů i zařízení
-        a perzistenci dat do databáze.
+  \setlength\itemsep{.05em}
+  \item \textbf{Backend} je středobodem celého systému -- komunikuje se všemi ostatními komponentami.
+  Zajišťuje business logiku aplikace, autentizaci i autorizaci uživatelů i zařízení
+  a persistenci dat do databáze.
   \begin{itemize}
+    \setlength\itemsep{.05em}
     \item \textbf{Databáze} slouží k ukládání a čtení dat.
     \item \textbf{OpenALPR Server} je server, jenž obstarává přístup
-          ke knihovně OpenALPR, která rozpoznává SPZ, přes protokol http.
+          ke knihovně OpenALPR, která rozpoznává SPZ, přes protokol HTTP.
   \end{itemize}
-  \item \textbf{Mobilní aplikace} posílá obrazová data na backend, kde jsou zpracována. Je určena pro platformu Android.
+  \item \textbf{Mobilní aplikace} je určená pro platformu Android a posílá obrazová data na backend,
+        kde jsou zpracována.
   \item \textbf{Frontend} je rozhraní mezi celým systémem a správcem parkoviště.
 \end{itemize}
 
@@ -45,7 +48,7 @@ knihovna mongoose. \citep[viz][]{Mongoose}
 
 Primárním způsobem komunikace s frontendem
 je dotazovací jazyk GraphQL, který přináší ucelený popis poskytovaných dat pomocí kontroly typů a
-expresivních dotazů, jejichž odpověď má stejný "tvar" v JSON formátu. 
+expresivních dotazů, jejichž odpověď má stejný ``tvar'' v JSON formátu. 
 Obrázek \ref{fig:graphql_example} ukazuje dotaz hledání uživatele podle jména.
 
 \begin{figure} \centering
@@ -92,10 +95,10 @@ klást menší nároky na velikost aplikace (tj. můžeme přidávat i velké kn
 
 Mobilní aplikace, která je určena pro platformu Android, měla volbu jazyka omezenou na Javu, Kotlin a C++.
 Rychlost C++ není potřeba a navíc autor s tímto nízkoúrovňovým jazykem nemá takové zkušenosti.
-Kotlin oproti Javě umožňuje přímočarejší přístup k prkům uživatelského rozhraní, a proto byl zvolen.
+Kotlin oproti Javě umožňuje přímočarejší přístup k prvkům uživatelského rozhraní, a proto byl zvolen.
 
-Jediným úkolem mobilní aplikace je v pravidelném intervalu pořídit snímek fotoaparátem a poslat ho na
-backend, který jej patřičně zpracuje.
+Jediným úkolem mobilní aplikace je v pravidelném intervalu pořizovat snímky fotoaparátem a posílat je na
+backend, který je patřičně zpracuje.
 
 \subsection{Detekce SPZ}
 
@@ -103,11 +106,10 @@ Detekci SPZ bude zajišťovat knihovna OpenALPR, jejímž vstupem je obrázek a 
 parametry jako úhel kamery apod.
 \citep[viz][]{OpenALPR}
 
-Ke zbytku aplikace bude připojena malým HTTP serverem, jenž byl převzán a upraven
-\citep[viz][]{OpenALPR_Server}.
+Ke zbytku aplikace bude připojena malým HTTP serverem, jenž byl převzán a upraven.
 Ten umožňuje poslat pomocí protokolu HTTP obrázek a obdržet JSON s SPZ daty a souřadnicemi detekované SPZ.
 Samotný server ke knihovně přistupuje zavoláním binárky \textit{alpr}, který jako argument přijme cestu k
-obrázku, ve kterém hledáme SPZ.
+obrázku, ve kterém hledáme SPZ. \citep[viz][]{OpenALPR_Server}
 
 Alternativní a lepší způsob přístupu by bylo mít v Node.js přímo takzv.
 \textit{language-binding}, ale to se autorovi (a mnoho dalším, kteří se o to pokoušeli) nepodařilo.

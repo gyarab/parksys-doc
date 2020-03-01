@@ -3,7 +3,7 @@
 
 Jak již bylo řečeno v kapitole \ref{archtech}, mobilní aplikace pořídí snímek,
 pošle ho na Backend, jenž ho pošle serveru s knihovnou OpenALPR, která
-rozposná SPZ a výsledek pošle zpět na Backend. V této kapitole si popíšeme
+rozpozná SPZ a výsledek pošle zpět na backend. V této kapitole si popíšeme
 mobilní aplikaci a server s OpenALPR.
 
 \section{Zvyšování přesnosti}
@@ -11,20 +11,20 @@ mobilní aplikaci a server s OpenALPR.
 \subsection{Cachování výsledků}
 
 Výsledek z knihovny OpenALPR je seznam dvojic udávající SPZ a šanci, že konkrétní SPZ je správně --
-čili jak si OpenALPR věří ve výsledek. Je tudíž logické měření udělat víc a provést aritmetický průměr a
+jak si OpenALPR věří ve výsledek. Je tudíž logické měření udělat víc a provést aritmetický průměr a
 zvolit nejlepší výsledek.
 
 K ukládání takto dočasných dat (přibližně počet měření krát 1 sekunda) se databáze nehodí, a proto
-bylo zavedeno ukládání do mezipaměti. V současné chvíli se využívá prostá paměť Backendu,
+bylo zavedeno ukládání do mezipaměti. V současné chvíli se využívá prostá paměť backendu,
 kde klíčem je $id$ zařízení. Díky tomu, že Node.js běží na jednom vlákně, nemusíme se bát souběhu
-(angl. race-condition). Externí mezipaměť by bylo vhodné využít (např. Redis), pokud bychom spouštěli více
-instancí Backend a prováděli takzvaný load-balancing.
+(angl. race-condition). Externí mezipaměť by bylo vhodné využít (např. Redis), pokud by se spouštělo více
+instancí backendu a prováděl by se takzvaný \textit{load-balancing}.
 
-Výchozí počet měření je 2, a lze ho upravit v nastavení Backendu.
+Výchozí počet měření je 2, a lze ho upravit v konfiguraci backendu.
 
-\subsection{Filtrování podle obsahu}
+\subsection{Filtrování podle geometrického obsahu}
 
-Pokud OpenALPR nalezne SPZ, údá i její pozici v zdrojovém obrázku.
+Pokud OpenALPR nalezne SPZ, udá i její pozici ve zdrojovém obrázku.
 Aby se tedy předešlo naskenování SPZ, které jsou například daleko, lze odfiltrovat SPZ
 podle jejich obsahu v pixelech čtverečních. Konkrétní hodnota je potřeba odladit na místě skenování a
 lze změnit ve webové aplikaci pro kterékoliv zařízení.
@@ -61,7 +61,7 @@ nepovolené manipulaci.
 Na obrázku \ref{fig:app_lifecycle} lze vidět životní cyklus mobilní aplikace.
 Proces neprobíhá na jednom vlákně. Jakmile se pořídí fotografie, tak začně odpočet kolem jedné
 sekundy, po kterém se pořídí další, a zároveň se už posílá první fotografie.
-Změní-li se konfigurace na backendu, tak je poslána zaříení při dalším kontaktu, jinak
+Změní-li se konfigurace na backendu, tak je poslána zařízení při dalším kontaktu, jinak
 konfigurace poslána není.
 
 \begin{figure}[!htb] \centering
@@ -83,7 +83,7 @@ lze vidět obě -- hlavní obrazovku a nastavení.
 \end{figure}
 
 V nastavení lze nastavit adresu backendu a vybrat si mezi HTTP a HTTPS.
-Nevýhodou tohoto způsobu komunikace ale je, že pokud se útočníkovi provede
+Nevýhodou tohoto způsobu komunikace ale je, že pokud se útočníkovi povede
 se dostat mezi backend a zařízení, tak si vlastně pořídil kameru.
 
 \section{Implementační detaily mobilní aplikace}
@@ -92,7 +92,7 @@ se dostat mezi backend a zařízení, tak si vlastně pořídil kameru.
 
 Ke komunikaci přes HTTP využívá aplikace knihovnu Volley, která je doporučena
 v Android dokumentaci. Princip použití je takový, že si vytvoříme
-\textit{singleton} obstarávajíc9 frontu žádostí, kterému předáváme HTTP žádosti s
+\textit{singleton} obstarávající frontu žádostí, kterému předáváme HTTP žádosti s
 \textit{callback} funkcí obsluhující odpověď. \citep[viz][]{Volley1}
 
 \subsection{Ukládání snímků}

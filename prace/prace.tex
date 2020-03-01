@@ -3,27 +3,27 @@
 %% Verze pro jednostranný tisk:
 % Okraje: levý 40mm, pravý 25mm, horní a dolní 25mm
 % (ale pozor, LaTeX si sám přidává 1in)
-\documentclass[12pt,a4paper]{report}
-\setlength\textwidth{145mm}
-\setlength\textheight{247mm}
-\setlength\oddsidemargin{15mm}
-\setlength\evensidemargin{15mm}
-\setlength\topmargin{0mm}
-\setlength\headsep{0mm}
-\setlength\headheight{0mm}
-% \openright zařídí, aby následující text začínal na pravé straně knihy
-\let\openright=\clearpage
-
-%% Pokud tiskneme oboustranně:
-% \documentclass[12pt,a4paper,twoside,openright]{report}
+% \documentclass[12pt,a4paper]{report}
 % \setlength\textwidth{145mm}
 % \setlength\textheight{247mm}
-% \setlength\oddsidemargin{14.2mm}
-% \setlength\evensidemargin{0mm}
+% \setlength\oddsidemargin{15mm}
+% \setlength\evensidemargin{15mm}
 % \setlength\topmargin{0mm}
 % \setlength\headsep{0mm}
 % \setlength\headheight{0mm}
-% \let\openright=\cleardoublepage
+% % \openright zařídí, aby následující text začínal na pravé straně knihy
+% \let\openright=\clearpage
+
+%% Pokud tiskneme oboustranně:
+\documentclass[12pt,a4paper,twoside,openright]{report}
+\setlength\textwidth{145mm}
+\setlength\textheight{247mm}
+\setlength\oddsidemargin{14.2mm}
+\setlength\evensidemargin{0mm}
+\setlength\topmargin{0mm}
+\setlength\headsep{0mm}
+\setlength\headheight{0mm}
+\let\openright=\cleardoublepage
 
 %% Vytváříme PDF/A-2u
 \usepackage[a-2u]{pdfx}
@@ -129,6 +129,9 @@ platebním terminálem a závorou měl být reálně použitelný.
 
 %% Titulní strana a různé povinné informační strany
 \begin{document}
+
+\hyphenation{end-point}
+
 \include{titulka}
 
 %%% Strana s automaticky generovaným obsahem bakalářské práce

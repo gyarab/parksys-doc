@@ -106,14 +106,15 @@ se dotázali na mazlíčky našeho uživatele.
 \citep[viz][]{GraphQLDoc}
 
 Zároveň můžeme provádět virtualizaci atributů -- přidávat atributy, které v databázi nemáme, ale pro webové rozhraní se hodí.
-Hypotetickým příkladem budiž celková zaplacená částka zákazníkem, která se v případě potřeby vypočítá.
+Hypotetickým příkladem budiž celková zaplacená částka zákazníkem, která se v případě potřeby vypočítá nebo
+živé, stále měnící se statistiky.
 
 \subsection{Obecné resolvery}
 
-Jelikož se většina operací nad modeli se opakuje, byli napsány obecné resolvery jako HOF (Higher-Order-Function)
+Jelikož se většina operací nad modely se opakuje, byly napsány obecné resolvery jako HOF (Higher-Order-Function)
 pro vytváření, úpravu, mazání, vyhledávání a získávání modelů v relaci.
-Měnící se část je pak pouze definice databázového modelu. Díky GraphQL nemusíme ani ověřovat datové typy, které dostaneme od klienta --
-GraphQL toto udělá za nás díky schema, které tvoříme my.
+Měnící se část je pak pouze definice databázového modelu. Díky GraphQL se neumísi ani ověřovat datové typy --
+GraphQL toto udělá podle schema, které tvoří programátor.
 
 \begin{figure}[!htb]
 \lstset
@@ -146,6 +147,8 @@ function gqlPopulate<D extends mongoose.Document,
   };
 }
 \end{lstlisting}
+\centering
+\textit{Ukázka obecného resolveru v Typescriptu.}
 \end{figure}
 
 Zde lze vidět funkci vracející resolver, který vrátí objekt v relaci (provede JOIN v SQL terminologii),
@@ -153,24 +156,25 @@ pokud ho vlastnící objekt ještě nemá. Na sedmém řádku se získá model z
 vracející resolver. Proměnná \textit{ctx} definuje kontext resolveru a obsahuje modely a klienta, aby
 bylo snažší resolvery testovat -- jedná se o \textit{dependency-injection}.
 
-Na šestém řádku lze vidět parametry, které dostává každý resolver. První parametr je objekt vrácený nadřazeným resolverem,
-pokud nějaký je. Druhý parametr obsahuje klientem specifikované argumenty, například id hledaného uživatele.
+Na šestém řádku lze vidět parametry, které dostává každý resolver. První parametr je objekt vrácený nadřazeným resolverem.
+Druhý parametr obsahuje klientem specifikované argumenty, například $id$ hledaného uživatele.
 Třetí parametr je již zmíněný kontext, jeho
-obsah si ale definijeme samy v jiné části zdrojového kódu. Poslední parametr obsahuje info o dotazu samotném --
-jaké parametry si klient vyžádal apod.
+obsah si lze definovat dle libosti.
+Poslední parametr obsahuje informace o dotazu samotném --
+jaké parametry si klient vyžádal, AST (angl. Abstract-Syntax-Tree) dotazu apod.
 
 \section{Autentizace a autorizace} \label{auther_authen}
 
 Autentifikace lidských uživatelů probíhá pomocí standardního hesla a zařízení pomocí dlouhého, náhodně generovaného hesla,
 které je posíláno na frontend ve formě QR kódu, které zařízení naskenuje.
-Po úspěšné autentizaci obdží klient token, který kdyby klient posílal v souboru Cookie,
+Po úspěšné autentizaci obdrží klient token, který kdyby klient posílal v souboru Cookie,
 tak bychom se vystavovali riziku útoku CSRF/XSRF.
 Místo toho bude klient posílat token v hlavičce \textit{Authorization}.
 
-Podle tokenu klienta jednoznačně identifikujeme a víme jeho oprávnění. Endpointy a GraphQL resolvery zabezpečíme tak,
-že každý endpoint nebo resolver, který vyžaduje oprávnění, dáme jako argument HOF (Higher-Order-Function)
-\textit{checkPermissions} společně s požadovanými oprávněními. \textit{checkPermissions} pak zavolá původní endpoint
-nebo resolver pouze pokud má klient dostatečná oprávnění.
+Podle tokenu je klient jednoznačně identifikovatelný. Endpointy a GraphQL resolvery jsou zabezpečeny tak,
+že každý endpoint nebo resolver, jenž vyžaduje oprávnění, dáme jako argument HOF (Higher-Order-Function)
+\textit{checkPermissions} společně s požadovanými oprávněními. \textit{checkPermissions} pak zavolá původní
+endpoint nebo resolver pouze pokud má klient dostatečná oprávnění.
 
 \section{Parkovací pravidla} \label{analysis_parking_schema}
 
@@ -186,9 +190,8 @@ Mechanismus, kterým umožníme vozidlům být ovlivněna některými pravidly,
 budou filtry.
 Pro dostatečnou flexibilitu je zapotřebí oddělit samotná pravidla od jejich
 priority, časového intervalu platnosti i filtrů,
-k čemuž bude sloužit objekt typu \texttt{ParkingRuleAssignment}.
+k čemuž bude sloužit objekt typu \textit{ParkingRuleAssignment}.
 
-% TODO - add a db schema image that takes less space
 \begin{lstlisting}
 type ParkingRuleAssignment {
   rules: [ParkingRule]!
@@ -203,8 +206,9 @@ type ParkingRuleAssignment {
 type VehicleFilter {
   id: ID!
   name: String!
+  # INCLUDE nebo EXCLUDE
   action: VehicleFilterAction!
-  vehicles: [Vehicle!]!
+  vehicles: [Vehicle!]
 }
 \end{lstlisting}
 
@@ -224,16 +228,17 @@ se stejnou prioritou.
   \setlength\itemsep{.05em}
   \item Na základě módu filtrování si budeme udržovat množinu buď odstraněných vozidel (mód ALL), nebo přidaných vozidel (mód NONE).
   \item Podle příslušné akce filtrů (odstranit nebo přidat) budeme množinu našich vozidel manipulovat. Např. je-li mód ALL a filtr odstraňuje, do množiny si vozidla přidáme.
-  \item Pokud je vozidlo ve výsledné množině, tak pro něj \texttt{ParkingRuleAssignment} platí pokud je filtrovací mód NONE a neplatí pokud je mód ALL. Opačné výsledky nastanou, pokud vozidlo v množině není.
+  \item Pokud je vozidlo ve výsledné množině, tak pro něj \textit{ParkingRuleAssignment} platí pokud je filtrovací mód NONE,
+        ale neplatí pokud je mód ALL. Opačné výsledky nastanou, pokud vozidlo v množině není.
 \end{enumerate}
 
 Časová i paměťová složitost algoritmu je ${\cal O}(N)$, kde $N$ je počet filtrů.
 
 Tento algoritmus lze potenciálně rozdělit na předvýpočet (kroky 1. a 2.) a ověření (krok 3.).
-To je jedna možnost, která zvýší paměťovou náročnost, protože bychom si museli pamatovat množiny, což je nepraktické.
+Tato možnost zvýší paměťovou náročnost, protože bychom si museli pamatovat množiny, což je nepraktické.
 Je-li uživatel příčetný, počet použitých filtrů nebude obrovský, a tudíž je lepší zvolit následující způsob cachovaní.
 Zapamatujeme si výsledky pro určitý seznam filtrů pro konkrétní vozidlo pouze při běhu algoritmu, který je
-vysvětlen v následující kapitole, čímž následující algoritmus zrychlíme.
+vysvětlen v následující podkapitole, čímž následující algoritmus zrychlíme.
 
 \subsection{Algoritmus pro aplikaci pravidel}
 
@@ -244,24 +249,24 @@ vysvětlen v následující kapitole, čímž následující algoritmus zrychlí
   \label{fig:rules_drawing}
 \end{figure}
 
-V jednom čase může existovat více objektů typu \texttt{ParkingRuleAssignment} avšak s různou prioritou.
-Může se stát, že aplikovaných \texttt{ParkingRuleAssignment} bude několik (různé priority, vyprší platnost, etc.).
+V jednom čase může existovat více objektů typu \textit{ParkingRuleAssignment} avšak s různou prioritou.
+Může se stát, že aplikovaných \textit{ParkingRuleAssignment} bude několik (různé priority, vyprší platnost, etc.).
 
-Situaci si lze představit jako několik úseček navzájem rovnoběžných úseček v různých výškách, které se neprotínají.
+Situaci si lze představit jako několik navzájem rovnoběžných úseček v různých výškách, které se neprotínají.
 Nás nyní zajímá, na které a v jakých intervalech na ně dopadne světlo, pokud na ně kolmo zeshora posvítíme.
 Situaci lze vidět na obrázku \ref{fig:rules_drawing}.
 
-Pro zjednodušení předpokládejme, že všechny \texttt{ParkingRuleAssignment}, které zpracováváme, platí pro naše vozidlo.
+Pro zjednodušení předpokládejme, že všechny \textit{ParkingRuleAssignment}, které zpracováváme, platí pro naše vozidlo.
 Přidat tuto kontrolu později je triviální.
 
-\textit{Vstup: seznam \texttt{ParkingRuleAssignmentů} odpovídající pro interval pobytu vozidla na parkovišti, vozidlo}
+\textit{Vstup: seznam ParkingRuleAssignment odpovídající pro interval pobytu vozidla na parkovišti, vozidlo}
 
-\textit{Výstup: seznam \texttt{ParkingRuleAssignmentů} s časy platnosti}
+\textit{Výstup: seznam ParkingRuleAssignment s časy platnosti}
 \begin{enumerate}
   \setlength\itemsep{.05em}
   \item Seřadíme si začátky a konce úseček podle jejich času.
   \item Vytvoříme si haldu pro odkládání úseček, která řadí podle priority -- větší výše.
-  \item Vytvoříme si seznam aplikovaných pravidel s časy (časy mohou se lišit od počátečních i koncových časů).
+  \item Vytvoříme si seznam aplikovaných pravidel s časy (časy se mohou lišit od počátečních i koncových časů).
   \item Nechť \textit{s} je současná úsečka a \textit{$t_s$} čas zvolení \textit{s} (čas zvolení se může lišit od začátku úsečky).
   \item Pro každou událost \textit{u} značící začátek/konec úsečky (aplikaci pravidla) \textit{p}:
   \begin{enumerate}
@@ -281,7 +286,7 @@ Přidat tuto kontrolu později je triviální.
     \item Jinak (jedná se o konec nějaké úsečky):
     \begin{enumerate}
       \item Přidáme \textit{s} do seznamu aplikovaných pravidel se začátkem \textit{$t_s$} a koncem \textit{s.end}.
-      \item Taháme z haldy, dokud nedostaneme úsečku s koncem později než konecm \textit{p}, nebo dokud halda není prázdná.
+      \item Taháme z haldy, dokud nedostaneme úsečku s koncem později než koncem \textit{p}, nebo dokud halda není prázdná.
       \item Pokud jsme z haldy vhodnou úsečku vytáhli, použijeme ji. V opačném případě vyprázdníme \textit{s} a \textit{$t_s$}.
     \end{enumerate}
   \end{enumerate}
@@ -290,11 +295,11 @@ Přidat tuto kontrolu později je triviální.
 Algoritmus zajisté doběhne, protože máme konečný počet událostí a v každém cyklu jednu zpracujeme.
 Paměťová složitost je zřejmě lineární. Časová složitost bez filtrování je ${\cal O}(N\cdot{logN})$, kde $N$ je 
 počet úseček, protože
-využijeme některého z rychlích zaření a protože použijeme binární haldu a lepší. Počet operací nad haldou,
+využijeme některého z rychlích řazení a protože použijeme binární haldu nebo lepší haldu. Počet operací nad haldou,
 který by konečnou složitost mohl změnit, je naštestí lineární. Největší počet operací nad haldou dostaneme tak, že
 každou přidanou úsečku umístíme tak, aby při zpracování jejího konce i začátku došlo k přidání a odebrání z haldy
-(nejedná o tu samou úsečku). Jedna z takovýchto uspořádání je například pyramida, popřípadě zikkurat.
-Tedy s každou přidanou úsečkou se počet operací nad haldou zvýší maximálně o $2$.
+Jedno z takovýchto uspořádání je například pyramida, popřípadě zikkurat.
+Tedy s každou přidanou úsečkou se počet operací nad haldou zvýší maximálně o $2$, což je lineární vzhledem k počtu úseček.
 
 Přidáme-li filtrování, tak v nejhorším případě budeme ověřovat platnost každé úsečky. Bude-li $M$ průměrný počet
 filtrů, pak je časová složitost ${\cal O}(N\cdot{M})$. 
@@ -303,23 +308,24 @@ filtrů, pak je časová složitost ${\cal O}(N\cdot{M})$.
 \section{Uživatelské rozhraní}
 
 Jelikož autor neměl zkušenosti s vývojem webového uživatelského rozhraní, rozhodl se využít starter projekt
-společnosti Crazy Factory, který pojí vybrané technologie dohromady a mandatuje projektu základní strukturu.
+společnosti Crazy Factory GmbH, který pojí vybrané technologie dohromady a mandatuje projektu základní strukturu.
 Navíc podporuje překlady, reportování chyb apod., což vytvářet z ničeho je obtížné. \citep[viz][]{CFProj}
 
 \subsection{Redux a persistence stavu}
 
 Jak již bylo zmíněno v předchozí kapitole, uživatelské rozhraní používá Redux pro sdílení stavu mezi komponentami.
 Stav v Reduxu je strom, jenž je upravován akcemi. Akce a současný stav je předán takzvaným \textit{reducers}, což jsou prosté funkce,
-které vrátí stav nový. \citep[viz][]{ReduxCore} Prostost reducerů umožňuje testovatelnost.
+které vrátí stav nový. \citep[viz][]{ReduxCore} Prostost reducerů zajišťuje testovatelnost.
 
-Jako příklad konkrétního využití budiž sdíleí některých údajů mezi obrazovkami.
-Napřídklad sdílení vozidla mezi stránkou s vozidly a stránkou s pravidly, schopnost seznamu parkování zvolit vozidlo a mnoho dalších.
+Jako příklad konkrétního využití budiž sdílení některých údajů mezi obrazovkami.
+Například sdílení vozidla mezi stránkou s vozidly a stránkou s pravidly, schopnost seznamu se záznamy o parkování
+zvolit vozidlo a mnoho dalších.
 
 Některé komponenty jsou pak na stavu závislé a dojde k jejich překreslení, pokud se jimi čtený stav změní, což je též zařízeno
 Reduxem. Jedná se vlastně o formu \textit{dependency-injection}. Stejným mechanismem jsou do komponent vkládány
 funkce vyvtvářející akce a jiné vedlejší efekty, což dělá tyto komponenty snadno testovatelné.
 
-K tomu abychom mohli uložit stav aplikace po zavření okna, použijeme knihovnu \textit{redux-persist}, která poskytuje
+K uložení stavu aplikace po zavření okna, použijeme knihovnu redux-persist, která poskytuje
 HOF funkci, které dáme reducer, a ona změny, které způsobí, někam uloží. \citep[viz][]{reduxpersist}
 V našem případě se jedná o \textit{localstorage}.
 
@@ -347,8 +353,8 @@ Jedná se o spektrum, ne o definitivní kategorie.
 
 \subsection{Grafy}
 
-Grafy jsou potřeba na stránce se statistikami. K tomu byla použita knihovna \textit{react-google-charts},
-což, jak název napovídá, je port knihovny \textit{google-charts} do Reactu. Ta kromě obvyklích grafů umí
+Grafy jsou potřeba na stránce se statistikami. K tomu byla použita knihovna react-google-charts,
+což, jak název napovídá, je port knihovny google-charts do Reactu. Ta kromě obvyklích grafů umí
 například i takzvaný kalendářový graf, jenž lze vidět na obrázku \ref{fig:google_charts}.
 
 \begin{figure}[!htb] \centering
@@ -363,7 +369,7 @@ například i takzvaný kalendářový graf, jenž lze vidět na obrázku \ref{f
 Dle principu neopakování se bylo vytvořeno několik obecných UI komponent, které umožňují vyhledávání libovolných
 modelů a jejich volbu a využití v ostatních komponentách. Ve zdrojovém kódu je implementujeme jako
 HOF (Higher-Order-Function), což je funkce vracející další funkce -- konkrétní komponenty.
-Měnící se části, které do těchto obecných komponent budeme vkládat je komponenta renderující jediný model
+Měnící se části, které se do těchto obecných komponent budou vkládat je komponenta renderující jediný model
 (\textit{renderModel}),
 GraphQL dotaz pro získávání modelů (\textit{queryString}), funkce, jejímž vstupem je odpověď na GraphQL dotaz a výstupem je
 samotné pole modelů (\textit{modelArrayGetter}), a funkce, jejímž vstupem je dotazovací řetězec a výstupem jsou
