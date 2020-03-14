@@ -1,6 +1,7 @@
 
 \chapter{Rozpoznávání SPZ}
 
+\noindent
 Jak již bylo řečeno v kapitole \ref{archtech}, mobilní aplikace pořídí snímek,
 pošle ho na Backend, jenž ho pošle serveru s knihovnou OpenALPR, která
 rozpozná SPZ a výsledek pošle zpět na backend. V této kapitole si popíšeme
@@ -10,6 +11,7 @@ mobilní aplikaci a server s OpenALPR.
 
 \subsection{Cachování výsledků}
 
+\noindent
 Výsledek z knihovny OpenALPR je seznam dvojic udávající SPZ a šanci, že konkrétní SPZ je správně --
 jak si OpenALPR věří ve výsledek. Je tudíž logické měření udělat víc a provést aritmetický průměr a
 zvolit nejlepší výsledek.
@@ -24,6 +26,7 @@ Výchozí počet měření je 2, a lze ho upravit v konfiguraci backendu.
 
 \subsection{Filtrování podle geometrického obsahu}
 
+\noindent
 Pokud OpenALPR nalezne SPZ, udá i její pozici ve zdrojovém obrázku.
 Aby se tedy předešlo naskenování SPZ, které jsou například daleko, lze odfiltrovat SPZ
 podle jejich obsahu v pixelech čtverečních. Konkrétní hodnota je potřeba odladit na místě skenování a
@@ -31,6 +34,7 @@ lze změnit ve webové aplikaci pro kterékoliv zařízení.
 
 \section{Autentifikace}
 
+\noindent
 Zařízení se autentifikuje naskenováním QR kódu, jenž lze najít ve webové aplikaci. Ten obsahuje
 JSON řetězec s aktivačním heslem, pomocí kterého se zařízení přihlásí do systému a získa svou konfiguraci.
 
@@ -41,6 +45,7 @@ Konkrétní mechnismus komunikace s touto externí byl převzán. \citep[viz][]{
 
 \section{Volba zařízení pro mobilní aplikaci}
 
+\noindent
 Co se týče hardwarového vybavení snímacího zařízení, tak je vyžadována přední kamera
 s rozlišením alespoň 1000 na 1000 pixelů. Důvod pro toto rozlišení je, že backend obdržený snímek
 stejně zmenší na 1000x1000 pixelů (lze však změnit ve webové aplikaci), aby knihovna OpenALPR provedla rozpoznání co nejrychleji, a zároveň
@@ -58,6 +63,7 @@ nepovolené manipulaci.
 
 \section{Životní cyklus mobilní aplikace}
 
+\noindent
 Na obrázku \ref{fig:app_lifecycle} lze vidět životní cyklus mobilní aplikace.
 Proces neprobíhá na jednom vlákně. Jakmile se pořídí fotografie, tak začně odpočet kolem jedné
 sekundy, po kterém se pořídí další, a zároveň se už posílá první fotografie.
@@ -72,6 +78,7 @@ konfigurace poslána není.
 
 \section{Uživatelské rozhraní mobilní aplikace}
 
+\noindent
 Uživatelské rozhraní se skládá ze dvou obrazovek. Na obrázcích \ref{fig:app_ui}
 lze vidět obě -- hlavní obrazovku a nastavení.
 
@@ -88,6 +95,7 @@ V nastavení lze nastavit adresu backendu a vybrat si mezi HTTP a HTTPS.
 
 \subsection{Komunikace s backendem}
 
+\noindent
 Ke komunikaci přes HTTP využívá aplikace knihovnu Volley, která je doporučena
 v Android dokumentaci. Princip použití je takový, že si vytvoříme
 \textit{singleton} obstarávající frontu žádostí, kterému předáváme HTTP žádosti s
@@ -95,6 +103,7 @@ v Android dokumentaci. Princip použití je takový, že si vytvoříme
 
 \subsection{Ukládání snímků}
 
+\noindent
 Snímky se ukládají do paměti určené pro aplikaci. Kdyby se použili dočasné soubory,
 mohlo by se stát, že je systém před posláním nemilosrdně smaže.
 \citep[viz][]{AndroidMem}

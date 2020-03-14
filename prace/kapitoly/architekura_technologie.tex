@@ -9,6 +9,7 @@
   \label{fig:architecture_drawing}
 \end{figure}
 
+\noindent
 Parkovací systém se skládá z následujících částí, které si nyní popíšeme stručně a detailněji v
 následujících kapitolách.
 Jednotlivé komponenty spolu komunikují pomocí HTTP.
@@ -34,12 +35,14 @@ Obrázek \ref{fig:architecture_drawing} ukazuje tyto části a nastiňuje obsah 
 
 \subsection{Databáze}
 
+\noindent
 Databáze MongoDB byla vybrána, protože data se budou převážně zapisovat a bude potřeba v nich rychle
 hledat a provádět agregační dotazy.
 Mimo jiné umožňuje provoz několika spolupracujících instancí, zálohování apod. \citep[viz][]{MongoDB}
 
 \subsection{Backend} \label{backend}
 
+\noindent
 Jako programovací jazyk pro backend byl zvolen staticky typovaný Typescript kvůli rychlosti vývoje
 a množství knihoven, které poskytuje ekosystém Node.js. \citep[][]{Typescript} \citep[][]{Nodejs}
 
@@ -69,6 +72,7 @@ obrázků bude mít backend i jiné endpointy.
 
 \subsection{Frontend} \label{frontend}
 
+\noindent
 Pro frontend byl jako u backendu vybrán Typescript ze stejných důvodů. Webové rozhraní
 je takzvaná SPA (z angl. Single-Page-Application), což znamená, že uživateli se obsah mění dynamicky
 bez načítání dalších stránek.
@@ -93,6 +97,7 @@ klást menší nároky na velikost aplikace (tj. můžeme přidávat i velké kn
 
 \subsection{Mobilní aplikce} \label{mobile_app}
 
+\noindent
 Mobilní aplikace, která je určena pro platformu Android, měla volbu jazyka omezenou na Javu, Kotlin a C++.
 Rychlost C++ není potřeba a navíc autor s tímto nízkoúrovňovým jazykem nemá takové zkušenosti.
 Kotlin oproti Javě umožňuje přímočarejší přístup k prvkům uživatelského rozhraní, a proto byl zvolen.
@@ -102,6 +107,7 @@ backend, který je patřičně zpracuje.
 
 \subsection{Detekce SPZ}
 
+\noindent
 Detekci SPZ bude zajišťovat knihovna OpenALPR, jejímž vstupem je obrázek a popřípadě
 parametry jako úhel kamery apod.
 \citep[viz][]{OpenALPR}
@@ -116,6 +122,7 @@ Alternativní a lepší způsob přístupu by bylo mít v Node.js přímo takzv.
 
 \section{Metodika vývoje}
 
+\noindent
 Nejprve se vyvine veškerá funkcionalita v základní podobě
 (na způsob MVP -- z angl. Minimal-Viable-Product) a později se vše vyhladí a zlepší. To však neznamená,
 že by se nemělo dát si záležet na kvalitním a udržitelném kódu, naopak. Cílem je mít flexibilní základ,

@@ -1,6 +1,7 @@
 
 \chapter{Webová aplikace}
 
+\noindent
 Tato kapitola popisuje zvolené postupy při psaní webové aplikace (backend a frontend).
 
 Obrázek \ref{fig:structure_back} a obrázek \ref{fig:structure_front} popisují adresářové
@@ -68,6 +69,7 @@ Seznam všech závislostí je uveden v souborech \textit{package.json} a \textit
 
 \section{Obrazovky}
 
+\noindent
 Dle požadavků z úvodu mějme po příhlášení do webového rozhraní následující obrazovky,
 mezi kterými bude uživatel přepínat pomocí hlavního menu.
 Snímky obrazovek lze vidět v sekci \ref{screens}.
@@ -86,6 +88,7 @@ Snímky obrazovek lze vidět v sekci \ref{screens}.
 
 \section{GraphQL resolvery}
 
+\noindent
 Protože GraphQL je primárním způsobem komunikace mezi frontendem a backendem, stojí za to si vysvětlit základní stavební bloky
 GraphQL -- resolvery, které tvoří strom. Vzpoměňme si na příklad z předchozí kapitoly na obrázku \ref{fig:graphql_example}.
 Zde kořenem stromu je resolver \textit{userSearch}, jenž přijímá argumenty potřebné pro jeho běh, ty jsou v tomto případě
@@ -111,6 +114,7 @@ Hypotetickým příkladem budiž celková zaplacená částka zákazníkem, kter
 
 \subsection{Obecné resolvery}
 
+\noindent
 Jelikož se většina operací nad modely se opakuje, byly napsány obecné resolvery jako HOF (Higher-Order-Function)
 pro vytváření, úpravu, mazání, vyhledávání a získávání modelů v relaci.
 Měnící se část je pak pouze definice databázového modelu. Díky GraphQL se neumísi ani ověřovat datové typy --
@@ -165,6 +169,7 @@ jaké parametry si klient vyžádal, AST (angl. Abstract-Syntax-Tree) dotazu apo
 
 \section{Autentizace a autorizace} \label{auther_authen}
 
+\noindent
 Autentifikace lidských uživatelů probíhá pomocí standardního hesla a zařízení pomocí dlouhého, náhodně generovaného hesla,
 které je posíláno na frontend ve formě QR kódu, které zařízení naskenuje.
 Po úspěšné autentizaci obdrží klient token, který kdyby klient posílal v souboru Cookie,
@@ -176,6 +181,41 @@ Podle tokenu je klient jednoznačně identifikovatelný. Endpointy a GraphQL res
 \textit{checkPermissions} společně s požadovanými oprávněními. \textit{checkPermissions} pak zavolá původní
 endpoint nebo resolver pouze pokud má klient dostatečná oprávnění.
 
+\section{Endpointy backendu}
+
+\noindent
+Backend má pouze několik endpointů. Pro komunikaci s webovým rozhraním přes GraphQL.
+Mobilní zařízení GraphQL nevyužívají, protože GraphQL není k nahrávání snímků vhodné a míchání více způsobů
+komunikace pro velice malou mobilní aplikaci by vývoj spíše ztížilo. Máme tedy další endpointy:
+
+\begin{itemize}
+  \setlength\itemsep{.05em}
+  \item POST \textit{/graphql} je určen k primární komunikaci s webovým rozhraním včetně autentifikace.
+  \item GET \textit{/devices/qr/:id} slouží k získání QR kódu ve formě PNG obrázku z webového rozhraní pro autentifikaci zařízení.
+        Přijíma \textit{id} zařízení jako parametr v URL.
+  \item POST \textit{/devices/activate} slouží k autentifikaci zařízení, které právě naskenovalo QR kód s aktivačním heslem, které je poslání v těle žádosti.
+  \item PUT \textit{/devices/config} slouží zařízení k získání své konfigurace a případné změně konfigurace ze strany zařízení.
+  \item POST \textit{/devices/capture} přijímá obrazová data od zařízení.
+  \item GET \textit{/captureImage/:id} slouží k získání výřezu naskenované SPZ z webového rozhraní. Přijímá \textit{id} obrázku jako parametr v URL.
+\end{itemize}
+
+\section{Ukládání a mazaní výřezů SPZ}
+
+\noindent
+Pokud je rozpoznána SPZ, nalezená SPZ se z obrázku vyřízne, a pak je dostupná k zobrazení ve webovém rozhraní.
+Tato funkce lze vypnout ve webové aplikaci a zároveň lze výřezy smazat podle data vytvoření a
+lze nastavit automatické mazání po uplynuté době.
+
+Výřezy jsou získány pomocí knihovny sharp a souřadnic SPZ od OpenALPR.
+Zvolený způsob uložení je standardní dokument v MongoDB. Data jsou zakódována do base64,
+a handler endpointu \textit{/captureImage/:id} je dekóduje zpět.
+
+První alternativou by bylo využít GridFS MongoDB, ten je určen pro soubory
+nad 16MB (limit formátu BSON) nebo pokud je potřeba číst jen části souborů.
+Výřezy přibližně 500x100 pixelů jsou však mnohonásobně menší a vždy je načítáme celé.
+
+Druhou alternativou by byl souborový systém, ale mít všechna data v databázi je praktičtější.
+
 \section{Parkovací pravidla} \label{analysis_parking_schema}
 
 \begin{itemize}
@@ -186,6 +226,7 @@ endpoint nebo resolver pouze pokud má klient dostatečná oprávnění.
   \item V jednu chvíli může platit více pravidel.
 \end{itemize}
 
+\noindent
 Mechanismus, kterým umožníme vozidlům být ovlivněna některými pravidly,
 budou filtry.
 Pro dostatečnou flexibilitu je zapotřebí oddělit samotná pravidla od jejich
@@ -219,11 +260,16 @@ Hodí se mít filtry uložené separátně, aby mohli být využity několikrát
 Pro zjednodušení algoritmů, uvalíme omezení: ve stejný čas nesmí existovat více \textit{ParkingRuleAssignment}
 se stejnou prioritou.
 
+\newpage
+
 \subsection{Algoritmus filtru vozidel}
 
+\noindent
 \textit{Vstup: objekt ParkingRuleAssignment s filtry, vozidlo}
 
+\noindent
 \textit{Výstup: boolean určující platnost}
+
 \begin{enumerate}
   \setlength\itemsep{.05em}
   \item Na základě módu filtrování si budeme udržovat množinu buď odstraněných vozidel (mód ALL), nebo přidaných vozidel (mód NONE).
@@ -249,6 +295,7 @@ vysvětlen v následující podkapitole, čímž následující algoritmus zrych
   \label{fig:rules_drawing}
 \end{figure}
 
+\noindent
 V jednom čase může existovat více objektů typu \textit{ParkingRuleAssignment} avšak s různou prioritou.
 Může se stát, že aplikovaných \textit{ParkingRuleAssignment} bude několik (různé priority, vyprší platnost, etc.).
 
@@ -259,9 +306,13 @@ Situaci lze vidět na obrázku \ref{fig:rules_drawing}.
 Pro zjednodušení předpokládejme, že všechny \textit{ParkingRuleAssignment}, které zpracováváme, platí pro naše vozidlo.
 Přidat tuto kontrolu později je triviální.
 
+\vspace{5mm}
+\noindent
 \textit{Vstup: seznam ParkingRuleAssignment odpovídající pro interval pobytu vozidla na parkovišti, vozidlo}
 
+\noindent
 \textit{Výstup: seznam ParkingRuleAssignment s časy platnosti}
+
 \begin{enumerate}
   \setlength\itemsep{.05em}
   \item Seřadíme si začátky a konce úseček podle jejich času.
@@ -292,6 +343,7 @@ Přidat tuto kontrolu později je triviální.
   \end{enumerate}
 \end{enumerate}
 
+\noindent
 Algoritmus zajisté doběhne, protože máme konečný počet událostí a v každém cyklu jednu zpracujeme.
 Paměťová složitost je zřejmě lineární. Časová složitost bez filtrování je ${\cal O}(N\cdot{logN})$, kde $N$ je 
 počet úseček, protože
@@ -307,12 +359,14 @@ filtrů, pak je časová složitost ${\cal O}(N\cdot{M})$.
 
 \section{Uživatelské rozhraní}
 
+\noindent
 Jelikož autor neměl zkušenosti s vývojem webového uživatelského rozhraní, rozhodl se využít starter projekt
 společnosti Crazy Factory GmbH, který pojí vybrané technologie dohromady a mandatuje projektu základní strukturu.
 Navíc podporuje překlady, reportování chyb apod., což vytvářet z ničeho je obtížné. \citep[viz][]{CFProj}
 
 \subsection{Redux a persistence stavu}
 
+\noindent
 Jak již bylo zmíněno v předchozí kapitole, uživatelské rozhraní používá Redux pro sdílení stavu mezi komponentami.
 Stav v Reduxu je strom, jenž je upravován akcemi. Akce a současný stav je předán takzvaným \textit{reducers}, což jsou prosté funkce,
 které vrátí stav nový. \citep[viz][]{ReduxCore} Prostost reducerů zajišťuje testovatelnost.
@@ -331,6 +385,7 @@ V našem případě se jedná o \textit{localstorage}.
 
 \subsection{Typy komponent}
 
+\noindent
 Níže je rozlišení komponent podle jejich interakce s ostatními a míry autonomie.
 Jedná se o spektrum, ne o definitivní kategorie.
 
@@ -353,6 +408,7 @@ Jedná se o spektrum, ne o definitivní kategorie.
 
 \subsection{Grafy}
 
+\noindent
 Grafy jsou potřeba na stránce se statistikami. K tomu byla použita knihovna react-google-charts,
 což, jak název napovídá, je port knihovny google-charts do Reactu. Ta kromě obvyklích grafů umí
 například i takzvaný kalendářový graf, jenž lze vidět na obrázku \ref{fig:google_charts}.
@@ -363,9 +419,9 @@ například i takzvaný kalendářový graf, jenž lze vidět na obrázku \ref{f
   \label{fig:google_charts}
 \end{figure}
 
-
 \subsection{Obecná vybírátka modelů}
 
+\noindent
 Dle principu neopakování se bylo vytvořeno několik obecných UI komponent, které umožňují vyhledávání libovolných
 modelů a jejich volbu a využití v ostatních komponentách. Ve zdrojovém kódu je implementujeme jako
 HOF (Higher-Order-Function), což je funkce vracející další funkce -- konkrétní komponenty.
@@ -404,6 +460,7 @@ Další vybírátka abstrahují i vstup od uživatele, takže lze použít např
   \label{fig:page_devices}
 \end{figure}
 
+\noindent
 Viz obrázek \ref{fig:page_devices}.
 Po vypršení QR kódu je uživateli nabídnuto vytvořit nový.
 
@@ -415,6 +472,7 @@ Po vypršení QR kódu je uživateli nabídnuto vytvořit nový.
   \label{fig:page_rules}
 \end{figure}
 
+\noindent
 Viz obrázek \ref{fig:page_rules}.
 Oranžová linka v kalendáři značí simulaci pravidel, jejíž výsledek je cena viditelná vlevo
 dole v sekci Simulation.
@@ -427,6 +485,7 @@ dole v sekci Simulation.
   \label{fig:page_session}
 \end{figure}
 
+\noindent
 Viz obrázek \ref{fig:page_session}.
 Pokud uživatel najede myší na čas vjezdu nebo výjezdu, tak se mu zobrazí výřez SPZ z pořízeného snímku.
 Zároveň lze kliknout na SPZ a zobrazit si ostatní záznamy onoho vozidla na stejné obrazovce.
