@@ -138,19 +138,9 @@ Hypotetickým příkladem budiž celková zaplacená částka zákazníkem, kter
 Jelikož se většina operací nad modely se opakuje, byly napsány obecné resolvery jako HOF (Higher-Order-Function)
 pro vytváření, úpravu, mazání, vyhledávání a získávání modelů v relaci.
 Měnící se část je pak pouze definice databázového modelu. Díky GraphQL se neumísi ani ověřovat datové typy --
-GraphQL toto udělá podle schema, které tvoří programátor.
+GraphQL toto udělá podle schema, které tvoří programátor v SDL (abbrv. Schema-Definition-Language).
 
 \begin{figure}[!htb]
-\lstset
-{ %Formatting for code in appendix
-  basicstyle=\footnotesize,
-  numbers=left,
-  stepnumber=1,
-  showstringspaces=false,
-  tabsize=1,
-  breaklines=true,
-  breakatwhitespace=false,
-}
 \lstset{language=Javascript}
 \begin{lstlisting}
 function gqlPopulate<D extends mongoose.Document,
@@ -166,7 +156,7 @@ function gqlPopulate<D extends mongoose.Document,
       // Already populated
       return obj[key];
     } else {
-      // Fetch the field K on D
+      // Fetch the field K on D only
       const populated: D = await model.populate(obj, {
         path: keyStr
       });
@@ -235,12 +225,14 @@ Pro dostatečnou flexibilitu je zapotřebí oddělit samotná pravidla od jejich
 priority, časového intervalu platnosti i filtrů,
 k čemuž bude sloužit objekt typu \textit{ParkingRuleAssignment}.
 
+\begin{figure}[!htb]
+\lstset{language=GraphQL}
 \begin{lstlisting}
 type ParkingRuleAssignment {
+  id: ID!
   rules: [ParkingRule]!
   start: DateTime!
   end: DateTime!
-  # ALL nebo NONE
   vehicleFilterMode: VehicleFilterMode!
   vehicleFilters: [VehicleFilter!]
   priority: NonNegativeInt!
@@ -249,11 +241,17 @@ type ParkingRuleAssignment {
 type VehicleFilter {
   id: ID!
   name: String!
-  # INCLUDE nebo EXCLUDE
   action: VehicleFilterAction!
   vehicles: [Vehicle!]
 }
 \end{lstlisting}
+\caption[Definice typů ParkingRuleAssignment a VehicleFilter v GraphQL SDL.]{Definice typů ParkingRuleAssignment a VehicleFilter v GraphQL SDL.
+Tučne jsou označeny rezervovaná slova a skáláry již obsažené v základním GraphQL. Kurzívou jsou označeny typu z balíčku \textit{graphql-scalars}.
+Vykřičník značí, že atribut je povinný.
+Typ VehicleFilterMode je enum, jehož možné hodnoty jsou ALL, NONE.
+Typ VehicleFilterAction je taktéž enum, jehož možné hodnoty jsou INCLUDE, EXCLUDE.}
+\label{fig:type_pra_vf}
+\end{figure}
 
 Filtrování bude mít dva módy: začneme se všemi vozidly (ALL) a začneme bez vozidel (NONE).
 Následné filtry mohou buď přidávat, nebo odstraňovat jednotlivá vozidla.

@@ -18,3 +18,26 @@
   morestring=[b]',
   morestring=[b]"
 }[keywords, comments, strings]
+
+\lstdefinelanguage{GraphQL}{
+  morekeywords=[1]{type, !},
+  morekeywords=[2]{ID, String},
+  morekeywords=[2]{DateTime, NonNegativeInt},
+  keywordstyle=[2]\bfseries,
+  keywordstyle=[3]\itshape,
+  sensitive,
+  morecomment=[l]\#,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\lstset
+{ %Formatting for code in appendix
+  basicstyle=\footnotesize,
+  numbers=left,
+  stepnumber=1,
+  showstringspaces=false,
+  tabsize=1,
+  breaklines=true,
+  breakatwhitespace=false,
+}
