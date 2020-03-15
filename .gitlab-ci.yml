@@ -4,8 +4,8 @@ compile_pdf:
     - tar cvf upload.tar.gz .
     - "curl -Lv -X POST \"https://tmscer.cz/_latex_compile_/\" -H \"Authorization: $TMSCER_TOKEN\" -F \"data=@upload.tar.gz\" --output - > prace.pdf"
     - "echo `head -1 prace.pdf`"
-    - "IS_PDF=`head -1 prace.pdf | grep -i DOCTYPE | wc -l`"
-    - 'if [ "$IS_PDF" -eq 0 ]; then exit 0; else exit 1; fi'
+    - "echo `head -1 prace.pdf | grep -i DOCTYPE`"
+    - "if [ \"$(head -1 prace.pdf | grep -i DOCTYPE | wc -l)\" -eq 0 ]; then exit 0; else exit 1; fi"
   artifacts:
     paths:
       - prace.pdf
