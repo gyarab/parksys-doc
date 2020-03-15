@@ -181,6 +181,7 @@ který má mnoho paremetrů.
 
 Nejdůležitější z nich jsou funkce, které řeší zpracování žádosti i odpovědi, jimž se říká \textit{links}.
 Ty řeší zpracování chyb a poslání chyb do Reduxu, přečtení URL backendu z nastavení, také vložení tokenu do hlavičky žádosti (viz \ref{auther_authen}).
+Jejich způsob použití lze přirovnat k návrhovému vzoru \textit{chain-of-responsibility}.
 
 Další parametr je určen ke cachování a vložení GraphQL schema získaného z backendu, aby bylo možné používat v dotazech fragmenty.
 
@@ -255,7 +256,8 @@ type VehicleFilter {
 }
 \end{lstlisting}
 \caption[Definice typů ParkingRuleAssignment a VehicleFilter v GraphQL SDL.]{Definice typů ParkingRuleAssignment a VehicleFilter v GraphQL SDL.
-Tučne jsou označeny rezervovaná slova a skáláry již obsažené v základním GraphQL. Kurzívou jsou označeny typu z balíčku \textit{graphql-scalars}.
+Tučne jsou označeny rezervovaná slova a skáláry již obsažené v základním GraphQL.
+Kurzívou jsou označeny skaláry z balíčku \textit{graphql-scalars}.
 Vykřičník značí, že atribut je povinný.
 Typ VehicleFilterMode je enum, jehož možné hodnoty jsou ALL, NONE.
 Typ VehicleFilterAction je taktéž enum, jehož možné hodnoty jsou INCLUDE, EXCLUDE.}
@@ -268,8 +270,6 @@ Hodí se mít filtry uložené separátně, aby mohli být využity několikrát
 
 Pro zjednodušení algoritmů, uvalíme omezení: ve stejný čas nesmí existovat více \textit{ParkingRuleAssignment}
 se stejnou prioritou.
-
-\newpage
 
 \subsection{Algoritmus filtru vozidel}
 
