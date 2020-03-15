@@ -86,7 +86,27 @@ Snímky obrazovek lze vidět v sekci \ref{screens}.
   % \item \textbf{Správa uživatelů} -- přidávání, odebírání a úprava uživatelů a jejich operávnění.
 \end{itemize}
 
-\section{GraphQL resolvery}
+\section{Komunikace backendu a frontendu}
+
+\subsection{Endpointy backendu}
+
+\noindent
+Backend má pouze několik endpointů. Pro komunikaci s webovým rozhraním přes GraphQL.
+Mobilní zařízení GraphQL nevyužívají, protože GraphQL není k nahrávání snímků vhodné a míchání více způsobů
+komunikace pro velice malou mobilní aplikaci by vývoj spíše ztížilo. Máme tedy další endpointy:
+
+\begin{itemize}
+  \setlength\itemsep{.05em}
+  \item POST \textit{/graphql} je určen k primární komunikaci s webovým rozhraním včetně autentifikace.
+  \item GET \textit{/devices/qr/:id} slouží k získání QR kódu ve formě PNG obrázku z webového rozhraní pro autentifikaci zařízení.
+        Přijíma \textit{id} zařízení jako parametr v URL.
+  \item POST \textit{/devices/activate} slouží k autentifikaci zařízení, které právě naskenovalo QR kód s aktivačním heslem, které je poslání v těle žádosti.
+  \item PUT \textit{/devices/config} slouží zařízení k získání své konfigurace a případné změně konfigurace ze strany zařízení.
+  \item POST \textit{/devices/capture} přijímá obrazová data od zařízení.
+  \item GET \textit{/captureImage/:id} slouží k získání výřezu naskenované SPZ z webového rozhraní. Přijímá \textit{id} obrázku jako parametr v URL.
+\end{itemize}
+
+\subsection{GraphQL resolvery}
 
 \noindent
 Protože GraphQL je primárním způsobem komunikace mezi frontendem a backendem, stojí za to si vysvětlit základní stavební bloky
@@ -123,14 +143,15 @@ GraphQL toto udělá podle schema, které tvoří programátor.
 \begin{figure}[!htb]
 \lstset
 { %Formatting for code in appendix
-    basicstyle=\footnotesize,
-    numbers=left,
-    stepnumber=1,
-    showstringspaces=false,
-    tabsize=1,
-    breaklines=true,
-    breakatwhitespace=false,
+  basicstyle=\footnotesize,
+  numbers=left,
+  stepnumber=1,
+  showstringspaces=false,
+  tabsize=1,
+  breaklines=true,
+  breakatwhitespace=false,
 }
+\lstset{language=Javascript}
 \begin{lstlisting}
 function gqlPopulate<D extends mongoose.Document,
                      K extends keyof D>(
@@ -138,66 +159,47 @@ function gqlPopulate<D extends mongoose.Document,
   key: K
 ): Resolver {
   return async function(obj: D, args, ctx: Context, info) {
+    // Get the model
     const model = modelGetter(ctx);
     const keyStr = key.toString();
     if (obj.populated(keyStr)) {
+      // Already populated
       return obj[key];
     } else {
+      // Fetch the field K on D
       const populated: D = await model.populate(obj, {
         path: keyStr
       });
+      // Resolver returns just the field K
       return populated[key];
     }
   };
 }
 \end{lstlisting}
-\centering
-\textit{Ukázka obecného resolveru v Typescriptu.}
+% \centering
+\caption[Ukázka obecného resolveru v Typescriptu.]{Ukázka obecného resolveru v Typescriptu. Na osmém řádku se získá model z funkce v \textit{lexical-scope} funkce vracející resolver. Proměnná \textit{ctx} definuje kontext resolveru a obsahuje modely a klienta, aby bylo snažší resolvery testovat -- jedná se o \textit{dependency injection}. Na šestém řádku lze vidět parametry, které dostává každý resolver. První parametr je objekt vrácený nadřazeným resolverem. Druhý parametr obsahuje klientem specifikované argumenty, například $id$ hledaného uživatele. Třetí parametr je již zmíněný kontext, jeho obsah si lze definovat dle libosti. Poslední parametr obsahuje informace o dotazu samotném -- jaké parametry si klient vyžádal, AST (angl. Abstract-Syntax-Tree) dotazu apod.}
+\label{fig:generic_resolver}
 \end{figure}
 
-Zde lze vidět funkci vracející resolver, který vrátí objekt v relaci (provede JOIN v SQL terminologii),
-pokud ho vlastnící objekt ještě nemá. Na sedmém řádku se získá model z funkce v \textit{lexical-scope} funkce
-vracející resolver. Proměnná \textit{ctx} definuje kontext resolveru a obsahuje modely a klienta, aby
-bylo snažší resolvery testovat -- jedná se o \textit{dependency-injection}.
+Na obrázku \ref{fig:generic_resolver} lze vidět funkci vracející resolver, který vrátí objekt v relaci (provede JOIN v SQL terminologii),
+pokud ho vlastnící objekt ještě nemá.
 
-Na šestém řádku lze vidět parametry, které dostává každý resolver. První parametr je objekt vrácený nadřazeným resolverem.
-Druhý parametr obsahuje klientem specifikované argumenty, například $id$ hledaného uživatele.
-Třetí parametr je již zmíněný kontext, jeho
-obsah si lze definovat dle libosti.
-Poslední parametr obsahuje informace o dotazu samotném --
-jaké parametry si klient vyžádal, AST (angl. Abstract-Syntax-Tree) dotazu apod.
 
 \section{Autentizace a autorizace} \label{auther_authen}
 
 \noindent
-Autentifikace lidských uživatelů probíhá pomocí standardního hesla a zařízení pomocí dlouhého, náhodně generovaného hesla,
+Autentifikace lidských uživatelů probíhá pomocí standardního hesla a autentifikace zařízení pomocí dlouhého,
+náhodně generovaného hesla,
 které je posíláno na frontend ve formě QR kódu, které zařízení naskenuje.
 Po úspěšné autentizaci obdrží klient token, který kdyby klient posílal v souboru Cookie,
 tak bychom se vystavovali riziku útoku CSRF/XSRF.
-Místo toho bude klient posílat token v hlavičce \textit{Authorization}.
+Místo toho bude klient posílá token v hlavičce \textit{Authorization}.
 
 Podle tokenu je klient jednoznačně identifikovatelný. Endpointy a GraphQL resolvery jsou zabezpečeny tak,
 že každý endpoint nebo resolver, jenž vyžaduje oprávnění, dáme jako argument HOF (Higher-Order-Function)
 \textit{checkPermissions} společně s požadovanými oprávněními. \textit{checkPermissions} pak zavolá původní
 endpoint nebo resolver pouze pokud má klient dostatečná oprávnění.
 
-\section{Endpointy backendu}
-
-\noindent
-Backend má pouze několik endpointů. Pro komunikaci s webovým rozhraním přes GraphQL.
-Mobilní zařízení GraphQL nevyužívají, protože GraphQL není k nahrávání snímků vhodné a míchání více způsobů
-komunikace pro velice malou mobilní aplikaci by vývoj spíše ztížilo. Máme tedy další endpointy:
-
-\begin{itemize}
-  \setlength\itemsep{.05em}
-  \item POST \textit{/graphql} je určen k primární komunikaci s webovým rozhraním včetně autentifikace.
-  \item GET \textit{/devices/qr/:id} slouží k získání QR kódu ve formě PNG obrázku z webového rozhraní pro autentifikaci zařízení.
-        Přijíma \textit{id} zařízení jako parametr v URL.
-  \item POST \textit{/devices/activate} slouží k autentifikaci zařízení, které právě naskenovalo QR kód s aktivačním heslem, které je poslání v těle žádosti.
-  \item PUT \textit{/devices/config} slouží zařízení k získání své konfigurace a případné změně konfigurace ze strany zařízení.
-  \item POST \textit{/devices/capture} přijímá obrazová data od zařízení.
-  \item GET \textit{/captureImage/:id} slouží k získání výřezu naskenované SPZ z webového rozhraní. Přijímá \textit{id} obrázku jako parametr v URL.
-\end{itemize}
 
 \section{Ukládání a mazaní výřezů SPZ}
 
@@ -212,7 +214,7 @@ a handler endpointu \textit{/captureImage/:id} je dekóduje zpět.
 
 První alternativou by bylo využít GridFS MongoDB, ten je určen pro soubory
 nad 16MB (limit formátu BSON) nebo pokud je potřeba číst jen části souborů.
-Výřezy přibližně 500x100 pixelů jsou však mnohonásobně menší a vždy je načítáme celé.
+Výřezy přibližně 500x100 pixelů jsou však mnohonásobně menší a vždy jsou načítány celé.
 
 Druhou alternativou by byl souborový systém, ale mít všechna data v databázi je praktičtější.
 
