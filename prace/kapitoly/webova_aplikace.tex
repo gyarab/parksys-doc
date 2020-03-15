@@ -174,6 +174,15 @@ function gqlPopulate<D extends mongoose.Document,
 Na obrázku \ref{fig:generic_resolver} lze vidět funkci vracející resolver, který vrátí objekt v relaci (provede JOIN v SQL terminologii),
 pokud ho vlastnící objekt ještě nemá.
 
+\subsection{Tvorba Apollo klienta}
+
+Webové rozhraní komunikující s backendem využívá již zmíněnou klientskou verzi knihovny Apollo, aby si vytvořila klienta,
+který má mnoho paremetrů.
+
+Nejdůležitější z nich jsou funkce, které řeší zpracování žádosti i odpovědi, jimž se říká \textit{links}.
+Ty řeší zpracování chyb a poslání chyb do Reduxu, přečtení URL backendu z nastavení, také vložení tokenu do hlavičky žádosti (viz \ref{auther_authen}).
+
+Další parametr je určen ke cachování a vložení GraphQL schema získaného z backendu, aby bylo možné používat v dotazech fragmenty.
 
 \section{Autentizace a autorizace} \label{auther_authen}
 
