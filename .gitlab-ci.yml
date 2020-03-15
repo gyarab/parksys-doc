@@ -3,7 +3,7 @@ compile_pdf:
   script:
     - tar cvf upload.tar.gz .
     - "curl -Lv -X POST \"https://tmscer.cz/_latex_compile_/\" -H \"Authorization: $TMSCER_TOKEN\" -F \"data=@upload.tar.gz\" --output - > prace.pdf"
-    - "if [ \"$(head -1 prace.pdf | grep -i DOCTYPE | wc -l)\" -eq 0 ]; then exit 0; else cat prace.pdf >&2; exit 1; fi"
+    - "if [ \"$(head -1 prace.pdf | grep -i DOCTYPE | wc -l)\" -eq 0 ]; then exit 0; else cat prace.pdf >&2; rm prace.pdf; exit 1; fi"
   artifacts:
     paths:
       - prace.pdf
