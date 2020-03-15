@@ -86,9 +86,24 @@ Snímky obrazovek lze vidět v sekci \ref{screens}.
   % \item \textbf{Správa uživatelů} -- přidávání, odebírání a úprava uživatelů a jejich operávnění.
 \end{itemize}
 
+\section{Autentizace a autorizace} \label{auther_authen}
+
+\noindent
+Autentifikace lidských uživatelů probíhá pomocí standardního hesla a autentifikace zařízení pomocí dlouhého,
+náhodně generovaného hesla,
+které je posíláno na frontend ve formě QR kódu, které zařízení naskenuje.
+Po úspěšné autentizaci obdrží klient token, který kdyby klient posílal v souboru Cookie,
+tak bychom se vystavovali riziku útoku CSRF/XSRF.
+Místo toho bude klient posílá token v hlavičce \textit{Authorization}.
+
+Podle tokenu je klient jednoznačně identifikovatelný. Endpointy a GraphQL resolvery jsou zabezpečeny tak,
+že každý endpoint nebo resolver, jenž vyžaduje oprávnění, dáme jako argument HOF (Higher-Order-Function)
+\textit{checkPermissions} společně s požadovanými oprávněními. \textit{checkPermissions} pak zavolá původní
+endpoint nebo resolver pouze pokud má klient dostatečná oprávnění.
+
 \section{Komunikace backendu a frontendu}
 
-\subsection{Endpointy backendu}
+\subsection{Endpointy backendu} \label{endpoints}
 
 \noindent
 Backend má pouze několik endpointů. Pro komunikaci s webovým rozhraním přes GraphQL.
@@ -176,6 +191,7 @@ pokud ho vlastnící objekt ještě nemá.
 
 \subsection{Tvorba Apollo klienta}
 
+\noindent
 Webové rozhraní komunikující s backendem využívá již zmíněnou klientskou verzi knihovny Apollo, aby si vytvořila klienta,
 který má mnoho paremetrů.
 
@@ -185,21 +201,42 @@ Jejich způsob použití lze přirovnat k návrhovému vzoru \textit{chain-of-re
 
 Další parametr je určen ke cachování a vložení GraphQL schema získaného z backendu, aby bylo možné používat v dotazech fragmenty.
 
-\section{Autentizace a autorizace} \label{auther_authen}
+\subsection{Získávání obrázků}
 
 \noindent
-Autentifikace lidských uživatelů probíhá pomocí standardního hesla a autentifikace zařízení pomocí dlouhého,
-náhodně generovaného hesla,
-které je posíláno na frontend ve formě QR kódu, které zařízení naskenuje.
-Po úspěšné autentizaci obdrží klient token, který kdyby klient posílal v souboru Cookie,
-tak bychom se vystavovali riziku útoku CSRF/XSRF.
-Místo toho bude klient posílá token v hlavičce \textit{Authorization}.
+Jelikož se k autorizaci používá header \textit{Authorization} místo souborů cookies,
+způsob získávání obrázků z endpointů zmíněných v \ref{endpoints} není obvyklý.
+Namísto nastavení atributu \textit{src} HTML tagu \textit{img} na normální URL obrázku,
+použijeme Blob URL. Obrázek stáhneme v Javascriptu a vytvoříme Blob URL pomocí API prohlížeče.
+Přibližná implementace je ukázána na obrázku \ref{fig:image_getter}.
 
-Podle tokenu je klient jednoznačně identifikovatelný. Endpointy a GraphQL resolvery jsou zabezpečeny tak,
-že každý endpoint nebo resolver, jenž vyžaduje oprávnění, dáme jako argument HOF (Higher-Order-Function)
-\textit{checkPermissions} společně s požadovanými oprávněními. \textit{checkPermissions} pak zavolá původní
-endpoint nebo resolver pouze pokud má klient dostatečná oprávnění.
+\begin{figure}[!htb]
+\lstset{language=Javascript}
+\begin{lstlisting}
+function imageGetter(url: string): Promise<Response> {
+  const url = `${config.backendApi.root}/${url}`;
+  return fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`
+    }
+  });
+};
 
+// In a component, setBlobUrl and setError are React hooks
+function blobImage(url: string, setBlobUrl: string => void,
+                   setError: any => void) {
+  imageGetter(url)
+    .then(response => response.blob())
+    .then(blob => {
+      setBlobUrl(URL.createObjectURL(blob));
+    })
+    .catch(setError);
+}
+\end{lstlisting}
+\caption{Získání obrázků za použití hlavičky \textit{Authorization} a jejich zpracování.}
+\label{fig:image_getter}
+\end{figure}
 
 \section{Ukládání a mazaní výřezů SPZ}
 
