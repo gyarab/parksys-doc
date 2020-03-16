@@ -257,6 +257,9 @@ Druhou alternativou by byl souborový systém, ale mít všechna data v databáz
 
 \section{Parkovací pravidla} \label{analysis_parking_schema}
 
+\noindent
+Nechť umí parkovací pravidla následující:
+
 \begin{itemize}
   \setlength\itemsep{.05em}
   \item Různá vozidla mohou podléhat ruzným pravidlům.
@@ -265,12 +268,11 @@ Druhou alternativou by byl souborový systém, ale mít všechna data v databáz
   \item V jednu chvíli může platit více pravidel.
 \end{itemize}
 
-\noindent
 Mechanismus, kterým umožníme vozidlům být ovlivněna některými pravidly,
 budou filtry.
-Pro dostatečnou flexibilitu je zapotřebí oddělit samotná pravidla od jejich
+Pro jednoduchost je zapotřebí oddělit samotná pravidla od jejich
 priority, časového intervalu platnosti i filtrů,
-k čemuž bude sloužit objekt typu \textit{ParkingRuleAssignment}.
+k čemuž bude sloužit objekt typu ParkingRuleAssignment.
 
 \begin{figure}[!htb]
 \lstset{language=GraphQL}
@@ -301,12 +303,9 @@ Typ VehicleFilterAction je taktéž enum, jehož možné hodnoty jsou INCLUDE, E
 \label{fig:type_pra_vf}
 \end{figure}
 
-Filtrování bude mít dva módy: začneme se všemi vozidly (ALL) a začneme bez vozidel (NONE).
+Filtrování bude mít dva módy: začne se se všemi vozidly (ALL) a začne se bez vozidel (NONE).
 Následné filtry mohou buď přidávat, nebo odstraňovat jednotlivá vozidla.
-Hodí se mít filtry uložené separátně, aby mohli být využity několikrát.
-
-Pro zjednodušení algoritmů, uvalíme omezení: ve stejný čas nesmí existovat více \textit{ParkingRuleAssignment}
-se stejnou prioritou.
+Hodí se mít filtry uložené separátně, aby mohly být využity několikrát.
 
 \subsection{Algoritmus filtru vozidel}
 
@@ -314,23 +313,23 @@ se stejnou prioritou.
 \textit{Vstup: objekt ParkingRuleAssignment s filtry, vozidlo}
 
 \noindent
-\textit{Výstup: boolean určující platnost}
+\textit{Výstup: boolean určující zdali vozidlo prošlo filtrem}
 
 \begin{enumerate}
   \setlength\itemsep{.05em}
   \item Na základě módu filtrování si budeme udržovat množinu buď odstraněných vozidel (mód ALL), nebo přidaných vozidel (mód NONE).
-  \item Podle příslušné akce filtrů (odstranit nebo přidat) budeme množinu našich vozidel manipulovat. Např. je-li mód ALL a filtr odstraňuje, do množiny si vozidla přidáme.
-  \item Pokud je vozidlo ve výsledné množině, tak pro něj \textit{ParkingRuleAssignment} platí pokud je filtrovací mód NONE,
-        ale neplatí pokud je mód ALL. Opačné výsledky nastanou, pokud vozidlo v množině není.
+  \item Podle příslušné akce filtrů (odstranit nebo přidat) budeme množinu našich vozidel manipulovat.
+        Např. je-li mód ALL a filtr odstraňuje, do množiny si vozidla přidáme, nebo pokud je-li mód NONE a filtr též odstraňuje, vozidla z množiny odstraňujeme.
+  \item Pokud je vozidlo ve výsledné množině, tak pro něj ParkingRuleAssignment platí pokud je filtrovací mód NONE,
+        ale neplatí pokud je mód ALL. Opačný výsledek se vrátí, pokud vozidlo v množině není.
 \end{enumerate}
 
 Časová i paměťová složitost algoritmu je ${\cal O}(N)$, kde $N$ je počet filtrů.
-
-Tento algoritmus lze potenciálně rozdělit na předvýpočet (kroky 1. a 2.) a ověření (krok 3.).
-Tato možnost zvýší paměťovou náročnost, protože bychom si museli pamatovat množiny, což je nepraktické.
-Je-li uživatel příčetný, počet použitých filtrů nebude obrovský, a tudíž je lepší zvolit následující způsob cachovaní.
-Zapamatujeme si výsledky pro určitý seznam filtrů pro konkrétní vozidlo pouze při běhu algoritmu, který je
-vysvětlen v následující podkapitole, čímž následující algoritmus zrychlíme.
+% Tento algoritmus lze potenciálně rozdělit na předvýpočet (kroky 1. a 2.) a ověření (krok 3.).
+% Tato možnost zvýší paměťovou náročnost, protože bychom si museli pamatovat množiny, což je nepraktické.
+% Je-li uživatel příčetný, počet použitých filtrů nebude obrovský, a tudíž je lepší zvolit následující způsob cachovaní.
+% Zapamatujeme si výsledky pro určitý seznam filtrů pro konkrétní vozidlo pouze při běhu algoritmu, který je
+% vysvětlen v následující podkapitole, čímž následující algoritmus zrychlíme.
 
 \subsection{Algoritmus pro aplikaci pravidel}
 
@@ -342,19 +341,19 @@ vysvětlen v následující podkapitole, čímž následující algoritmus zrych
 \end{figure}
 
 \noindent
-V jednom čase může existovat více objektů typu \textit{ParkingRuleAssignment} avšak s různou prioritou.
-Může se stát, že aplikovaných \textit{ParkingRuleAssignment} bude několik (různé priority, vyprší platnost, etc.).
+Pro zjednodušení algoritmu, uvalíme omezení: ve stejný čas nesmí existovat více ParkingRuleAssignment
+se stejnou prioritou.
 
 Situaci si lze představit jako několik navzájem rovnoběžných úseček v různých výškách, které se neprotínají.
 Nás nyní zajímá, na které a v jakých intervalech na ně dopadne světlo, pokud na ně kolmo zeshora posvítíme.
-Situaci lze vidět na obrázku \ref{fig:rules_drawing}.
+Na obrázku \ref{fig:rules_drawing} je ilustrace tohoto geometrického problému.
 
-Pro zjednodušení předpokládejme, že všechny \textit{ParkingRuleAssignment}, které zpracováváme, platí pro naše vozidlo.
+Pro zjednodušení popisu algoritmu předpokládejme, že všechny ParkingRuleAssignment, které zpracováváme, platí pro naše vozidlo.
 Přidat tuto kontrolu později je triviální.
 
 \vspace{5mm}
 \noindent
-\textit{Vstup: seznam ParkingRuleAssignment odpovídající pro interval pobytu vozidla na parkovišti, vozidlo}
+\textit{Vstup: seznam ParkingRuleAssignment platných v intervalu pobytu vozidla na parkovišti, vozidlo}
 
 \noindent
 \textit{Výstup: seznam ParkingRuleAssignment s časy platnosti}
@@ -433,7 +432,7 @@ V našem případě se jedná o \textit{localstorage}.
 
 \noindent
 Níže je rozlišení komponent podle jejich interakce s ostatními a míry autonomie.
-Jedná se o spektrum, ne o definitivní kategorie.
+Jedná se o spektrum, ne o kategorie.
 
 \begin{itemize}
   \setlength\itemsep{0.05em}

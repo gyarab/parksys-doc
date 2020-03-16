@@ -2,28 +2,32 @@
 
 \noindent
 Tento dokument se zabývá koncepcí a implementací informačního systému pro uzavřená
-parkoviště s minimální obsluhou a automatickým rozpoznáváním SPZ.
-Tento projekt zároveň slouží k vyzkoušení si moderních webových technologií
-a frameworků s přesahem k mobilnímu vývoji.
+parkoviště s automatickým rozpoznáváním SPZ.
+Inspirací pro projekt bylo, že se po autorovi při výjezdu z parkoviště nechtěl
+parkovací lístek, nýbrž vozidlo bylo puštěno na základě SPZ.
 
-Práce se nezabývá operací se závorou a platebním terminálem, neb by to zvyšovalo
+Projekt se nezabývá operací se závorou a platebním terminálem, neb by to zvyšovalo
 obtížnost už tak obtížného projektu a vyžadovalo by to poměrně vysoké
 náklady na hardware.
 
-\section*{Zadání}
+Projekt zároveň slouží k vyzkoušení si moderních webových technologií
+a frameworků s přesahem k mobilnímu vývoji a počítačovému vidění.
 
-Parkovací systém by měl mít následující funkcionalitu:
+% Bude se tedy vytvářet parkovací systém, který má následující
+% \section*{Specifikace}
 
-\begin{itemize}
-  \setlength\itemsep{0.05em}
-  \item Naskenování SPZ.
-  \item Vytváření dostatečně flexibilních pravidel pro většinu použití.
-  \begin{itemize}
-    \setlength\itemsep{0.05em}
-      \item Od času A do B za tarif X/jednotka času.
-      \item Různý provoz o svátcích a víkendech. \label{missing1}
-      \item Limity na hodiny zdarma.
-      \item Filtrování vozidel -- pro různá vozidla mohou platit jiná pravidla.
-    \end{itemize}
-  \item Statistiky počtu aut a výdělku s grafy.
-\end{itemize}
+% Parkovací systém by měl mít následující funkcionalitu:
+
+% \begin{itemize}
+%   \setlength\itemsep{0.05em}
+%   \item Naskenování SPZ.
+%   \item Vytváření dostatečně flexibilních pravidel pro většinu použití.
+%   \begin{itemize}
+%     \setlength\itemsep{0.05em}
+%       \item Od času A do B za tarif X/jednotka času.
+%       %\item Různý provoz o svátcích a víkendech. \label{missing1}
+%       \item Limity na hodiny zdarma.
+%       \item Filtrování vozidel -- pro různá vozidla mohou platit jiná pravidla.
+%     \end{itemize}
+%   \item Statistiky počtu aut a výdělku s grafy.
+% \end{itemize}
