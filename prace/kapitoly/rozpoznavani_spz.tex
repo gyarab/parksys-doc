@@ -32,6 +32,7 @@ Aby se tedy předešlo naskenování SPZ, které jsou například daleko, lze od
 podle jejich obsahu v pixelech čtverečních. Konkrétní hodnota je potřeba odladit na místě skenování a
 lze změnit ve webové aplikaci pro kterékoliv zařízení.
 
+
 \section{Autentifikace}
 
 \noindent
@@ -47,9 +48,8 @@ Konkrétní mechnismus komunikace s touto externí byl převzán. \citep[viz][]{
 
 \noindent
 Co se týče hardwarového vybavení snímacího zařízení, tak je vyžadována přední kamera
-s rozlišením alespoň 1000 na 1000 pixelů. Důvod pro toto rozlišení je, že backend obdržený snímek
-stejně zmenší na 1000x1000 pixelů (lze však změnit ve webové aplikaci), aby knihovna OpenALPR provedla rozpoznání co nejrychleji, a zároveň
-aby bylo rozpoznání dostatečně přesné. Procesor, RAM i vnitřní paměť může být libovolná -- kterékoliv
+s rozlišením alespoň 1000 na 1000 pixelů. Bližší informace ohledně a zdůvodnění zmenšení jsou v sekci \ref{app_resizing}.
+Procesor, RAM i vnitřní paměť může být libovolná -- kterékoliv
 dnešní nové zařízení bohatě postačí (za předpokladu, že vnitřní paměť není zaplněná).
 Minimální verze Androidu je 5 (SDK 21).
 
@@ -75,6 +75,27 @@ konfigurace poslána není.
   \caption{Životní cycklus mobilní aplikace.}
   \label{fig:app_lifecycle}
 \end{figure}
+
+\section{Optimalizace velikosti přenesených dat} \label{app_resizing}
+
+\noindent
+Aby se ušetřilo na přenesených datech a aby rozpoznání proběhlo rychleji,
+mobilní aplikace zmenší snímek
+na nastavitelnou hodnotu
+Tuto funkci poskytuje metoda \textit{createScaledBitmap} v třídě \textit{android.graphics.Bitmap}.
+
+V závislosti na poměru stran snímků největšího rozlišení fotoaparátu,
+může být potřeba hodnotu zmenšení změnit.
+Základní hodnota je 1300x1000 pixelů, protože aplikace byla testována na
+zařízení s fotoaparátem o roslišení 4356x3492 pixelů (poměr stran je 4:3).
+
+Ušetření je opravdu veliké. Při testu s fotoaparátem o rozlišení 4356x3492 pixelů
+byla průměrná velikost nezmenšených snímků $1,9$MB (JPG, $N=50$, $\sigma=0,325$).
+Průměrná velikost snímků zmenšených na 1300x1000 pixelů byla
+$0,15$MB (JPG, $N=50$, $\sigma=0,024$). Kdyby byla frekvence snímání jeden snímek za sekundu,
+tak by bez optimalizací byl objem přenesených dat za jeden den $164,16$GB ($3600\cdot24\cdot1,9$MB).
+Při stejné frekvenci s optimalizacemi by byl objem přenesených dat za jeden den
+$12,96$GB ($3600\cdot24\cdot0,15$MB), což je $7,9$\% objemu bez optimalizací.
 
 \section{Uživatelské rozhraní mobilní aplikace}
 
