@@ -112,7 +112,7 @@ Detekci SPZ bude zajišťovat knihovna OpenALPR, jejímž vstupem je obrázek a 
 parametry jako úhel kamery apod.
 \citep[viz][]{OpenALPR}
 
-Ke zbytku aplikace bude připojena malým HTTP serverem, jenž byl převzán a upraven.
+Ke zbytku aplikace bude připojena malým HTTP serverem, jenž byl převzat a upraven.
 Ten umožňuje poslat pomocí protokolu HTTP obrázek a obdržet JSON s SPZ daty a souřadnicemi detekované SPZ.
 Samotný server ke knihovně přistupuje zavoláním binárky \textit{alpr}, který jako argument přijme cestu k
 obrázku, ve kterém hledáme SPZ. \citep[viz][]{OpenALPR_Server}
@@ -125,8 +125,8 @@ Alternativní a lepší způsob přístupu by bylo mít v Node.js přímo takzv.
 \noindent
 Nejprve se vyvine veškerá funkcionalita v základní podobě
 (na způsob MVP -- z angl. Minimal-Viable-Product) a později se vše vyhladí a zlepší. To však neznamená,
-že by se nemělo dát si záležet na kvalitním a udržitelném kódu, naopak. Cílem je mít flexibilní základ,
-na kterém lze stavět. Pro klidný spánek budeme psát dle uvážení automatizované testy, aby se předešlo
+že bychom si neměli záležet na kvalitním a udržitelném kódu, naopak. Cílem je mít flexibilní základ,
+na kterém lze stavět. Pro jistotu budeme psát dle uvážení automatizované testy, aby se předešlo
 nežádoucímu chování aplikace po úpravě kódu -- regresi.
 
 Backend i frontend budou vyvinuty současně. Dokud není mobilní aplikace pro zařízení, lze ji simulovat

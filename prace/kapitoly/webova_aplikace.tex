@@ -17,7 +17,7 @@ Některé méně důležite adresáře byly vynechány.
     \item \textbf{src} -- zdrojový kód
     \begin{itemize}
       \setlength\itemsep{.05em}
-      \item \textbf{apis} -- hepler funkce pro komunikaci s externím API pro rozpoznávání SPZ
+      \item \textbf{apis} -- helper funkce pro komunikaci s externím API pro rozpoznávání SPZ
       \item \textbf{auth} -- autentifikace a autorizace
       \item \textbf{cache} -- implementace mezipaměti
       \item \textbf{db} -- připojení k databázi a nastavení GraphQL serveru Apollo
@@ -37,10 +37,10 @@ Některé méně důležite adresáře byly vynechány.
       \item \textbf{src/app} -- zdrojový kód
       \begin{itemize}
         \setlength\itemsep{.05em}
-        \item \textbf{apis} -- hepler funkce pro získávání obrázků z backendu
+        \item \textbf{apis} -- helper funkce pro získávání obrázků z backendu
         \item \textbf{components} -- komponenty uživatelského rozhraní
         \item \textbf{constants} -- GraphQL dotazy, barvy, apod
-        \item \textbf{helpers} -- hepler funkce
+        \item \textbf{helpers} -- helper funkce
         \item \textbf{images} -- obrázky
         \item \textbf{layouts} -- rozložení obrazovek
         \item \textbf{pages} -- komponenty obrazovek
@@ -57,7 +57,7 @@ Některé méně důležite adresáře byly vynechány.
 
 Nastavení frontendu je upravitelné ve složce s konfigurací (/config).
 Některé hodnoty jsou brané z proměnných prostředí, mají ale předdefinovanou hodnotu, pokud
-konkrétní promenná prostředí je prázdná.
+konkrétní proměnná prostředí je prázdná.
 
 Nastavení backendu je řešeno knihovnou nconf, která umožňuje kteroukoliv hodnotu upravit
 pomocí proměnných prostředí -- stačí jen vzít cestu k hodnotě a každé vnoření nahradit 
@@ -79,7 +79,8 @@ Snímky obrazovek lze vidět v sekci \ref{screens}.
   \item \textbf{Zařízení} -- správa zařízení zachycujících fotografie SPZ, která lze autentifikovat do systému pomocí
         QR kódu.
   \item \textbf{Pravidla a Filtry} -- definice parkovacích pravidel a filtrů vozidel (popsáno v \ref{analysis_parking_schema}).
-        Pro ověření půjde si parkovací pravidla a filtry odsimulovat.
+        % TODO
+        Pro ověření je možné si parkovací pravidla a filtry simulovat.
   \item \textbf{Statistiky} -- detailněji zobrazené údaje o počtu parkování a výdělku podle roku, měsíce a dne s grafy.
   \item \textbf{Vozidla a Parkování} -- prohlížení vozidel a jejich parkování.
   \item \textbf{Správa účtu} -- změna údajů a hesla současně přihlášeného uživatele.
@@ -92,14 +93,14 @@ Snímky obrazovek lze vidět v sekci \ref{screens}.
 Autentifikace lidských uživatelů probíhá pomocí standardního hesla a autentifikace zařízení pomocí dlouhého,
 náhodně generovaného hesla,
 které je posíláno na frontend ve formě QR kódu, které zařízení naskenuje.
-Po úspěšné autentizaci obdrží klient token, který kdyby klient posílal v souboru Cookie,
-tak bychom se vystavovali riziku útoku CSRF/XSRF.
-Místo toho bude klient posílá token v hlavičce \textit{Authorization}.
+Po úspěšné autentizaci obdrží klient token.
+Kdyby klient posílal token v souboru Cookie, vystavoval by se riziku útoku CSRF/XSRF.
+Místo toho bude klient posílat token v hlavičce \textit{Authorization}.
 
 Podle tokenu je klient jednoznačně identifikovatelný. Endpointy a GraphQL resolvery jsou zabezpečeny tak,
 že každý endpoint nebo resolver, jenž vyžaduje oprávnění, dáme jako argument HOF (Higher-Order-Function)
 \textit{checkPermissions} společně s požadovanými oprávněními. \textit{checkPermissions} pak zavolá původní
-endpoint nebo resolver pouze pokud má klient dostatečná oprávnění.
+endpoint nebo resolver, pouze pokud má klient dostatečná oprávnění.
 
 \section{Komunikace backendu a frontendu}
 
@@ -114,8 +115,8 @@ komunikace pro velice malou mobilní aplikaci by vývoj spíše ztížilo. Máme
   \setlength\itemsep{.05em}
   \item POST \textit{/graphql} je určen k primární komunikaci s webovým rozhraním včetně autentifikace.
   \item GET \textit{/devices/qr/:id} slouží k získání QR kódu ve formě PNG obrázku z webového rozhraní pro autentifikaci zařízení.
-        Přijíma \textit{id} zařízení jako parametr v URL.
-  \item POST \textit{/devices/activate} slouží k autentifikaci zařízení, které právě naskenovalo QR kód s aktivačním heslem, které je poslání v těle žádosti.
+        Přijímá \textit{id} zařízení jako parametr v URL.
+  \item POST \textit{/devices/activate} slouží k autentifikaci zařízení, které právě naskenovalo QR kód s aktivačním heslem, které je posláno v těle žádosti.
   \item PUT \textit{/devices/config} slouží zařízení k získání své konfigurace a případné změně konfigurace ze strany zařízení.
   \item POST \textit{/devices/capture} přijímá obrazová data od zařízení.
   \item GET \textit{/captureImage/:id} slouží k získání výřezu naskenované SPZ z webového rozhraní. Přijímá \textit{id} obrázku jako parametr v URL.
@@ -130,13 +131,13 @@ Zde kořenem stromu je resolver \textit{userSearch}, jenž přijímá argumenty 
 povinné (ale nemusí). Kořenový resolver je funkce vracející nějaký typ, v tomto případě typ \textit{UserSearchResult}, který udává nalezené
 uživatele (\textit{UserSearchResult.data}) a stránkování (v příkladu vynecháno).
 Při návrhu tohoto resolveru bychom si mohli rozmyslet, že údaje o stránkování vynecháme a vrátíme pouze
-pole nepřázdných uživatelů -- typ \textit{[User!]}.
+pole neprázdných uživatelů -- typ \textit{[User!]}.
 Máme dva druhy typů: skaláry (listy stromu) a objekty (uzly stromu).
 Typ \textit{User} je objekt a má v sobě také nějaké hodnoty a vrátí se nám jen ty, na které se zeptáme. Měl-li by typ \textit{User}
 další objekty, mohli bychom se zeptat i na jejich hodnoty. Kdybychom psali aplikaci pro veterinární kliniku, mohli bychom se zeptat
 třeba na jména mazlíčků.
 
-Jak toto implementujeme? Pro každý kořenový resolver musíme napsat funkci, která buď přímo vrátí požadovaný objekt s atributy a nebo
+Jak toto implementujeme? Pro každý kořenový resolver musíme napsat funkci, která buď přímo vrátí požadovaný objekt s atributy, a nebo
 k typu, který náš kořenový resolver vrací, napíšeme další resolvery, které vrací opět objekty, nebo skaláry.
 Kdybychom se databáze ptali na uživatele i s
 mazlíčky (v SQL terminologii bychom provedli JOIN), tak bychom nemuseli pro typ \textit{User} psát resolver pro mazlíčky, kde bychom
@@ -144,13 +145,11 @@ se dotázali na mazlíčky našeho uživatele.
 \citep[viz][]{GraphQLDoc}
 
 Zároveň můžeme provádět virtualizaci atributů -- přidávat atributy, které v databázi nemáme, ale pro webové rozhraní se hodí.
-Hypotetickým příkladem budiž celková zaplacená částka zákazníkem, která se v případě potřeby vypočítá nebo
-živé, stále měnící se statistiky.
-
+Hypotetickým příkladem budiž celková zaplacená částka zákazníkem, která se v případě potřeby vypočítá nebo aktuální agregované statistiky.
 \subsection{Obecné resolvery}
 
 \noindent
-Jelikož se většina operací nad modely se opakuje, byly napsány obecné resolvery jako HOF (Higher-Order-Function)
+Jelikož se většina operací nad modely opakuje, byly napsány obecné resolvery jako HOF (Higher-Order-Function)
 pro vytváření, úpravu, mazání, vyhledávání a získávání modelů v relaci.
 Měnící se část je pak pouze definice databázového modelu. Díky GraphQL se neumísi ani ověřovat datové typy --
 GraphQL toto udělá podle schema, které tvoří programátor v SDL (abbrv. Schema-Definition-Language).
@@ -242,7 +241,7 @@ function blobImage(url: string, setBlobUrl: string => void,
 
 \noindent
 Pokud je rozpoznána SPZ, nalezená SPZ se z obrázku vyřízne, a pak je dostupná k zobrazení ve webovém rozhraní.
-Tato funkce lze vypnout ve webové aplikaci a zároveň lze výřezy smazat podle data vytvoření a
+Tuto funkci lze vypnout ve webové aplikaci a zároveň lze výřezy smazat podle data vytvoření a
 lze nastavit automatické mazání po uplynuté době.
 
 Výřezy jsou získány pomocí knihovny sharp a souřadnic SPZ od OpenALPR.
@@ -262,7 +261,7 @@ Nechť umí parkovací pravidla následující:
 
 \begin{itemize}
   \setlength\itemsep{.05em}
-  \item Různá vozidla mohou podléhat ruzným pravidlům.
+  \item Různá vozidla mohou podléhat různým pravidlům.
   \item Pravidla mají prioritu.
   \item Pravidla mají časové omezení.
   \item V jednu chvíli může platit více pravidel.
@@ -318,7 +317,7 @@ Hodí se mít filtry uložené separátně, aby mohly být využity několikrát
 \begin{enumerate}
   \setlength\itemsep{.05em}
   \item Na základě módu filtrování si budeme udržovat množinu buď odstraněných vozidel (mód ALL), nebo přidaných vozidel (mód NONE).
-  \item Podle příslušné akce filtrů (odstranit nebo přidat) budeme množinu našich vozidel manipulovat.
+  \item Podle příslušné akce filtrů (odstranit nebo přidat) budeme manipulovat množinou vozidel.
         Např. je-li mód ALL a filtr odstraňuje, do množiny si vozidla přidáme, nebo pokud je-li mód NONE a filtr též odstraňuje, vozidla z množiny odstraňujeme.
   \item Pokud je vozidlo ve výsledné množině, tak pro něj ParkingRuleAssignment platí pokud je filtrovací mód NONE,
         ale neplatí pokud je mód ALL. Opačný výsledek se vrátí, pokud vozidlo v množině není.
@@ -407,7 +406,7 @@ filtrů, pak je časová složitost ${\cal O}(N\cdot{M})$.
 \noindent
 Jelikož autor neměl zkušenosti s vývojem webového uživatelského rozhraní, rozhodl se využít starter projekt
 společnosti Crazy Factory GmbH, který pojí vybrané technologie dohromady a mandatuje projektu základní strukturu.
-Navíc podporuje překlady, reportování chyb apod., což vytvářet z ničeho je obtížné. \citep[viz][]{CFProj}
+Navíc podporuje překlady, reportování chyb apod., což je obtížné vytvářet z ničeho. \citep[viz][]{CFProj}
 
 \subsection{Redux a persistence stavu}
 
@@ -422,7 +421,7 @@ zvolit vozidlo a mnoho dalších.
 
 Některé komponenty jsou pak na stavu závislé a dojde k jejich překreslení, pokud se jimi čtený stav změní, což je též zařízeno
 Reduxem. Jedná se vlastně o formu \textit{dependency-injection}. Stejným mechanismem jsou do komponent vkládány
-funkce vyvtvářející akce a jiné vedlejší efekty, což dělá tyto komponenty snadno testovatelné.
+funkce vytvářející akce a jiné vedlejší efekty, což dělá tyto komponenty snadno testovatelné.
 
 K uložení stavu aplikace po zavření okna, použijeme knihovnu redux-persist, která poskytuje
 HOF funkci, které dáme reducer, a ona změny, které způsobí, někam uloží. \citep[viz][]{reduxpersist}
@@ -470,7 +469,7 @@ například i takzvaný kalendářový graf, jenž lze vidět na obrázku \ref{f
 Dle principu neopakování se bylo vytvořeno několik obecných UI komponent, které umožňují vyhledávání libovolných
 modelů a jejich volbu a využití v ostatních komponentách. Ve zdrojovém kódu je implementujeme jako
 HOF (Higher-Order-Function), což je funkce vracející další funkce -- konkrétní komponenty.
-Měnící se části, které se do těchto obecných komponent budou vkládat je komponenta renderující jediný model
+Měnící se části, které se do těchto obecných komponent budou vkládat, je komponenta renderující jediný model
 (\textit{renderModel}),
 GraphQL dotaz pro získávání modelů (\textit{queryString}), funkce, jejímž vstupem je odpověď na GraphQL dotaz a výstupem je
 samotné pole modelů (\textit{modelArrayGetter}), a funkce, jejímž vstupem je dotazovací řetězec a výstupem jsou
