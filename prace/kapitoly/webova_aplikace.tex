@@ -63,7 +63,7 @@ Nastavení backendu je řešeno knihovnou nconf, která umožňuje kteroukoliv h
 pomocí proměnných prostředí -- stačí jen vzít cestu k hodnotě a každé vnoření nahradit 
 dvěma podtržítky.
 \citep[viz][]{nconf}
-Například cesta $\{ mongo: \{ host \} \}$ lze přepsat promměnou prostředí s názvem $mongo\_\_host$.
+Například cesta \texttt{\{ mongo: \{ host \} \}} lze přepsat promměnou prostředí s názvem \texttt{mongo\_\_host}.
 
 Seznam všech závislostí je uveden v souborech \textit{package.json} a \textit{package-lock.json}.
 
@@ -102,7 +102,7 @@ Podle tokenu je klient jednoznačně identifikovatelný. Endpointy a GraphQL res
 \textit{checkPermissions} společně s požadovanými oprávněními. \textit{checkPermissions} pak zavolá původní
 endpoint nebo resolver, pouze pokud má klient dostatečná oprávnění.
 
-\section{Komunikace backendu a frontendu}
+\section{Komunikace}
 
 \subsection{Endpointy backendu} \label{endpoints}
 
@@ -246,7 +246,7 @@ lze nastavit automatické mazání po uplynuté době.
 
 Výřezy jsou získány pomocí knihovny sharp a souřadnic SPZ od OpenALPR.
 Zvolený způsob uložení je standardní dokument v MongoDB. Data jsou zakódována do base64,
-a handler endpointu \textit{/captureImage/:id} je dekóduje zpět.
+a handler endpointu \textit{/captureImage/:id} (viz \ref{endpoints}) je dekóduje zpět.
 
 První alternativou by bylo využít GridFS MongoDB, ten je určen pro soubory
 nad 16MB (limit formátu BSON) nebo pokud je potřeba číst jen části souborů.
@@ -436,7 +436,7 @@ Jedná se o spektrum, ne o kategorie.
 \begin{itemize}
   \setlength\itemsep{0.05em}
   \item \textbf{Bez vnitřního stavu} -- může se jednat o tlačítka, vstupy textu apod. Tyto komponenty jsou zcela řízeny
-      nadřazenou komponentou.
+      nadřazenou komponentou. S nadřazenou komponentou komunikují pomocí callback funkcí, které komponenta přijímá jako parametry.
   \begin{itemize}
     \setlength\itemsep{0.05em}
     \item \textbf{Strukturní} -- delegují data dalším komponentám a mohou mít podřízené komponenty. Příkladem budiž sekce třeba v 
@@ -449,6 +449,56 @@ Jedná se o spektrum, ne o kategorie.
     \item \textbf{Komunikující se světem} --  komunikují s vnějším světem. Například posílají GraphQL dotaz backendu.
   \end{itemize}
 \end{itemize}
+
+\subsection{Základní prvky uživatelského rozhraní}
+
+\noindent
+Každá složitější webová aplikace používá různé druhy tlačítek a vstupů.
+Bohužel v každém prohlížeči vypadají základní prvky jinak. Na obrázku \ref{fig:browser_checkboxes}
+je screenshot z webové stránky \url{https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox}.
+
+Pokud se chce navíc vizuálně sjednotit tyto prvky se zbytkem uživatelského rozhraní, je
+vyvinutí vlastních elementárních prvků nevyhnutelné. Vývoj se řídil principem minimu informací
+-- omezí se v rámci jednoho prvku počet nápadných částí. V praxi to například znamená žádné nebo méně výrazné
+ orámování (CSS vlastnost \textit{border}) a zahlé rohy (CSS vlastnost \textit{border-radius}).
+Na obrázku \ref{fig:ui_elems} lze vidět prvky využité v projektu.
+
+\begin{figure}[!htb] \centering
+  \includegraphics[width=70mm]{../img/chrome_checkbox.png}
+  \includegraphics[width=70mm]{../img/firefox_checkbox.png}
+  \caption{Checkboxy v Mozilla Firefox a Google Chrome.}
+  \label{fig:browser_checkboxes}
+\end{figure}
+
+\begin{figure}[htb!]
+  \centering
+  \begin{tabular}{@{}c@{}}
+    \includegraphics[width=70mm]{../img/buttons.png} \\
+    \small (1) Tlačítka -- Delete je vypnut/disabled.
+  \end{tabular}
+
+  \vspace{\floatsep}
+
+  \begin{tabular}{@{}c@{}}
+    \includegraphics[width=24mm]{../img/two_pickers.png} \\
+    \small (2) Přepínač -- zapnut a vypnut.
+  \end{tabular}
+
+  \vspace{\floatsep}
+  \begin{tabular}{@{}c@{}}
+    \includegraphics[width=28mm]{../img/checkboxes.png} \\
+    \small (3) Checkbox ve stádiích vypnutí, přejíždění myší, zapnutí a opět přejíždění myší.
+  \end{tabular}
+
+  \vspace{\floatsep}
+  \begin{tabular}{@{}c@{}}
+    \includegraphics[width=70mm]{../img/ui_flag.png} \\
+    \small (4) Zvýrazňovač -- chyba, upozornění a SPZ (podtržení značí interaktivnost).
+  \end{tabular}
+  \caption{Základní prvky uživatelského rozhraní.}
+  \label{fig:ui_elems}
+\end{figure}
+
 
 \subsection{Grafy}
 
@@ -498,7 +548,7 @@ Další vybírátka abstrahují i vstup od uživatele, takže lze použít např
 
 \subsection*{Zařízení}
 
-\begin{figure}[!htb] \centering
+\begin{figure} \centering
   \includegraphics[width=145mm]{../img/page_devices.png}
   \caption{Stránka pro zařízení.}
   \label{fig:page_devices}
@@ -510,7 +560,7 @@ Po vypršení QR kódu je uživateli nabídnuto vytvořit nový.
 
 \subsection*{Pravidla a Filtry}
 
-\begin{figure}[!htb] \centering
+\begin{figure} \centering
   \includegraphics[width=145mm]{../img/page_rules.png}
   \caption{Stránka s pravidly, filtry a simulací pravidel.}
   \label{fig:page_rules}
@@ -523,7 +573,7 @@ dole v sekci Simulation.
 
 \subsection*{Vozidla a parkování}
 
-\begin{figure}[!htb] \centering
+\begin{figure} \centering
   \includegraphics[width=145mm]{../img/page_vehicles1.png}
   \caption{Záznam o parkování.}
   \label{fig:page_session}
