@@ -83,15 +83,18 @@ Tato stránka umožňuje změnu údajů a hesla současně přihlášeného uži
 \noindent
 Na této stránce je správa zařízení zachycujících snímky SPZ, která lze autentifikovat do systému pomocí
 QR kódu. Pokud však zařízení není aktivováno a QR kód vyprší, tak lze vygenerovat nový.
-Obrazovka také zobrauje čas posledního kontaktu.
-Nastavení zařízení obsahuje směr (dovnitř/ven), parametry pro detekci SPZ popsané v podkapitole \ref{reco_params},
+Obrazovka také zobrauje čas posledního kontaktu se zařízením.
+Nastavení zařízení obsahuje směr (dovnitř/ven), parametry pro detekci SPZ popsané v podkapitole \ref{reco_params}
 a paramatry pro zmenšení snímky popsané v podkapitole \ref{app_resizing}.
 
 Screenshot obrazovky je na obrázku \ref{fig:page_devices}.
 
 \begin{figure} \centering
   \includegraphics[width=145mm]{../img/page_devices.png}
-  \caption{Stránka pro zařízení s hlavním menu.}
+  \caption[Stránka pro zařízení s hlavním menu.]{Stránka pro zařízení s hlavním menu. Stránka se
+  pravidelně aktualizuje. Pokud byl poslední kontakt se zařízením před více jak minutou,
+  čas posledního kontaktu se podbarví červeně. Pokud byl poslední kontakt se zařízením
+  před více jak hodinou, místo relativního časo se zobrazí čas absolutní.}
   \label{fig:page_devices}
 \end{figure}
 
@@ -103,8 +106,8 @@ Pro ověření je možné parkovací pravidla a filtry simulovat.
 Obrazovka obsahuje pohled v rámci dne a měsíce, který umožňuje mazání přiřazení pravidel na několik dnů a
 kopírování přiřazení pravidel na několik dnů na konkrétní dny, což umožňuje rychlou manipulaci
 s přiřazením pravidel.
-Je-li potřeba mít ty samá pravidla několik týdnů, měsíců nebo let, lze požadovaný rozsah vybrat
-a zkopírovat buď na několik míst, nebo zvolit počáteční datum a počet zkopírování.
+Je-li potřeba mít ta samá pravidla několik týdnů, měsíců nebo let, lze požadovaný rozsah vybrat
+a zkopírovat buď na několik míst, nebo zvolit počáteční datum a počet zkopírování do budoucnosti.
 
 Screenshoty obrazovky jsou na obrázcích \ref{fig:page_rules_filters1}, \ref{fig:page_rules_filters2} a \ref{fig:page_rules_filters3}.
 
@@ -136,8 +139,8 @@ Screenshoty obrazovky jsou na obrázcích \ref{fig:page_rules_filters1}, \ref{fi
 
 \noindent
 Na této stránce lze zobrazit záznamy parkování, které obsahují čas vjezdu a výjezdu,
-aplikovaná pravidla a vypočítaná částku k zaplacení, a také vozidla, kdy parkovala a kolik
-bylo celkem naúčtováno.
+aplikovaná pravidla, vypočítanou částku k zaplacení pro konkrétní záznam a také vozidla,
+kdy parkovala a kolik bylo celkem naúčtováno jednomu vozidlu.
 
 Screenshoty obrazovky jsou na obrázcích \ref{fig:page_vehicles1} a \ref{fig:page_vehicles2}.
 
