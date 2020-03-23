@@ -55,8 +55,7 @@ Některé méně důležite adresáře byly vynechány.
 
 \newpage
 
-Nastavení frontendu je upravitelné ve složce s konfigurací (/config).
-Některé hodnoty jsou brané z proměnných prostředí, mají ale předdefinovanou hodnotu, pokud
+Některé konfigurovatelné hodnoty jsou brané z proměnných prostředí, mají ale předdefinovanou hodnotu, pokud
 konkrétní proměnná prostředí je prázdná.
 
 Nastavení backendu je řešeno knihovnou nconf, která umožňuje kteroukoliv hodnotu upravit
@@ -70,7 +69,7 @@ Seznam všech závislostí je uveden v souborech \textit{package.json} a \textit
 \section{Obrazovky}
 
 \noindent
-Dle požadavků z úvodu mějme po příhlášení do webového rozhraní následující obrazovky,
+Mějme po příhlášení do webového rozhraní následující obrazovky,
 mezi kterými bude uživatel přepínat pomocí hlavního menu.
 
 \subsection{Správa účtu}
@@ -103,10 +102,8 @@ Screenshot obrazovky je na obrázku \ref{fig:page_devices}.
 \noindent
 Tato stránka umožňuje definici parkovacích pravidel a filtrů vozidel (popsáno v \ref{analysis_parking_schema}).
 Pro ověření je možné parkovací pravidla a filtry simulovat.
-Obrazovka obsahuje pohled v rámci dne a měsíce, který umožňuje mazání přiřazení pravidel na několik dnů a
-kopírování přiřazení pravidel na několik dnů na konkrétní dny, což umožňuje rychlou manipulaci
-s přiřazením pravidel.
-Je-li potřeba mít ta samá pravidla několik týdnů, měsíců nebo let, lze požadovaný rozsah vybrat
+Obrazovka obsahuje pohled v rámci dne a měsíce.
+Je-li potřeba mít ta samá pravidla několik týdnů, měsíců nebo let, lze požadovaný rozsah (týden, měsíc, pár dnů) vybrat
 a zkopírovat buď na několik míst, nebo zvolit počáteční datum a počet zkopírování do budoucnosti.
 
 Screenshoty obrazovky jsou na obrázcích \ref{fig:page_rules_filters1}, \ref{fig:page_rules_filters2} a \ref{fig:page_rules_filters3}.
@@ -114,7 +111,8 @@ Screenshoty obrazovky jsou na obrázcích \ref{fig:page_rules_filters1}, \ref{fi
 \begin{figure}[htb!] \centering
   \includegraphics[width=145mm]{../img/page_rules_filters1.png}
   \caption[Stránka s pravidly a filtry -- pohled na jeden den.]{Stránka s pravidly a filtry -- pohled na jeden den.
-  Na horizontální ose je čas a na vertikální ose je priorita přiřazení pravidla. Oranžová čára značí simulaci a vlevo
+  Na horizontální ose je čas a na vertikální ose je priorita přiřazení pravidla.
+  Kliknutím na blok v kalendáři se otevře editace přiřazení pravidla. Oranžová čára značí simulaci a vlevo
   dole lze spatřit výpočítanou částku k zaplacení. Nalevo od panelu se simulací jsou editory definic filtrů
   a pravidel. Modrá horizontální čára značí aktuální čas.}
   \label{fig:page_rules_filters1}
@@ -324,9 +322,8 @@ function blobImage(url: string, setBlobUrl: string => void,
 
 \noindent
 Pokud je rozpoznána SPZ, nalezená SPZ se z obrázku vyřízne, a pak je dostupná k zobrazení ve webovém rozhraní.
-Tuto funkci lze vypnout ve webové aplikaci a zároveň lze výřezy smazat podle data vytvoření a
-lze nastavit automatické mazání po uplynuté době.
-
+% Tuto funkci lze vypnout ve webové aplikaci a zároveň lze výřezy smazat podle data vytvoření a
+% lze nastavit automatické mazání po uplynuté době.
 Výřezy jsou získány pomocí knihovny sharp a souřadnic SPZ od OpenALPR.
 Zvolený způsob uložení je standardní dokument v MongoDB. Data jsou zakódována do base64,
 a handler endpointu \textit{/captureImage/:id} (viz \ref{endpoints}) je dekóduje zpět.
@@ -621,6 +618,7 @@ Další vybírátka abstrahují i vstup od uživatele, takže lze použít např
 
 \begin{figure}[!htb] \centering
   \includegraphics[width=70mm]{../img/picker_component.png}
-  \caption{Vyrenderovaná komponenta jednoho vybírátka.}
+  \caption[Vyrenderovaná komponenta jednoho vybírátka.]{Vyrenderovaná komponenta jednoho vybírátka. Šedivě podbarvený uživatel je zvolený.
+  Při psaní do textového se ihned vyhledává hledaný objekt -- v tomto případě uživatel.}
   \label{fig:picker_component}
 \end{figure}

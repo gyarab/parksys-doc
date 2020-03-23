@@ -1,17 +1,41 @@
 \chapter*{Závěr}
 \addcontentsline{toc}{chapter}{Závěr}
 
-Výsledný projekt splňuje celé zádání kromě jednoho bodu -- konkrétně se jedná o
-různý provoz
-o svátích a podobných dnech. Implementace takovéto funkcionality
-vyžaduje implementovat kalendář.
-Co se týče rozpoznávání SPZ, statistik, samotných pravidel a filtrů vozidel, je zde
-vše implementováno a funguje skvěle.
-Při prohlížení záznamů parkování lze nahlédnout na výřez SPZ z pořízeného snímku.
-Navíc lze pravidla a filtry simulovat pro libovolné vozidlo.
+\noindent
+Výsledný produkt se vyvinul nad očekávání autora. Rozpoznávání SPZ 
+pomocí běžného telefonu funguje skvěle a
+občas i za poměrně nehostinných podmínek (viz obrázek \ref{fig:recogn}).
+
+\begin{figure}[!htb] \centering
+  \includegraphics[width=145mm]{../img/example_recognition.png}
+  \caption{Rozpoznaná SPZ v nehostinných podmínkách.}
+  \label{fig:recogn}
+\end{figure}
+
+\noindent
+Co se týče uživatelského rozhraní, tak to vypadá jednotně a přehledně.
+Je nabité funkcemi a dohromady s backendem umožňuje ovládat parkovací systém. Zejména monitorovat
+zařízení a měnit jejich nastavení na dálku, simulovat vytvořená parkovací pravidla
+a filtry, číst statistiky a záznamy parkování.
 
 Vývoj byl díky vhodně zvoleným technologiím poměrně rychlý a bezbolestný.
 V jeho průběhu nedošlo k žádnému backtrackování kvůli předchozím rozhodnutím.
+I automatické testování se vyplatilo.
 Projekt je bez velkých obtíží rozšiřitelný a pozměnitelný.
-Dalším rozšířením, aby projekt byl plnohodnotný parkovací systém, by byla
-integrace s platebním terminálem a závorou.
+Projekt by šlo rozšířit o komunikaci se závorou a platebním terminálem,
+což by z projektu udělalo plnohodnotný parkovací systém.
+
+% Výsledný projekt splňuje celé zádání kromě jednoho bodu -- konkrétně se jedná o
+% různý provoz
+% o svátích a podobných dnech. Implementace takovéto funkcionality
+% vyžaduje implementovat kalendář.
+% Co se týče rozpoznávání SPZ, statistik, samotných pravidel a filtrů vozidel, je zde
+% vše implementováno a funguje skvěle.
+% Při prohlížení záznamů parkování lze nahlédnout na výřez SPZ z pořízeného snímku.
+% Navíc lze pravidla a filtry simulovat pro libovolné vozidlo.
+
+% Vývoj byl díky vhodně zvoleným technologiím poměrně rychlý a bezbolestný.
+% V jeho průběhu nedošlo k žádnému backtrackování kvůli předchozím rozhodnutím.
+% Projekt je bez velkých obtíží rozšiřitelný a pozměnitelný.
+% Dalším rozšířením, aby projekt byl plnohodnotný parkovací systém, by byla
+% integrace s platebním terminálem a závorou.

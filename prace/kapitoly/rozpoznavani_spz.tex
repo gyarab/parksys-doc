@@ -3,11 +3,15 @@
 
 \noindent
 Jak již bylo řečeno v kapitole \ref{archtech}, mobilní aplikace pořídí snímek,
-pošle ho na Backend, jenž ho pošle serveru s knihovnou OpenALPR, která
+pošle ho backendu, jenž ho pošle serveru s knihovnou OpenALPR, která
 rozpozná SPZ a výsledek pošle zpět na backend. V této kapitole si popíšeme
 mobilní aplikaci a server s OpenALPR.
 
 \section{Zvyšování přesnosti} \label{reco_params}
+
+\noindent
+Přesnost je hodně ovlivněna osvětlením, proto při nasazení v prostředí s neideálním
+osvětlením je dobré použít dodatečné světlo osvětlující SPZ.
 
 \subsection{Cachování výsledků}
 
