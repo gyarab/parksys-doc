@@ -46,7 +46,7 @@ JSON řetězec s aktivačním heslem, pomocí kterého se zařízení přihlás�
 Samotné skenování QR kódu je provedeno externí aplikací Barcode Scanner od vývojáře
 Zxing Team, která lze nainstalovat z Play Store.
 
-Konkrétní mechnismus komunikace s touto externí byl převzán. \citep[viz][]{QrScan}
+Konkrétní mechnismus komunikace s touto externí byl převzán. \citep[][]{QrScan}
 
 \section{Volba zařízení pro mobilní aplikaci}
 
@@ -60,8 +60,9 @@ Minimální verze Androidu je 5 (SDK 21).
 Autorovi se nepodařilo najít způsob, jak zároveň pořizovat v pravidelném intervalu snímky
 a mít zařízení uzamknuté proti přístupu. K zajištění pořizování snímků si hlavní
 obrazovka aplikace řekně systému Android o zabránění uzamknutí.
+
 To má dva následky. První je, že zařízení by nemělo mít OLED displej, aby nedošlo k takzvanému
-\textit{burn-in} \citep[viz][]{OledBurnIn}. Druhý je, že zařízení by mělo být v produkčním provozu
+\textit{burn-in}. \citep[][]{OledBurnIn} Druhý je, že zařízení by mělo být v produkčním provozu
 bezpečně uzavřeno v krabičce, nebo by se mělo nacházet na bezpečném místě, aby se předešlo
 nepovolené manipulaci.
 
@@ -127,13 +128,13 @@ lze vidět obě -- hlavní obrazovku a nastavení.
 Ke komunikaci přes HTTP využívá aplikace knihovnu Volley, která je doporučena
 v Android dokumentaci. Princip použití je takový, že si vytvoříme
 \textit{singleton} obstarávající frontu žádostí, kterému předáváme HTTP žádosti s
-\textit{callback} funkcí obsluhující odpověď. \citep[viz][]{Volley1}
+\textit{callback} funkcí obsluhující odpověď. \citep[][]{Volley1}
 
 \subsection{Ukládání snímků}
 
 \noindent
 Snímky se ukládají do paměti určené pro aplikaci. Kdyby se použily dočasné soubory,
 mohlo by se stát, že je systém před posláním nemilosrdně smaže.
-\citep[viz][]{AndroidMem}
+\citep[][]{AndroidMem}
 Aplikace tedy musí obstarávat i mazání souborů, což se provádí
 ihned po odeslání snímku na backend.

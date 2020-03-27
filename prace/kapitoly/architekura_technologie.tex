@@ -38,7 +38,7 @@ Obrázek \ref{fig:architecture_drawing} ukazuje tyto části a nastiňuje obsah 
 \noindent
 Databáze MongoDB byla vybrána, protože data se budou převážně zapisovat a bude potřeba v nich rychle
 hledat a provádět agregační dotazy.
-Mimo jiné umožňuje provoz několika spolupracujících instancí, zálohování apod. \citep[viz][]{MongoDB}
+Mimo jiné umožňuje provoz několika spolupracujících instancí, zálohování apod. \citep[][]{MongoDB}
 
 \subsection{Backend} \label{backend}
 
@@ -47,7 +47,7 @@ Jako programovací jazyk pro backend byl zvolen staticky typovaný Typescript kv
 a množství knihoven, které poskytuje ekosystém Node.js. \citep[][]{Typescript} \citep[][]{Nodejs}
 
 Pro definici databázových modelů a komunikaci s databází byla kvůli své vyspělosti a skvělé funkcionalitě zvolena
-knihovna mongoose. \citep[viz][]{Mongoose}
+knihovna mongoose. \citep[][]{Mongoose}
 
 Primárním způsobem komunikace s frontendem
 je dotazovací jazyk GraphQL, který přináší ucelený popis poskytovaných dat pomocí kontroly typů a
@@ -64,7 +64,7 @@ Model uživatele může mít i další atributy, ale GraphQL vrátí přesně ty
 Tento triviální příklad neukazuje další funkce jako mutace dat, dědičnost typů, více dotazů v jedné HTTP žádosti
 a mnoho dalších funkcí.
 GraphQL je pouze specifikace vytvořená společností Facebook a má několik
-implementací. \citep[viz][]{GraphQLDoc} Pro tento projekt byla zvolena implementace Apollo \citep[viz][]{Apollo}.
+implementací. \citep[][]{GraphQLDoc} Pro tento projekt byla zvolena implementace Apollo \citep[][]{Apollo}.
 
 Jelikož GraphQL posílá odpovědi v JSON, není vhodné pro posílání obrázků. Je to možné za využití base64 kódování,
 ale přes síť se přenese více bytů, než při použití obvyklého způsobu přes HTTP. Z toho důvodu pro posílání
@@ -79,11 +79,11 @@ bez načítání dalších stránek.
 
 Renderování zajišťuje knihovna React, která od klasického přístupu, kdy se odděluje HTML a Javascript do separátních
 souborů, mandatuje, že v jednom souboru je jedna komponenta se vším svým HTML a logikou ve formě Javascriptu nebo
-Typescriptu. \citep[viz][]{Reactjs}
-Pomocí další knihovny typestyle pak můžeme do stejného souboru psát i typované CSS \citep[viz][]{typestyle}.
+Typescriptu. \citep[][]{Reactjs}
+Pomocí další knihovny typestyle pak můžeme do stejného souboru psát i typované CSS.\citep[][]{typestyle}
 
 Aby bylo možné snadno sdílet mezi komponentami stav, byla pro takzvaný state-management zvolena knihovna Redux.
-\citep[viz][]{ReduxCore}
+\citep[][]{ReduxCore}
 Diagram na obrázku \ref{fig:react_redux_dataflow} ukazuje tok dat mezi Reactem a Reduxem.
 
 Jelikož je aplikace vyvíjena pro správce systému a ne pro velké množství uživatelů, můžeme si dovolit
@@ -91,7 +91,7 @@ klást menší nároky na velikost aplikace (tj. můžeme přidávat i velké kn
 
 \begin{figure}[!htb] \centering
 \includegraphics[width=145mm]{../img/react-redux-architecture.png}
-\caption{Spojení React a Redux. \citep[viz][]{react_redux_dataflow}}
+\caption{Spojení React a Redux. \citep[][]{react_redux_dataflow}}
 \label{fig:react_redux_dataflow}
 \end{figure}
 
@@ -110,12 +110,12 @@ backend, který je patřičně zpracuje.
 \noindent
 Detekci SPZ bude zajišťovat knihovna OpenALPR, jejímž vstupem je obrázek a popřípadě
 parametry jako úhel kamery apod.
-\citep[viz][]{OpenALPR}
+\citep[][]{OpenALPR}
 
 Ke zbytku aplikace bude připojena malým HTTP serverem, jenž byl převzat a upraven.
 Ten umožňuje poslat pomocí HTTP obrázek a obdržet JSON s SPZ daty a souřadnicemi detekované SPZ.
 Samotný server ke knihovně přistupuje zavoláním binárky \textit{alpr}, který jako argument přijme cestu k
-obrázku, ve kterém hledáme SPZ. \citep[viz][]{OpenALPR_Server}
+obrázku, ve kterém hledáme SPZ. \citep[][]{OpenALPR_Server}
 
 Alternativní a lepší způsob přístupu by bylo mít v Node.js přímo takzv.
 \textit{language-binding}, ale to se autorovi (a mnoho dalším, kteří se o to pokoušeli) nepodařilo.

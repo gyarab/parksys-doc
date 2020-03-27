@@ -61,7 +61,7 @@ konkrétní proměnná prostředí je prázdná.
 Nastavení backendu je řešeno knihovnou nconf, která umožňuje kteroukoliv hodnotu upravit
 pomocí proměnných prostředí -- stačí jen vzít cestu k hodnotě a každé vnoření nahradit 
 dvěma podtržítky.
-\citep[viz][]{nconf}
+\citep[][]{nconf}
 Například cesta \texttt{\{ mongo: \{ host \} \}} lze přepsat promměnou prostředí s názvem \texttt{mongo\_\_host}.
 
 Seznam všech závislostí je uveden v souborech \textit{package.json} a \textit{package-lock.json}.
@@ -223,7 +223,7 @@ k typu, který náš kořenový resolver vrací, napíšeme další resolvery, k
 Kdybychom se databáze ptali na uživatele i s
 mazlíčky (v SQL terminologii bychom provedli JOIN), tak bychom nemuseli pro typ \textit{User} psát resolver pro mazlíčky, kde bychom
 se dotázali na mazlíčky našeho uživatele.
-\citep[viz][]{GraphQLDoc}
+\citep[][]{GraphQLDoc}
 
 Zároveň můžeme provádět virtualizaci atributů -- přidávat atributy, které v databázi nemáme, ale pro webové rozhraní se hodí.
 Hypotetickým příkladem budiž celková zaplacená částka zákazníkem, která se v případě potřeby vypočítá nebo aktuální agregované statistiky.
@@ -276,7 +276,7 @@ Webové rozhraní komunikující s backendem využívá již zmíněnou klientsk
 který má mnoho paremetrů.
 
 Nejdůležitější z nich jsou funkce, které řeší zpracování žádosti i odpovědi, jimž se říká \textit{links}.
-Ty řeší zpracování chyb a poslání chyb do Reduxu, přečtení URL backendu z nastavení, také vložení tokenu do hlavičky žádosti (viz \ref{auther_authen}).
+Ty řeší zpracování chyb a poslání chyb do Reduxu, přečtení URL backendu z nastavení, také vložení tokenu do hlavičky žádosti ( \ref{auther_authen}).
 Jejich způsob použití lze přirovnat k návrhovému vzoru \textit{chain-of-responsibility}.
 
 Další parametr je určen ke cachování a vložení GraphQL schema získaného z backendu, aby bylo možné používat v dotazech fragmenty.
@@ -326,11 +326,12 @@ Pokud je rozpoznána SPZ, nalezená SPZ se z obrázku vyřízne, a pak je dostup
 % lze nastavit automatické mazání po uplynuté době.
 Výřezy jsou získány pomocí knihovny sharp a souřadnic SPZ od OpenALPR.
 Zvolený způsob uložení je standardní dokument v MongoDB. Data jsou zakódována do base64,
-a handler endpointu \textit{/captureImage/:id} (viz \ref{endpoints}) je dekóduje zpět.
+a handler endpointu \textit{/capture-Image/:id} (viz \ref{endpoints}) je dekóduje zpět.
 
-První alternativou by bylo využít GridFS MongoDB, ten je určen pro soubory
+První alternativou bylo využít GridFS MongoDB, ten je určen pro soubory
 nad 16MB (limit formátu BSON) nebo pokud je potřeba číst jen části souborů.
 Výřezy přibližně 500x100 pixelů jsou však mnohonásobně menší a vždy jsou načítány celé.
+% TODO: CITE
 
 Druhou alternativou by byl souborový systém, ale mít všechna data v databázi je praktičtější.
 
@@ -375,8 +376,8 @@ type VehicleFilter {
 \end{lstlisting}
 \caption[Definice typů ParkingRuleAssignment a VehicleFilter v GraphQL SDL.]{Definice typů ParkingRuleAssignment a VehicleFilter v GraphQL SDL.
 Tučne jsou označeny rezervovaná slova a skáláry již obsažené v základním GraphQL.
-Kurzívou jsou označeny skaláry z balíčku \textit{graphql-scalars}.
-Vykřičník značí, že atribut je povinný.
+Kurzívou jsou označeny skaláry z knihovny graphql-scalars.
+Vykřičník značí, že atribut je povinný (nesmí být null v odpovědi).
 Typ VehicleFilterMode je enum, jehož možné hodnoty jsou ALL, NONE.
 Typ VehicleFilterAction je taktéž enum, jehož možné hodnoty jsou INCLUDE, EXCLUDE.}
 \label{fig:type_pra_vf}
@@ -487,14 +488,14 @@ filtrů, pak je časová složitost ${\cal O}(N\cdot{M})$.
 \noindent
 Jelikož autor neměl zkušenosti s vývojem webového uživatelského rozhraní, rozhodl se využít starter projekt
 společnosti Crazy Factory GmbH, který pojí vybrané technologie dohromady a mandatuje projektu základní strukturu.
-Navíc podporuje překlady, reportování chyb apod., což je obtížné vytvářet z ničeho. \citep[viz][]{CFProj}
+Navíc podporuje překlady, reportování chyb apod., což je obtížné vytvářet z ničeho. \citep[][]{CFProj}
 
 \subsection{Redux a persistence stavu}
 
 \noindent
 Jak již bylo zmíněno v předchozí kapitole, uživatelské rozhraní používá Redux pro sdílení stavu mezi komponentami.
 Stav v Reduxu je strom, jenž je upravován akcemi. Akce a současný stav je předán takzvaným \textit{reducers}, což jsou prosté funkce,
-které vrátí stav nový. \citep[viz][]{ReduxCore} Prostost reducerů zajišťuje testovatelnost.
+které vrátí stav nový. \citep[][]{ReduxCore} Prostost reducerů zajišťuje testovatelnost.
 
 Jako příklad konkrétního využití budiž sdílení některých údajů mezi obrazovkami.
 Například sdílení vozidla mezi stránkou s vozidly a stránkou s pravidly, schopnost seznamu se záznamy o parkování
@@ -505,7 +506,7 @@ Reduxem. Jedná se vlastně o formu \textit{dependency-injection}. Stejným mech
 funkce vytvářející akce a jiné vedlejší efekty, což dělá tyto komponenty snadno testovatelné.
 
 K uložení stavu aplikace po zavření okna, použijeme knihovnu redux-persist, která poskytuje
-HOF funkci, které dáme reducer, a ona změny, které způsobí, někam uloží. \citep[viz][]{reduxpersist}
+HOF funkci, které dáme reducer, a ona změny, které způsobí, někam uloží. \citep[][]{reduxpersist}
 V našem případě se jedná o \textit{localstorage}.
 
 \subsection{Typy komponent}
@@ -538,7 +539,7 @@ Každá složitější webová aplikace používá různé druhy tlačítek a vs
 Bohužel v každém prohlížeči vypadají základní prvky jinak. Na obrázku \ref{fig:browser_checkboxes}
 je screenshot z webové stránky \url{https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox}.
 
-Pokud se chce navíc vizuálně sjednotit tyto prvky se zbytkem uživatelského rozhraní, je
+Pokud se chce navíc uálně sjednotit tyto prvky se zbytkem uživatelského rozhraní, je
 vyvinutí vlastních elementárních prvků nevyhnutelné. Vývoj se řídil principem minimu informací
 -- omezí se v rámci jednoho prvku počet nápadných částí. V praxi to například znamená žádné nebo méně výrazné
  orámování (CSS vlastnost \textit{border}) a zahlé rohy (CSS vlastnost \textit{border-radius}).
