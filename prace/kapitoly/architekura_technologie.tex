@@ -38,6 +38,8 @@ Obrázek \ref{fig:architecture_drawing} ukazuje tyto části a nastiňuje obsah 
 \noindent
 Databáze MongoDB byla vybrána, protože data se budou převážně zapisovat a bude potřeba v nich rychle
 hledat a provádět agregační dotazy.
+MongoDB je takzvaná NoSQL databáze -- k dotazování se nepoužívá SQL, nýbrž vlastní způsob dotazování v
+JSON. Základní datovou jednotkou je JSON/BSON dokument.
 Mimo jiné umožňuje provoz několika spolupracujících instancí, zálohování apod. \citep[][]{MongoDB}
 
 \subsection{Backend} \label{backend}
@@ -64,7 +66,8 @@ Model uživatele může mít i další atributy, ale GraphQL vrátí přesně ty
 Tento triviální příklad neukazuje další funkce jako mutace dat, dědičnost typů, více dotazů v jedné HTTP žádosti
 a mnoho dalších funkcí.
 GraphQL je pouze specifikace vytvořená společností Facebook a má několik
-implementací. \citep[][]{GraphQLDoc} Pro tento projekt byla zvolena implementace Apollo \citep[][]{Apollo}.
+implementací. \citep[][]{GraphQLDoc} Pro tento projekt byla zvolena implementace Apollo,
+protože poskytuje knihovnu pro backend i frontend. \citep[][]{Apollo}
 
 Jelikož GraphQL posílá odpovědi v JSON, není vhodné pro posílání obrázků. Je to možné za využití base64 kódování,
 ale přes síť se přenese více bytů, než při použití obvyklého způsobu přes HTTP. Z toho důvodu pro posílání
@@ -82,16 +85,23 @@ souborů, mandatuje, že v jednom souboru je jedna komponenta se vším svým HT
 Typescriptu. \citep[][]{Reactjs}
 Pomocí další knihovny typestyle pak můžeme do stejného souboru psát i typované CSS.\citep[][]{typestyle}
 
-Aby bylo možné snadno sdílet mezi komponentami stav, byla pro takzvaný state-management zvolena knihovna Redux.
+Aby bylo možné snadno sdílet mezi komponentami stav, byla pro takzvaný \textit{state-management} zvolena knihovna Redux.
 \citep[][]{ReduxCore}
 Diagram na obrázku \ref{fig:react_redux_dataflow} ukazuje tok dat mezi Reactem a Reduxem.
+Tato architektura zároveň umožňuje testovatelnost -- můžeme jednoduše ověřit, zdali byla akce
+například po kliknutí na tlačítko komponenty vyvolána, a jak komponenta reagovala na změnu stavu.
 
 Jelikož je aplikace vyvíjena pro správce systému a ne pro velké množství uživatelů, můžeme si dovolit
 klást menší nároky na velikost aplikace (tj. můžeme přidávat i velké knihovny), což velice usnadní vývoj.
 
 \begin{figure}[!htb] \centering
 \includegraphics[width=145mm]{../img/react-redux-architecture.png}
-\caption{Spojení React a Redux. \citep[][]{react_redux_dataflow}}
+\caption[Spojení React a Redux.]{Spojení React a Redux. \citep[][]{react_redux_dataflow}
+Komponenty vyvolávají akce pomocí \textit{action-creators}, akce jsou předány prostým funkcím zvaným \textit{reducers},
+ty aktualizují stav. Každá komponenta napojená
+na Redux má \textit{selector} funkci, pokud se výstup z \textit{selector} funkce aktualizuje, komponenta je přerenderována Reactem.
+V obrázku je prvek zvaný \textbf{Container}, ten je HOF (abbrv. Higher-Order-Function) pro komponentu a dodává jí přístup ke stavu a vytváření akcí.
+Reakce na akci může být i dotaz na server nebo jiný vedlejší efekt mimo komponentu.}
 \label{fig:react_redux_dataflow}
 \end{figure}
 
