@@ -179,7 +179,7 @@ Kdyby klient posílal token v souboru Cookie, vystavoval by se riziku útoku CSR
 Místo toho bude klient posílat token v hlavičce \textit{Authorization}.
 
 Podle tokenu je klient jednoznačně identifikovatelný. Endpointy a GraphQL resolvery jsou zabezpečeny tak,
-že každý endpoint nebo resolver, jenž vyžaduje oprávnění, dáme jako argument HOF (Higher-Order-Function)
+že každý endpoint nebo resolver, jenž vyžaduje oprávnění, dáme jako argument HOF (abbrv. Higher-Order-Function)
 \textit{checkPermissions} společně s požadovanými oprávněními. \textit{checkPermissions} pak zavolá původní
 endpoint nebo resolver, pouze pokud má klient dostatečná oprávnění.
 
@@ -230,10 +230,12 @@ Hypotetickým příkladem budiž celková zaplacená částka zákazníkem, kter
 \subsection{Obecné resolvery}
 
 \noindent
-Jelikož se většina operací nad modely opakuje, byly napsány obecné resolvery jako HOF (Higher-Order-Function)
+Jelikož se většina operací nad modely opakuje, byly napsány obecné resolvery jako HOF (abbrv. Higher-Order-Function)
 pro vytváření, úpravu, mazání, vyhledávání a získávání modelů v relaci.
 Měnící se část je pak pouze definice databázového modelu. Díky GraphQL se neumísi ani ověřovat datové typy --
 GraphQL toto udělá podle schema, které tvoří programátor v SDL (abbrv. Schema-Definition-Language).
+Na obrázku \ref{fig:generic_resolver} lze vidět funkci vracející resolver, který vrátí objekt v relaci
+(provede JOIN v SQL terminologii), pokud ho vlastnící objekt ještě nemá.
 
 \begin{figure}[!htb]
 \lstset{language=Javascript}
@@ -265,9 +267,6 @@ function gqlPopulate<D extends mongoose.Document,
 \caption[Ukázka obecného resolveru v Typescriptu.]{Ukázka obecného resolveru v Typescriptu. Na osmém řádku se získá model z funkce v \textit{lexical-scope} funkce vracející resolver. Proměnná \textit{ctx} definuje kontext resolveru a obsahuje modely a klienta, aby bylo snažší resolvery testovat -- jedná se o \textit{dependency injection}. Na šestém řádku lze vidět parametry, které dostává každý resolver. První parametr je objekt vrácený nadřazeným resolverem. Druhý parametr obsahuje klientem specifikované argumenty, například $id$ hledaného uživatele. Třetí parametr je již zmíněný kontext, jeho obsah si lze definovat dle libosti. Poslední parametr obsahuje informace o dotazu samotném -- jaké parametry si klient vyžádal, AST (angl. Abstract-Syntax-Tree) dotazu apod.}
 \label{fig:generic_resolver}
 \end{figure}
-
-Na obrázku \ref{fig:generic_resolver} lze vidět funkci vracející resolver, který vrátí objekt v relaci (provede JOIN v SQL terminologii),
-pokud ho vlastnící objekt ještě nemá.
 
 \subsection{Tvorba Apollo klienta}
 
@@ -326,13 +325,11 @@ Pokud je rozpoznána SPZ, nalezená SPZ se z obrázku vyřízne, a pak je dostup
 % lze nastavit automatické mazání po uplynuté době.
 Výřezy jsou získány pomocí knihovny sharp a souřadnic SPZ od OpenALPR.
 Zvolený způsob uložení je standardní dokument v MongoDB. Data jsou zakódována do base64,
-a handler endpointu \textit{/capture-Image/:id} (viz \ref{endpoints}) je dekóduje zpět.
+a handler endpointu \textit{/capture-Image/:id} (viz podpodkapitola \ref{endpoints}) je dekóduje zpět.
 
 První alternativou bylo využít GridFS MongoDB, ten je určen pro soubory
-nad 16MB (limit formátu BSON) nebo pokud je potřeba číst jen části souborů.
+nad 16MB (limit formátu BSON) nebo pokud je potřeba číst jen části souborů. \citep{MongoDBGridFS}
 Výřezy přibližně 500x100 pixelů jsou však mnohonásobně menší a vždy jsou načítány celé.
-% TODO: CITE
-
 Druhou alternativou by byl souborový systém, ale mít všechna data v databázi je praktičtější.
 
 \section{Parkovací pravidla} \label{analysis_parking_schema}
@@ -348,6 +345,7 @@ Nechť umí parkovací pravidla následující:
   \item V jednu chvíli může platit více pravidel.
 \end{itemize}
 
+\noindent
 Mechanismus, kterým umožníme vozidlům být ovlivněna některými pravidly,
 budou filtry.
 Pro jednoduchost je zapotřebí oddělit samotná pravidla od jejich
@@ -506,7 +504,7 @@ Reduxem. Jedná se vlastně o formu \textit{dependency-injection}. Stejným mech
 funkce vytvářející akce a jiné vedlejší efekty, což dělá tyto komponenty snadno testovatelné.
 
 K uložení stavu aplikace po zavření okna, použijeme knihovnu redux-persist, která poskytuje
-HOF funkci, které dáme reducer, a ona změny, které způsobí, někam uloží. \citep[][]{reduxpersist}
+HOF (abbrv. Higher-Order-Function), které dáme reducer, a ona změny, které způsobí, někam uloží. \citep[][]{reduxpersist}
 V našem případě se jedná o \textit{localstorage}.
 
 \subsection{Typy komponent}
@@ -600,7 +598,7 @@ například i takzvaný kalendářový graf, jenž lze vidět na obrázku \ref{f
 \noindent
 Dle principu neopakování se bylo vytvořeno několik obecných UI komponent, které umožňují vyhledávání libovolných
 modelů a jejich volbu a využití v ostatních komponentách. Ve zdrojovém kódu je implementujeme jako
-HOF (Higher-Order-Function), což je funkce vracející další funkce -- konkrétní komponenty.
+HOF (aabrv. Higher-Order-Function), což je funkce vracející další funkce -- konkrétní komponenty.
 Měnící se části, které se do těchto obecných komponent budou vkládat, je komponenta renderující jediný model
 (\textit{renderModel}),
 GraphQL dotaz pro získávání modelů (\textit{queryString}), funkce, jejímž vstupem je odpověď na GraphQL dotaz a výstupem je

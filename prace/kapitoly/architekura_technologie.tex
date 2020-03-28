@@ -100,7 +100,8 @@ klást menší nároky na velikost aplikace (tj. můžeme přidávat i velké kn
 Komponenty vyvolávají akce pomocí \textit{action-creators}, akce jsou předány prostým funkcím zvaným \textit{reducers},
 ty aktualizují stav. Každá komponenta napojená
 na Redux má \textit{selector} funkci, pokud se výstup z \textit{selector} funkce aktualizuje, komponenta je přerenderována Reactem.
-V obrázku je prvek zvaný \textbf{Container}, ten je HOF (abbrv. Higher-Order-Function) pro komponentu a dodává jí přístup ke stavu a vytváření akcí.
+V obrázku je prvek zvaný \textit{Container}, ten je HOF (abbrv. Higher-Order-Function) z knihovny react-redux
+pro komponentu a dodává jí přístup ke stavu a vytváření akcí.
 Reakce na akci může být i dotaz na server nebo jiný vedlejší efekt mimo komponentu.}
 \label{fig:react_redux_dataflow}
 \end{figure}

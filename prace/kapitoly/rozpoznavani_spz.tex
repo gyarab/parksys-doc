@@ -1,5 +1,5 @@
 
-\chapter{Rozpoznávání SPZ}
+\chapter{Rozpoznávání SPZ a mobilní aplikace}
 
 \noindent
 Jak již bylo řečeno v kapitole \ref{archtech}, mobilní aplikace pořídí snímek,
@@ -36,57 +36,45 @@ Aby se tedy předešlo naskenování SPZ, které jsou například daleko, lze od
 podle jejich obsahu v pixelech čtverečních. Konkrétní hodnota je potřeba odladit na místě skenování a
 lze změnit ve webové aplikaci pro kterékoliv zařízení.
 
+\section{Komunikace zařízení a backendu}
 
-\section{Autentizace}
+\subsection{Autentizace}
 
 \noindent
-Zařízení se autentifikuje naskenováním QR kódu, jenž lze najít ve webové aplikaci. Ten obsahuje
-JSON řetězec s aktivačním heslem, pomocí kterého se zařízení přihlásí do systému a získa svou konfiguraci.
+Zařízení se autentifikuje naskenováním QR kódu, jenž lze vytvořit ve webové aplikaci. Ten obsahuje
+JSON řetězec s aktivačním heslem, pomocí kterého se zařízení přihlásí do systému a získá svou konfiguraci.
 
 Samotné skenování QR kódu je provedeno externí aplikací Barcode Scanner od vývojáře
 Zxing Team, která lze nainstalovat z Play Store.
 
-Konkrétní mechnismus komunikace s touto externí byl převzán. \citep[][]{QrScan}
+Konkrétní způsob komunikace s touto externí aplikací byl převzán z \citep[][]{QrScan}. 
 
-\section{Volba zařízení pro mobilní aplikaci}
-
-\noindent
-Co se týče hardwarového vybavení snímacího zařízení, tak je vyžadována přední kamera
-s rozlišením alespoň 1000 na 1000 pixelů. Bližší informace ohledně a zdůvodnění zmenšení jsou v sekci \ref{app_resizing}.
-Procesor, RAM i vnitřní paměť může být libovolná -- kterékoliv
-dnešní nové zařízení bohatě postačí (za předpokladu, že vnitřní paměť není zaplněná).
-Minimální verze Androidu je 5 (SDK 21).
-
-Autorovi se nepodařilo najít způsob, jak zároveň pořizovat v pravidelném intervalu snímky
-a mít zařízení uzamknuté proti přístupu. K zajištění pořizování snímků si hlavní
-obrazovka aplikace řekně systému Android o zabránění uzamknutí.
-
-To má dva následky. První je, že zařízení by nemělo mít OLED displej, aby nedošlo k takzvanému
-\textit{burn-in}. \citep[][]{OledBurnIn} Druhý je, že zařízení by mělo být v produkčním provozu
-bezpečně uzavřeno v krabičce, nebo by se mělo nacházet na bezpečném místě, aby se předešlo
-nepovolené manipulaci.
-
-\section{Životní cyklus mobilní aplikace}
+\subsection{Zabezpečení komunikace s mobilní aplikací}
 
 \noindent
-Na obrázku \ref{fig:app_lifecycle} lze vidět životní cyklus mobilní aplikace.
-Proces neprobíhá na jednom vlákně. Jakmile se pořídí fotografie, tak začně odpočet kolem jedné
-sekundy, po kterém se pořídí další, a zároveň se už posílá první fotografie.
-Změní-li se konfigurace na backendu, tak je poslána zařízení při dalším kontaktu, jinak
-konfigurace poslána není.
+Jelikož mobilní aplikace naivně komunikuje s nastaveným počítačem (nastavení viz obrázek \ref{fig:app_ui}),
+tak je potřeba zajistit zabezpečení této komunikace. Autor vidí tři varianty:
 
-\begin{figure}[!htb] \centering
-  \includegraphics[width=135mm]{../img/app_lifecycle.jpg}
-  \caption{Životní cycklus mobilní aplikace.}
-  \label{fig:app_lifecycle}
-\end{figure}
+\begin{itemize}
+  \setlength\itemsep{0.05em}
+  \item Použít HTTPS.
+  \begin{itemize}
+    \item S certifikátem podepsaným certifikační autoritou.
+    \item S certifikátem podepsáným sám sebou (angl. \textit{self-signed}). U této subvarianty je potřeba do Android zařízení importovat daný certfikát v nastavení.
+  \end{itemize}
+  \item Použít VPN.
+  \item Použít uzavřenou a důvěryhodnou síť.
+\end{itemize}
 
-\section{Optimalizace velikosti přenesených dat} \label{app_resizing}
+\noindent
+Tyto varianty lze samozřejmě kombinovat.
+
+\subsection{Optimalizace velikosti přenesených dat} \label{app_resizing}
 
 \noindent
 Aby se ušetřilo na přenesených datech a aby rozpoznání proběhlo rychleji,
 mobilní aplikace zmenší snímek
-na nastavitelnou hodnotu
+na nastavitelnou hodnotu.
 Tuto funkci poskytuje metoda \textit{createScaledBitmap} v třídě \textit{android.graphics.Bitmap}.
 
 V závislosti na poměru stran snímků největšího rozlišení fotoaparátu,
@@ -102,7 +90,44 @@ tak by bez optimalizací byl objem přenesených dat za jeden den $164,16$GB ($3
 Při stejné frekvenci s optimalizacemi by byl objem přenesených dat za jeden den
 $12,96$GB ($3600\cdot24\cdot0,15$MB), což je $7,9$\% objemu bez optimalizací.
 
-\section{Uživatelské rozhraní mobilní aplikace}
+\section{Mobilní aplikace}
+
+\subsection{Volba zařízení pro mobilní aplikaci}
+
+\noindent
+Co se týče hardwarového vybavení snímacího zařízení, tak je vyžadována přední kamera
+s rozlišením alespoň 1000 na 1000 pixelů. Bližší informace ohledně a zdůvodnění zmenšení jsou v podkapitole \ref{app_resizing}.
+Procesor, RAM i vnitřní paměť může být libovolná -- kterékoliv
+dnešní nové zařízení bohatě postačí (za předpokladu, že vnitřní paměť není zaplněná).
+Minimální verze Androidu je 5 (SDK 21).
+
+Autorovi se nepodařilo najít způsob, jak zároveň pořizovat v pravidelném intervalu snímky
+a mít zařízení uzamknuté proti přístupu. K zajištění pořizování snímků si hlavní
+obrazovka aplikace řekně systému Android o zabránění uzamknutí.
+
+To má dva následky. První je, že zařízení by nemělo mít OLED displej, aby nedošlo k takzvanému
+\textit{burn-in}. \citep[][]{OledBurnIn} Druhý je, že zařízení by mělo být v produkčním provozu
+bezpečně uzavřeno v krabičce, nebo by se mělo nacházet na bezpečném místě, aby se předešlo
+nepovolené manipulaci.
+
+Na místě instalace je zároveň nutné napájení, nepředpokládá se, že by zařízení mohlo vydržet delší provozní dobu.
+
+\subsection{Životní cyklus mobilní aplikace}
+
+\noindent
+Na obrázku \ref{fig:app_lifecycle} lze vidět životní cyklus mobilní aplikace.
+Proces neprobíhá na jednom vlákně. Jakmile se pořídí fotografie, tak začně odpočet kolem jedné
+sekundy, po kterém se pořídí další, a zároveň se už posílá první fotografie.
+Změní-li se konfigurace na backendu, tak je poslána zařízení při dalším kontaktu, jinak
+konfigurace poslána není.
+
+\begin{figure}[!htb] \centering
+  \includegraphics[width=135mm]{../img/app_lifecycle.jpg}
+  \caption{Životní cycklus mobilní aplikace.}
+  \label{fig:app_lifecycle}
+\end{figure}
+
+\subsection{Uživatelské rozhraní mobilní aplikace}
 
 \noindent
 Uživatelské rozhraní se skládá ze dvou obrazovek. Na obrázcích \ref{fig:app_ui}
@@ -119,10 +144,9 @@ lze vidět obě -- hlavní obrazovku a nastavení.
   \label{fig:app_ui}
 \end{figure}
 
+\subsection{Implementační detaily mobilní aplikace}
 
-\section{Implementační detaily mobilní aplikace}
-
-\subsection{Komunikace s backendem}
+\subsubsection*{Komunikace s backendem}
 
 \noindent
 Ke komunikaci přes HTTP využívá aplikace knihovnu Volley, která je doporučena
@@ -130,10 +154,11 @@ v Android dokumentaci. Princip použití je takový, že si vytvoříme
 \textit{singleton} obstarávající frontu žádostí, kterému předáváme HTTP žádosti s
 \textit{callback} funkcí obsluhující odpověď. \citep[][]{Volley1}
 
-\subsection{Ukládání snímků}
+\subsubsection*{Ukládání snímků}
 
 \noindent
-Snímky se ukládají do paměti určené pro aplikaci. Kdyby se použily dočasné soubory,
+Snímky se ukládají do paměti určené zařízením pro aplikaci bez potřeby permisí navíc.
+Kdyby se použily dočasné soubory,
 mohlo by se stát, že je systém před posláním nemilosrdně smaže.
 \citep[][]{AndroidMem}
 Aplikace tedy musí obstarávat i mazání souborů, což se provádí
