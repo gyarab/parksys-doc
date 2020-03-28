@@ -491,13 +491,13 @@ Navíc podporuje překlady, reportování chyb apod., což je obtížné vytvá�
 \subsection{Redux a persistence stavu}
 
 \noindent
-Jak již bylo zmíněno v předchozí kapitole, uživatelské rozhraní používá Redux pro sdílení stavu mezi komponentami.
+Jak již bylo zmíněno v podpodkapitole \ref{frontend}, uživatelské rozhraní používá Redux pro sdílení stavu mezi komponentami.
 Stav v Reduxu je strom, jenž je upravován akcemi. Akce a současný stav je předán takzvaným \textit{reducers}, což jsou prosté funkce,
 které vrátí stav nový. \citep[][]{ReduxCore} Prostost reducerů zajišťuje testovatelnost.
 
 Jako příklad konkrétního využití budiž sdílení některých údajů mezi obrazovkami.
 Například sdílení vozidla mezi stránkou s vozidly a stránkou s pravidly, schopnost seznamu se záznamy o parkování
-zvolit vozidlo a mnoho dalších.
+zvolit vozidlo, ukládní části stavu obrazovky mezi přechody mezi ostatními obrazovkami a mnoho dalších.
 
 Některé komponenty jsou pak na stavu závislé a dojde k jejich překreslení, pokud se jimi čtený stav změní, což je též zařízeno
 Reduxem. Jedná se vlastně o formu \textit{dependency-injection}. Stejným mechanismem jsou do komponent vkládány
