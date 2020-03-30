@@ -1,3 +1,17 @@
+
+\newcommand{\getenv}[2][]{%
+\CatchFileEdef{\temp}{"|kpsewhich --var-value #2"}{\endlinechar=-1}%
+\if\relax\detokeniz\def\newtemp{}%
+
+\def\newtemp{}%
+\newcommand{\newgetenv}[2][]{%
+  \CatchFileEdef{\temp}{"|kpsewhich --var-value #2"}{}%
+  \StrGobbleRight{\temp}{1}[\newtemp]%  Delete the trailing whitespace character
+  \if\relax\detokenize{#1}\relax\temp\else\edef#1{\newtemp}\fi%
+}%
+
+\newgetenv[\SLIMES]{SLIMES}%
+
 %%% Tento soubor obsahuje definice různých užitečných maker a prostředí %%%
 %%% Další makra připisujte sem, ať nepřekáží v ostatních souborech.     %%%
 
@@ -32,7 +46,7 @@
 
 % Zapne černé "slimáky" na koncích řádků, které přetekly, abychom si
 % jich lépe všimli.
-\overfullrule=1mm
+% \ifdefstring{\SLIMES}{0}{}{\overfullrule=1mm}
 
 %%% Makra pro definice, věty, tvrzení, příklady, ... (vyžaduje baliček amsthm)
 

@@ -255,14 +255,14 @@ Typ \textit{User} je objekt a má v sobě také nějaké hodnoty a vrátí se n�
 další objekty, mohli bychom se zeptat i na jejich hodnoty. Kdybychom psali aplikaci pro veterinární kliniku, mohli bychom se zeptat
 třeba na jména mazlíčků.
 
-Pro každý kořenový resolver musíme napsat funkci, která buď přímo vrátí požadovaný objekt s atributy, a nebo
+Pro každý kořenový resolver se musí napsat funkce, která buď přímo vrátí požadovaný objekt s atributy, a nebo
 k typu, který náš kořenový resolver vratí, napíšeme další resolvery, které vrací příslušné objekty, nebo skaláry.
 Kdybychom se databáze ptali na uživatele i s
 mazlíčky (v SQL terminologii bychom provedli JOIN), tak bychom nemuseli pro typ \textit{User} psát resolver pro mazlíčky, kde bychom
 se dotázali na mazlíčky našeho uživatele.
 \citep[][]{GraphQLDoc}
 
-Zároveň můžeme provádět virtualizaci atributů -- přidávat atributy, které v databázi nemáme, ale pro webové rozhraní se hodí.
+Zároveň lze provádět virtualizaci atributů -- přidávat atributy, které v databázi nemáme, ale pro webové rozhraní se hodí.
 Hypotetickým příkladem budiž celková zaplacená částka zákazníkem, která se v případě potřeby vypočítá nebo aktuální agregované statistiky.
 
 SDL zároveň umožňuje komentáře, které lze pak zobrazit v různých nástrojích pro práci s GraphQL --
@@ -599,10 +599,11 @@ Jedná se o spektrum, ne o kategorie.
 \noindent
 Každá složitější webová aplikace používá různé druhy tlačítek a vstupů.
 Bohužel v každém prohlížeči vypadají základní prvky jinak. Na obrázku \ref{fig:browser_checkboxes}
-je screenshot z webové stránky \url{https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox}.
+jsou screenshoty z webové stránky \url{https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox}
+prohlížečích Mozilla Firefox a Google Chrome.
 
-Pokud se chce navíc uálně sjednotit tyto prvky se zbytkem uživatelského rozhraní, je
-vyvinutí vlastních elementárních prvků nevyhnutelné. Vývoj se řídil principem minimu informací
+Pokud se chce navíc sjednotit tyto prvky se zbytkem uživatelského rozhraní, je
+vyvinutí vlastních elementárních prvků nevyhnutelné. Vývoj se řídil principem minima informací
 -- omezí se v rámci jednoho prvku počet nápadných částí. V praxi to například znamená žádné nebo méně výrazné
  orámování (CSS vlastnost \textit{border}) a zahlé rohy (CSS vlastnost \textit{border-radius}).
 Na obrázku \ref{fig:ui_elems} lze vidět prvky využité v projektu.
