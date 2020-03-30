@@ -14,6 +14,8 @@
 % \openright zařídí, aby následující text začínal na pravé straně knihy
 \let\openright=\clearpage
 
+\usepackage{catchfile}
+
 %% Pokud tiskneme oboustranně:
 % \documentclass[12pt,a4paper,twoside,openright]{report}
 % \setlength\textwidth{145mm}
@@ -63,6 +65,8 @@
 \usepackage{dirtree}
 \usepackage{subfig}
 \usepackage[font=small,labelfont=bf,justification=justified,format=plain]{caption}
+\usepackage{pdflscape}
+% \usepackage[driver=pdftex]{geometry}
 % \usepackage{mathptmx}
 
 \include{hyphenation}
@@ -190,6 +194,20 @@ the system should be usable in real-life.
 %%% opatření rektora č. 72/2017.
 % \appendix
 % \chapter{Přílohy}
+% \include{prilohy/prilohy.tex}
+
+\appendix
+\newpage
+\pdfpagewidth=33.1in
+\pdfpageheight=14in
+\setlength\textwidth{33.1in}
+\setlength\linewidth{33.1in}
+
+\chapter{GraphQL Schema} \label{app:a:graphql_schema}
+\noindent
+
+\includegraphics[width=30in]{../img/gql_query_schema.png}
+\includegraphics[width=30in]{../img/gql_mutation_schema.png}
 
 % \openright
 \end{document}

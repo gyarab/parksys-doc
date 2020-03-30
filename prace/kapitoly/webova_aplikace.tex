@@ -3,6 +3,7 @@
 
 \noindent
 Tato kapitola popisuje zvolené postupy při psaní webové aplikace (backend a frontend).
+Nejprve ukazuje dokončené části a dále vysvětluje zvolené postupy.
 
 Obrázek \ref{fig:structure_back} a obrázek \ref{fig:structure_front} popisují adresářové
 struktury backendu a frontendu.
@@ -203,23 +204,59 @@ komunikace pro velice malou mobilní aplikaci by vývoj spíše ztížilo. Máme
   \item GET \textit{/captureImage/:id} slouží k získání výřezu naskenované SPZ z webového rozhraní. Přijímá \textit{id} obrázku jako parametr v URL.
 \end{itemize}
 
-\subsection{GraphQL resolvery}
+\subsection{GraphQL}
 
 \noindent
 Protože GraphQL je primárním způsobem komunikace mezi frontendem a backendem, stojí za to si vysvětlit základní stavební bloky
-GraphQL -- resolvery, které tvoří strom. Vzpoměňme si na příklad z předchozí kapitoly na obrázku \ref{fig:graphql_example}.
-Zde kořenem stromu je resolver \textit{userSearch}, jenž přijímá argumenty potřebné pro jeho běh, ty jsou v tomto případě
+GraphQL -- resolvery, které tvoří orientovaný graf, ale pro zjednodušení lze o této struktuře přemýšlet jako o stromu.
+Jaké resolvery máme, jaké přijímají typy, jaké vracejí typy definujeme v SDL (abbrv. Schema-Definition-Language).
+V Typescriptu (v tomto projektu) se pak resolvery implementují.
+Graf resolverů a tedy i GraphQL schema v SDL je v příloze \ref{app:a:graphql_schema}.
+Na obrázku \ref{fig:graphql_sdl} lze vidět příklad definice v SDL.
+
+\begin{figure}[!htb]
+  \lstset{language=GraphQL}
+  \begin{lstlisting}
+  type UserSearchResult {
+    data: [User!]
+    page: PositiveInt!
+    limit: PositiveInt!
+  }
+
+  input UserSearchInput {
+    name: String!
+    # Default is 50
+    limit: PositiveInt
+    # Default is 1
+    page: PositiveInt
+  }
+
+  extend type Query {
+    # If not logged id, an error is returned
+    currentUser: User!
+    userSearch(search: UserSearchInput!): UserSearchResult!
+    userSearchByEmail(search: UserByEmailSearchInput!): UserSearchResult!
+  }
+  \end{lstlisting}
+  \caption[Příklad definice resolverů v SDL.]{Příklad definice resolverů v SDL. Klíčové slovo extend umožňuje
+  definovat části typů v několika souborech, což umožňuje flexibilnější dělení projektu. Kromě obvyklích typů,
+  které dostává klient, máme i \textit{input} typy, ve kterých se definují povolené vstupní hodnoty.}
+  \label{fig:graphql_sdl}
+\end{figure}
+
+Vzpomeňme si na příklad z předchozí kapitoly na obrázku \ref{fig:graphql_example}.
+Zde vstupním vrcholem grafu je resolver \textit{userSearch}, jenž přijímá argumenty potřebné pro jeho běh, ty jsou v tomto případě
 povinné (ale nemusí). Kořenový resolver je funkce vracející nějaký typ, v tomto případě typ \textit{UserSearchResult}, který udává nalezené
 uživatele (\textit{UserSearchResult.data}) a stránkování (v příkladu vynecháno).
-Při návrhu tohoto resolveru bychom si mohli rozmyslet, že údaje o stránkování vynecháme a vrátíme pouze
-pole neprázdných uživatelů -- typ \textit{[User!]}.
-Máme dva druhy typů: skaláry (listy stromu) a objekty (uzly stromu).
+% Při návrhu tohoto resolveru bychom si mohli rozmyslet, že údaje o stránkování vynecháme a vrátíme pouze
+% pole neprázdných uživatelů -- typ \textit{[User!]}.
+Máme dva druhy typů: skaláry (``listy'' grafu) a objekty (``nelisty'' grafu).
 Typ \textit{User} je objekt a má v sobě také nějaké hodnoty a vrátí se nám jen ty, na které se zeptáme. Měl-li by typ \textit{User}
 další objekty, mohli bychom se zeptat i na jejich hodnoty. Kdybychom psali aplikaci pro veterinární kliniku, mohli bychom se zeptat
 třeba na jména mazlíčků.
 
-Jak toto implementujeme? Pro každý kořenový resolver musíme napsat funkci, která buď přímo vrátí požadovaný objekt s atributy, a nebo
-k typu, který náš kořenový resolver vrací, napíšeme další resolvery, které vrací opět objekty, nebo skaláry.
+Pro každý kořenový resolver musíme napsat funkci, která buď přímo vrátí požadovaný objekt s atributy, a nebo
+k typu, který náš kořenový resolver vratí, napíšeme další resolvery, které vrací příslušné objekty, nebo skaláry.
 Kdybychom se databáze ptali na uživatele i s
 mazlíčky (v SQL terminologii bychom provedli JOIN), tak bychom nemuseli pro typ \textit{User} psát resolver pro mazlíčky, kde bychom
 se dotázali na mazlíčky našeho uživatele.
@@ -227,6 +264,31 @@ se dotázali na mazlíčky našeho uživatele.
 
 Zároveň můžeme provádět virtualizaci atributů -- přidávat atributy, které v databázi nemáme, ale pro webové rozhraní se hodí.
 Hypotetickým příkladem budiž celková zaplacená částka zákazníkem, která se v případě potřeby vypočítá nebo aktuální agregované statistiky.
+
+SDL zároveň umožňuje komentáře, které lze pak zobrazit v různých nástrojích pro práci s GraphQL --
+dokumentace je vestavěná a téměř zadarmo.
+V tomto projektu byl použit nástroj GraphQLPlayground. Snímek dokumentace lze vidět na obrázku \ref{fig:graphql_doc}.
+
+\begin{figure}[htb!]
+  \includegraphics[width=145mm]{../img/gql_doc.png}
+  \caption[Screenshot dokumentace z nástroje GraphQLPlayground.]{Screenshot dokumentace z nástroje GraphQLPlayground.
+  CSS bylo upraveno, aby byl obrázek čitelnější.}
+  \label{fig:graphql_doc}
+\end{figure}
+
+\subsection{Top-level GraphQL typy}
+
+\noindent
+Již zmíněný graf resolverů má vstupní vrcholy -- \textit{Query}, \textit{Mutation} a popřípadě \textit{Subscription} (v tomto projektu nepoužito).
+\textit{Query} slouží k obalení operací čtení, \textit{Mutation} slouží k obalení operací úpravy/mutace dat a \textit{Subscription} slouží
+ke komunikaci přes websockety. \citep{GraphQLDoc} \citep{ApolloSubs}
+
+Tedy tvrzení z předchozí podpodkapitoly, že resolver \textit{userSearch} je vstupem do grafu byla lež.
+Přesněji k resolveru \textit{userSearch} se dostaneme přes top-level typ \textit{Query}.
+
+Graf resolverů a tedy i GraphQL schema v SDL (abbrv. Schema-Definition-Language) je v příloze \ref{app:a:graphql_schema}.
+Na obrázku \ref{fig:graphql_sdl} lze vidět příklad definice v SDL.
+
 \subsection{Obecné resolvery}
 
 \noindent
@@ -274,17 +336,19 @@ function gqlPopulate<D extends mongoose.Document,
 Webové rozhraní komunikující s backendem využívá již zmíněnou klientskou verzi knihovny Apollo, aby si vytvořila klienta,
 který má mnoho paremetrů.
 
-Nejdůležitější z nich jsou funkce, které řeší zpracování žádosti i odpovědi, jimž se říká \textit{links}.
-Ty řeší zpracování chyb a poslání chyb do Reduxu, přečtení URL backendu z nastavení, také vložení tokenu do hlavičky žádosti ( \ref{auther_authen}).
+Nejdůležitější z nich jsou funkce, které řeší zpracování žádosti i odpovědi, jimž se říká \textit{links}. \citep{ApolloLinks}
+Ty řeší zpracování chyb a poslání chyb do Reduxu, přečtení URL backendu z nastavení, také vložení tokenu do hlavičky žádosti
+(viz podkapitola \ref{auther_authen}).
 Jejich způsob použití lze přirovnat k návrhovému vzoru \textit{chain-of-responsibility}.
 
-Další parametr je určen ke cachování a vložení GraphQL schema získaného z backendu, aby bylo možné používat v dotazech fragmenty.
+Další parametr je určen ke cachování a vložení GraphQL schema získaného z backendu pomocí
+endpointu \textit{/graphql} (viz podpodkapitola \ref{endpoints}), aby bylo možné používat v dotazech fragmenty.
 
 \subsection{Získávání obrázků}
 
 \noindent
 Jelikož se k autorizaci používá header \textit{Authorization} místo souborů cookies,
-způsob získávání obrázků z endpointů zmíněných v \ref{endpoints} není obvyklý.
+způsob získávání obrázků z endpointů zmíněných v podpodkapitole \ref{endpoints} není obvyklý.
 Namísto nastavení atributu \textit{src} HTML tagu \textit{img} na normální URL obrázku,
 použijeme Blob URL. Obrázek stáhneme v Javascriptu a vytvoříme Blob URL pomocí API prohlížeče.
 Přibližná implementace je ukázána na obrázku \ref{fig:image_getter}.
