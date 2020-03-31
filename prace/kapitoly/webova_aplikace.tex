@@ -168,8 +168,6 @@ Tato stránka detailně zobrazuje údaje o počtu parkování a výdělku podle 
 Zároveň zobrazuje počet vozidel na parkovišti.
 Jeden z grafů je zobrazen na obrázku \ref{fig:google_charts} v podpodkapitole \ref{graphs}.
 
-\newpage
-
 \section{Autentizace a autorizace} \label{auther_authen}
 
 \noindent
@@ -397,6 +395,7 @@ nad 16MB (limit formátu BSON) nebo pokud je potřeba číst jen části soubor�
 Výřezy přibližně 500x100 pixelů jsou však mnohonásobně menší a vždy jsou načítány celé.
 Druhou alternativou by byl souborový systém, ale mít všechna data v databázi je praktičtější.
 
+\newpage
 \section{Parkovací pravidla} \label{analysis_parking_schema}
 
 \noindent
@@ -416,6 +415,12 @@ budou filtry.
 Pro jednoduchost je zapotřebí oddělit samotná pravidla od jejich
 priority, časového intervalu platnosti i filtrů,
 k čemuž bude sloužit objekt typu ParkingRuleAssignment.
+
+
+Filtrování bude mít dva módy: začne se se všemi vozidly (ALL) a začne se bez vozidel (NONE).
+Následné filtry mohou buď přidávat, nebo odstraňovat jednotlivá vozidla.
+Hodí se mít filtry uložené separátně, aby mohly být využity několikrát.
+Datový návrh lze vidět na obrázku \ref{fig:type_pra_vf}.
 
 \begin{figure}[!htb]
 \lstset{language=GraphQL}
@@ -446,13 +451,6 @@ Typ VehicleFilterAction je taktéž enum, jehož možné hodnoty jsou INCLUDE, E
 \label{fig:type_pra_vf}
 \end{figure}
 
-Filtrování bude mít dva módy: začne se se všemi vozidly (ALL) a začne se bez vozidel (NONE).
-Následné filtry mohou buď přidávat, nebo odstraňovat jednotlivá vozidla.
-Hodí se mít filtry uložené separátně, aby mohly být využity několikrát.
-
-\newpage
-\subsubsection*{Algoritmus pro aplikaci pravidel}
-
 \subsection{Algoritmus filtru vozidel}
 
 \noindent
@@ -470,6 +468,7 @@ Hodí se mít filtry uložené separátně, aby mohly být využity několikrát
         ale neplatí pokud je mód ALL. Opačný výsledek se vrátí, pokud vozidlo v množině není.
 \end{enumerate}
 
+\noindent
 Časová i paměťová složitost algoritmu je ${\cal O}(N)$, kde $N$ je počet filtrů.
 % Tento algoritmus lze potenciálně rozdělit na předvýpočet (kroky 1. a 2.) a ověření (krok 3.).
 % Tato možnost zvýší paměťovou náročnost, protože bychom si museli pamatovat množiny, což je nepraktické.
@@ -481,8 +480,8 @@ Hodí se mít filtry uložené separátně, aby mohly být využity několikrát
 
 \begin{figure}[!htb] \centering
   \includegraphics[width=145mm]{../img/rules_drawing.jpg}
-  \textit{Modré úsečky neplatí kvůli filtrům nebo protože jsou deaktivované. Oranžová čára značí výstup požadovaného algoritmu.}
-  \caption{Ilustrace problému úseček.}
+  \caption[Ilustrace problému úseček.]{Ilustrace problému úseček.
+  Modré úsečky neplatí kvůli filtrům nebo protože jsou deaktivované. Oranžová čára značí výstup požadovaného algoritmu.}
   \label{fig:rules_drawing}
 \end{figure}
 
@@ -496,8 +495,6 @@ Na obrázku \ref{fig:rules_drawing} je ilustrace tohoto geometrického problému
 
 Pro zjednodušení popisu algoritmu předpokládejme, že všechny objekty typu ParkingRuleAssignment, které zpracováváme, platí pro naše vozidlo.
 Přidat tuto kontrolu později je triviální.
-
-\subsubsection*{Algoritmus pro aplikaci pravidel}
 
 \vspace{5mm}
 \noindent
