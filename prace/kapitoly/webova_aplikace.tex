@@ -1,5 +1,6 @@
-
 \chapter{Webová aplikace}
+
+\begin{gather*} J(\Theta) = - \frac{1}{m} \sum_{i=1}^m \sum_{k=1}^K \left[y^{(i)}_k \log ((h_\Theta (x^{(i)}))_k) + (1 - y^{(i)}_k)\log (1 - (h_\Theta(x^{(i)}))_k)\right] + \frac{\lambda}{2m}\sum_{l=1}^{L-1} \sum_{i=1}^{s_l} \sum_{j=1}^{s_{l+1}} ( \Theta_{j,i}^{(l)})^2\end{gather*}
 
 \noindent
 Tato kapitola popisuje zvolené postupy při psaní webové aplikace (backend a frontend).
@@ -450,6 +451,8 @@ Následné filtry mohou buď přidávat, nebo odstraňovat jednotlivá vozidla.
 Hodí se mít filtry uložené separátně, aby mohly být využity několikrát.
 
 \newpage
+\subsubsection*{Algoritmus pro aplikaci pravidel}
+
 \subsection{Algoritmus filtru vozidel}
 
 \noindent
@@ -484,15 +487,17 @@ Hodí se mít filtry uložené separátně, aby mohly být využity několikrát
 \end{figure}
 
 \noindent
-Pro zjednodušení algoritmu, uvalíme omezení: ve stejný čas nesmí existovat více ParkingRuleAssignment
+Pro zjednodušení algoritmu, uvalíme omezení: ve stejný čas nesmí existovat více objektů typu ParkingRuleAssignment
 se stejnou prioritou.
 
 Situaci si lze představit jako několik navzájem rovnoběžných úseček v různých výškách, které se neprotínají.
 Nás nyní zajímá, na které a v jakých intervalech na ně dopadne světlo, pokud na ně kolmo zeshora posvítíme.
 Na obrázku \ref{fig:rules_drawing} je ilustrace tohoto geometrického problému.
 
-Pro zjednodušení popisu algoritmu předpokládejme, že všechny ParkingRuleAssignment, které zpracováváme, platí pro naše vozidlo.
+Pro zjednodušení popisu algoritmu předpokládejme, že všechny objekty typu ParkingRuleAssignment, které zpracováváme, platí pro naše vozidlo.
 Přidat tuto kontrolu později je triviální.
+
+\subsubsection*{Algoritmus pro aplikaci pravidel}
 
 \vspace{5mm}
 \noindent
@@ -503,8 +508,8 @@ Přidat tuto kontrolu později je triviální.
 
 \begin{enumerate}
   \setlength\itemsep{.05em}
-  \item Seřadíme si začátky a konce úseček podle jejich času.
-  \item Vytvoříme si haldu pro odkládání úseček, která řadí podle priority -- větší výše.
+  \item Seřadíme si začátky a konce úseček podle jejich času. Začátek úsečky se uchovává pointer na svůj objekt typu ParkingRuleAssignment.
+  \item Vytvoříme si haldu pro odkládání úseček, která řadí podle ParkingRuleAssignment.priority -- větší výše.
   \item Vytvoříme si seznam aplikovaných pravidel s časy (časy se mohou lišit od počátečních i koncových časů).
   \item Nechť \textit{s} je současná úsečka a \textit{$t_s$} čas zvolení \textit{s} (čas zvolení se může lišit od začátku úsečky).
   \item Pro každou událost \textit{u} značící začátek/konec úsečky (aplikaci pravidla) \textit{p}:
@@ -545,12 +550,96 @@ Přidáme-li filtrování, tak v nejhorším případě budeme ověřovat platno
 filtrů, pak je časová složitost ${\cal O}(N\cdot{M})$. 
 % Při rozumném počtu \texttt{ParkingRuleAssignment} v daném intervalu je algoritmus velice rychlý
 
+\subsection{Algoritmus pro mazání přiřazení pravidel}
+
+\noindent
+Pro mazání je praktičtější, když se nemažou všechny objekty typu ParkingRuleAssignment, které jsou
+některou svou částí v
+časovém úseku, který chceme vyprázdnit. Pak by se mohlo stát, že se smažou i jiné, jejichž
+začátek a/nebo konec je mimo tento úsek. Tedy místo toho, abychom mazali podle podmínky,
+
+$${start} <= {deleteEnd} \land {end} >= {deleteStart}$$
+
+\noindent
+budeme mazat pouze ty, které jsou celé v mazaném úseku ($a$).
+Ty, které mají některou svoji část i mimo mazaný úsek ($b_1 \lor b_2$), zkrátíme. Ty, co
+mají začátek i konec mimo mazaný úsek ($c$), rozdělíme na dva -- jeden vytvoříme a druhý
+dostaneme zkrácením původního.
+
+$${deleteStart} <= {start} \land {end} <= {deleteEnd}\;(a)$$
+$${start} < {deleteStart} \land {deleteStart} < {end} <= {deleteEnd}\;(b_1)$$
+$${deleteStart} <= {start} < {deleteEnd} \land {deleteEnd} < {end}\;(b_2)$$
+$${start} < {deleteStart} \land {deleteEnd} < {end}\;(c)$$
+
+\noindent
+Případy $a$ smažeme.
+U případů $b_1$ nastavíme $end = deleteStart$ a u případů $b_2$ nastavíme $start = deleteEnd$.
+U případů $c$ původnímu objektu typu ParkingRuleAssignment nastavíme $end = deleteStart$ a kopii,
+která má původní hodnotu $end$, nastavíme $start = deleteEnd$.
+
+Při implementaci využijeme věstavěnou schopnost Javascriptu provádět asynchronně na pozadí několik akcí, což
+můžeme, protože případy jsou disjunktní. Pokračujeme v programu, jakmile jsou všechny dokončené, aniž
+bychom blokovali vlákno.
+Akcí je nyní myšlena úprava dokumentů v databázi.
+
+\begin{figure}[!htb]
+  \lstset{language=Javascript}
+  \begin{lstlisting}
+const promises: Promise<IParkingRuleAssignment[]> = Promise.all([
+  // (a) Delete those that are wholly between deleteStart and deleteEnd
+  ParkingRuleAssignment.deleteMany({
+    start: { $gte: deleteStart },
+    end: { $lte: deleteEnd }
+  }),
+  // (b1) Start is outside, end is inside
+  ParkingRuleAssignment.updateMany(
+    { start: { $lt: deleteStart }, end: { $gt: deleteStart, $lte: deleteEnd } },
+    { $set: { end: deleteStart } }
+  ),
+  // (b2) End is outside, start is inside
+  ParkingRuleAssignment.updateMany(
+    { start: { $gte: deleteStart, $lt: deleteEnd }, end: { $gt: deleteEnd } },
+    { $set: { start: deleteEnd } }
+  ),
+  // (c) Both start and end are outside -> divide into two assignments
+  ParkingRuleAssignment.find({
+    end: { $gt: deleteEnd },
+    start: { $lt: deleteStart }
+  }).then(results => {
+    const copies = results.map(original => {
+      const copy = duplicateWithoutId(original);
+      copy.start = deleteEnd;
+      return copy;
+    });
+    results.forEach(a => (a.end = deleteStart));
+    return Promise.all([
+      ParkingRuleAssignment.create(copies),
+      Promise.all(results.map(r => r.save()))
+    ]);
+  })
+]);
+// ...continue once everything is finished
+  \end{lstlisting}
+  \caption[Mázání]{Mazání časového úseku objektů typu ParkingRuleAssignment. V kódu je IParkingRuleAssignment interface a
+  ParkingRuleAssignment je mongoose model, pomocí kterého se přístupuje ke kolekci dokumentů.}
+  \label{fig:pra_deleting}
+\end{figure}
+
 \section{Uživatelské rozhraní}
 
 \noindent
 Jelikož autor neměl zkušenosti s vývojem webového uživatelského rozhraní, rozhodl se využít starter projekt
 společnosti Crazy Factory GmbH, který pojí vybrané technologie dohromady a mandatuje projektu základní strukturu.
 Navíc podporuje překlady, reportování chyb apod., což je obtížné vytvářet z ničeho. \citep[][]{CFProj}
+
+Na obrázku \ref{fig:favicon} lze vidět \textit{favicon.ico} webového rozhraní.
+
+\begin{figure}[htb!]
+  \centering
+  \includegraphics[width=20mm]{../img/favicon.png}
+  \caption{Ikona}
+  \label{fig:favicon}
+\end{figure}
 
 \subsection{Redux a persistence stavu}
 
