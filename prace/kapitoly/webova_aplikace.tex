@@ -71,11 +71,13 @@ Seznam všech závislostí je uveden v souborech \textit{package.json} a \textit
 \noindent
 Mějme po příhlášení do webového rozhraní následující obrazovky,
 mezi kterými bude uživatel přepínat pomocí hlavního menu.
+\vspace{-0.5mm}
 
 \subsection{Správa účtu}
 
 \noindent
 Tato stránka umožňuje změnu údajů a hesla současně přihlášeného uživatele.
+\vspace{-0.5mm}
 
 \subsection{Zařízení}
 
@@ -97,6 +99,7 @@ Screenshot obrazovky je na obrázku \ref{fig:page_devices}.
   \label{fig:page_devices}
 \end{figure}
 
+\vspace{-0.5mm}
 \subsection{Pravidla a Filtry}
 
 \noindent
@@ -132,6 +135,7 @@ Screenshoty obrazovky jsou na obrázcích \ref{fig:page_rules_filters1}, \ref{fi
   Vpravo nahoře lze navíc editovat zvolené přiřazení pravidel.}
   \label{fig:page_rules_filters3}
 \end{figure}
+\vspace{-0.5mm}
 
 \subsection{Vozidla a Parkování}
 
@@ -158,6 +162,7 @@ Screenshoty obrazovky jsou na obrázcích \ref{fig:page_vehicles1} a \ref{fig:pa
   \caption[Záznam parkování.]{Záznam parkování s výřezem naskenované SPZ.}
   \label{fig:page_vehicles2}
 \end{figure}
+\vspace{-0.5mm}
 
 \subsection{Statistiky}
 
@@ -284,7 +289,6 @@ Tedy tvrzení z předchozí podpodkapitoly, že resolver \textit{userSearch} je 
 Přesněji k resolveru \textit{userSearch} se dostaneme přes top-level typ \textit{Query}.
 
 Graf resolverů a tedy i GraphQL schema v SDL (abbrv. Schema-Definition-Language) je v příloze \ref{app:a:graphql_schema}.
-Na obrázku \ref{fig:graphql_sdl} lze vidět příklad definice v SDL.
 
 \subsection{Obecné resolvery}
 
@@ -448,6 +452,7 @@ Typ VehicleFilterAction je taktéž enum, jehož možné hodnoty jsou INCLUDE, E
 \label{fig:type_pra_vf}
 \end{figure}
 
+\newpage
 \subsection{Algoritmus filtru vozidel}
 
 \noindent
@@ -493,7 +498,7 @@ Na obrázku \ref{fig:rules_drawing} je ilustrace tohoto geometrického problému
 Pro zjednodušení popisu algoritmu předpokládejme, že všechny objekty typu ParkingRuleAssignment, které zpracováváme, platí pro naše vozidlo.
 Přidat tuto kontrolu později je triviální.
 
-\vspace{5mm}
+\newpage
 \noindent
 \textit{Vstup: seznam ParkingRuleAssignment platných v intervalu pobytu vozidla na parkovišti, vozidlo}
 
@@ -744,7 +749,7 @@ například i takzvaný kalendářový graf, jenž lze vidět na obrázku \ref{f
 \subsection{Obecná vybírátka modelů}
 
 \noindent
-Dle principu neopakování se bylo vytvořeno několik obecných UI komponent, které umožňují vyhledávání libovolných
+Dle principu neopakování se (DRY -- Don\t-Repeat-Yourself) bylo vytvořeno několik obecných UI komponent, které umožňují vyhledávání libovolných
 modelů a jejich volbu a využití v ostatních komponentách. Ve zdrojovém kódu je implementujeme jako
 HOF (aabrv. Higher-Order-Function), což je funkce vracející další funkce -- konkrétní komponenty.
 Měnící se části, které se do těchto obecných komponent budou vkládat, je komponenta renderující jediný model
